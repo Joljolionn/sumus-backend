@@ -1,5 +1,6 @@
 package com.sumus.sumus_backend.services.impl;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
@@ -28,7 +29,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserEntity create(UserDto userDto) {
+    public UserEntity create(UserDto userDto) throws IOException {
 
         UserEntity userEntity = userMapper.mapFrom(userDto);
 

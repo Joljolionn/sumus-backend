@@ -1,16 +1,43 @@
 package com.sumus.sumus_backend.domain.dtos;
 
+import org.springframework.web.multipart.MultipartFile;
+
+import jakarta.persistence.Column;
+
 public class UserDto {
 
-    public UserDto(){}
+	public UserDto() {
+	}
 
-    private String username;
+	private String username;
 
-    private String email;
+	private String email;
 
-    private String password;
+	private String password;
 
-    private String telefone;
+	private String telefone;
+
+	private MultipartFile foto;
+
+	private String contentType;
+
+	private byte[] fotoBytes;
+
+	public byte[] getFotoBytes() {
+		return fotoBytes;
+	}
+
+	public void setFotoBytes(byte[] fotoBytes) {
+		this.fotoBytes = fotoBytes;
+	}
+
+	public MultipartFile getFoto() {
+		return foto;
+	}
+
+	public void setFoto(MultipartFile foto) {
+		this.foto = foto;
+	}
 
 	public String getUsername() {
 		return username;
@@ -42,5 +69,13 @@ public class UserDto {
 
 	public void setTelefone(String telefone) {
 		this.telefone = telefone;
+	}
+
+	public String getContentType() {
+		return contentType;
+	}
+
+	public void setContentType(String contentType) {
+		this.contentType = contentType;
 	}
 }

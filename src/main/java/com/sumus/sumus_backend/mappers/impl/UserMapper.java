@@ -1,5 +1,7 @@
 package com.sumus.sumus_backend.mappers.impl;
 
+import java.io.IOException;
+
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
@@ -17,12 +19,14 @@ public class UserMapper implements Mapper<UserEntity, UserDto> {
     }
 
     @Override
-    public UserEntity mapFrom(UserDto b) {
+    public UserEntity mapFrom(UserDto b) throws IOException{
         UserEntity userEntity = new UserEntity();
         userEntity.setEmail(b.getEmail());
         userEntity.setUsername(b.getUsername());
         userEntity.setTelefone(b.getTelefone());
         userEntity.setPassword(passwordEncoder.encode(b.getPassword()));
+        userEntity.setContentType(b.getFoto().getContentType());
+        userEntity.setFoto(b.getFoto().getBytes());
         return userEntity;
     }
 
@@ -32,6 +36,8 @@ public class UserMapper implements Mapper<UserEntity, UserDto> {
         userDto.setEmail(a.getEmail());
         userDto.setUsername(a.getUsername());
         userDto.setTelefone(a.getTelefone());
+        userDto.setContentType(a.getContentType());
+        userDto.setFotoBytes(a.getFoto());
         return userDto;
     }
 

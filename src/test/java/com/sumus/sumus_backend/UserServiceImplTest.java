@@ -1,9 +1,9 @@
-
 package com.sumus.sumus_backend;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -22,6 +22,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.mock.web.MockMultipartFile; // Importe esta classe
 
 public class UserServiceImplTest {
 
@@ -43,30 +44,71 @@ public class UserServiceImplTest {
     }
 
     @Test
-    void testCreate() {
+    void testCreate_Success() throws IOException { // Adicione 'throws IOException' para simplificar o teste
+        // 1. Prepara o UserDto com uma foto mockada
         UserDto user = new UserDto();
         user.setEmail("test@example.com");
         user.setUsername("teste");
         user.setPassword("123");
         user.setTelefone("11 123456789");
+        
+        // Cria um Mock MultipartFile
+        MockMultipartFile mockFoto = new MockMultipartFile(
+            "foto",
+            "foto_teste.jpg",
+            "image/jpeg",
+            "dados_da_foto".getBytes()
+        );
+        user.setFoto(mockFoto);
 
+        // 2. Prepara a UserEntity esperada
         UserEntity userEntity = new UserEntity();
         userEntity.setEmail(user.getEmail());
         userEntity.setUsername(user.getUsername());
         userEntity.setTelefone(user.getTelefone());
         userEntity.setPassword("encoded");
+        userEntity.setContentType("image/jpeg");
+        userEntity.setFoto("dados_da_foto".getBytes());
 
+        // 3. Configura os Mocks
         when(userMapper.mapFrom(user)).thenReturn(userEntity);
         when(userRepository.save(userEntity)).thenReturn(userEntity);
 
+        // 4. Executa o método a ser testado
         UserEntity created = userService.create(user);
 
+        // 5. Faz as verificações (asserts)
         assertNotNull(created);
         assertEquals("test@example.com", created.getEmail());
+        assertArrayEquals("dados_da_foto".getBytes(), created.getFoto());
+        assertEquals("image/jpeg", created.getContentType());
+        
+        // 6. Verifica as interações com os mocks
         verify(userMapper, times(1)).mapFrom(user);
         verify(userRepository, times(1)).save(userEntity);
     }
+    
+    @Test
+    void testCreate_IOException() throws IOException { // Teste para a exceção
+        // 1. Prepara o DTO
+        UserDto user = new UserDto();
+        user.setEmail("test@example.com");
+        user.setUsername("teste");
+        user.setPassword("123");
+        user.setTelefone("11 123456789");
+        user.setFoto(new MockMultipartFile("foto", "test.jpg", "image/jpeg", new byte[0]));
 
+        // 2. Configura o mock para lançar IOException
+        when(userMapper.mapFrom(any(UserDto.class))).thenThrow(new IOException("Erro ao ler foto"));
+        
+        // 3. Espera a exceção ser lançada
+        assertThrows(IOException.class, () -> userService.create(user));
+        
+        // 4. Verifica que o save não foi chamado
+        verify(userRepository, never()).save(any(UserEntity.class));
+    }
+
+    // ... (o resto do seu código de teste, que parece estar correto, pode ficar aqui)
     @Test
     void testListAll() {
         UserEntity user1 = new UserEntity();
@@ -84,12 +126,21 @@ public class UserServiceImplTest {
 
     
 @Test
-void testUpdate() {
+void testUpdate() throws IOException { // Adicione 'throws IOException'
     UserDto userDto = new UserDto();
     userDto.setEmail("teste@gmail.com");
     userDto.setUsername("novoNome");
     userDto.setTelefone("11 987654321");
     userDto.setPassword(null);
+    
+    // Adicione uma foto mock para o DTO de atualização
+    MockMultipartFile mockFoto = new MockMultipartFile(
+            "foto",
+            "foto_nova.png",
+            "image/png",
+            "novos_dados".getBytes()
+    );
+    userDto.setFoto(mockFoto);
 
     UserEntity existingUser = new UserEntity();
     existingUser.setId(1L);
@@ -97,24 +148,31 @@ void testUpdate() {
     existingUser.setUsername("teste");
     existingUser.setTelefone("11 123456789");
     existingUser.setPassword("123");
-
+    
     UserEntity savedUser = new UserEntity();
     savedUser.setId(1L);
     savedUser.setEmail("teste@gmail.com");
     savedUser.setUsername("novoNome");
     savedUser.setTelefone("11 987654321");
     savedUser.setPassword("123");
+    savedUser.setContentType("image/png");
+    savedUser.setFoto("novos_dados".getBytes());
 
     when(userRepository.findByEmail("teste@gmail.com")).thenReturn(Optional.of(existingUser));
 
+    // Correção: Mocar o comportamento de updateEntityFromDto para incluir a foto
     doAnswer(invocation -> {
         UserEntity entity = invocation.getArgument(0);
         UserDto dto = invocation.getArgument(1);
         entity.setUsername(dto.getUsername());
         entity.setTelefone(dto.getTelefone());
+        if(dto.getFoto() != null){
+            entity.setContentType(dto.getFoto().getContentType());
+            entity.setFoto(dto.getFoto().getBytes());
+        }
         return null;
     }).when(userMapper).updateEntityFromDto(any(UserEntity.class), any(UserDto.class));
-
+    
     when(userRepository.save(existingUser)).thenReturn(savedUser);
 
     Optional<UserEntity> result = userService.update(userDto);
@@ -122,6 +180,8 @@ void testUpdate() {
     assertTrue(result.isPresent());
     assertEquals("novoNome", result.get().getUsername());
     assertEquals("11 987654321", result.get().getTelefone());
+    assertArrayEquals("novos_dados".getBytes(), result.get().getFoto());
+    assertEquals("image/png", result.get().getContentType());
 
     verify(userRepository, times(1)).findByEmail("teste@gmail.com");
     verify(userMapper, times(1)).updateEntityFromDto(existingUser, userDto);
@@ -192,4 +252,3 @@ void testUpdate() {
         verify(passwordEncoder, times(1)).matches("123", "encoded");
     }
 }
-
