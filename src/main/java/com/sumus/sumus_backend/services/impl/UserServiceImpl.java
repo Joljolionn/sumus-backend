@@ -15,6 +15,8 @@ import com.sumus.sumus_backend.mappers.impl.UserMapper;
 import com.sumus.sumus_backend.repositories.UserRepository;
 import com.sumus.sumus_backend.services.UserService;
 
+// Classe com responsabilidade de tratar a lógica em si do precessamento dos
+// dados, mediadora entre a camada do banco de dados e a camada de apresentação
 @Service
 public class UserServiceImpl implements UserService {
 

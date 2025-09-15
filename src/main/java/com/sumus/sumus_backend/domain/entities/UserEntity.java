@@ -8,6 +8,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Lob;
 import jakarta.persistence.Table;
 
+// Classe para representar a tabela 'users' no banco de dados
 @Entity
 @Table(name = "users")
 public class UserEntity {
@@ -34,6 +35,8 @@ public class UserEntity {
 
         @Column(nullable = true)
         private String contentType;
+
+        private String tipo;
 
         public void setFoto(byte[] foto) {
                 this.foto = foto;
@@ -102,7 +105,5 @@ public class UserEntity {
         public void setFotoPath(byte[] foto) {
                 this.foto = foto;
         }
-
-        private String tipo;
 
 }

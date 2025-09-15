@@ -17,6 +17,7 @@ import com.sumus.sumus_backend.domain.dtos.UserDto;
 import com.sumus.sumus_backend.domain.entities.UserEntity;
 import com.sumus.sumus_backend.services.UserService;
 
+// Classe para representar os endpoints da aplicação
 @RestController
 public class UserControllerImpl {
     private UserService userService;

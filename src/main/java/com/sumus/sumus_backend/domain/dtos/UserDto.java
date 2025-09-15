@@ -2,8 +2,8 @@ package com.sumus.sumus_backend.domain.dtos;
 
 import org.springframework.web.multipart.MultipartFile;
 
-import jakarta.persistence.Column;
-
+// Classe usada na camada de apresentação para mostrar e transferir dados para
+// os usuários
 public class UserDto {
 
 	public UserDto() {
