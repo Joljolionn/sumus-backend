@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -24,8 +25,8 @@ public class UserControllerImpl {
         this.userService = userService;
     }
 
-    @PostMapping(path = "/users")
-    public ResponseEntity<UserEntity> createUser(@RequestBody UserDto userDto) {
+    @PostMapping(path = "/signup")
+    public ResponseEntity<UserEntity> createUser(@ModelAttribute UserDto userDto) {
         UserEntity user;
         try {
             user = userService.create(userDto);
