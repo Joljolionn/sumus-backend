@@ -4,7 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Optional;
 
-import com.sumus.sumus_backend.entities.UserEntity;
+import com.sumus.sumus_backend.domain.entities.UserEntity;
 import com.sumus.sumus_backend.repositories.UserRepository;
 
 import org.junit.jupiter.api.Test;
@@ -21,6 +21,9 @@ public class UserRepositoryTest {
     void testSaveAndFindByEmail() {
         UserEntity user = new UserEntity();
         user.setEmail("integration@example.com");
+        user.setUsername("teste");
+        user.setPassword("123");
+        user.setTelefone("11 123456789");
 
         userRepository.save(user);
 
@@ -33,9 +36,17 @@ public class UserRepositoryTest {
     @Test
     void testFindAll() {
         UserEntity userEntity1 = new UserEntity();
-        userEntity1.setEmail("user1@example.com");        
+        userEntity1.setEmail("user1@example.com");
+        userEntity1.setUsername("teste");
+        userEntity1.setPassword("123");
+        userEntity1.setTelefone("11 123456789");
         UserEntity userEntity2 = new UserEntity();
-        userEntity1.setEmail("user2@example.com");
+        userEntity2.setEmail("user2@example.com");
+        userEntity2.setPassword("123");
+        userEntity2.setUsername("teste");
+        userEntity2.setPassword("123");
+        userEntity2.setTelefone("11 123456789");
+
         userRepository.save(userEntity1);
         userRepository.save(userEntity2);
 
