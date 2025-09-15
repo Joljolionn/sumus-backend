@@ -7,25 +7,30 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.sumus.sumus_backend.domain.dtos.AuthResult;
+import com.sumus.sumus_backend.domain.dtos.LoginRequest;
+import com.sumus.sumus_backend.domain.dtos.UserDto;
 import com.sumus.sumus_backend.domain.entities.UserEntity;
+import com.sumus.sumus_backend.mappers.impl.UserMapper;
 import com.sumus.sumus_backend.repositories.UserRepository;
 import com.sumus.sumus_backend.services.UserService;
 
 @Service
 public class UserServiceImpl implements UserService {
 
-    UserRepository userRepository;
-    PasswordEncoder passwordEncoder;
+    private UserRepository userRepository;
+    private PasswordEncoder passwordEncoder;
+    private UserMapper userMapper;
 
-    UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder, UserMapper userMapper) {
         this.passwordEncoder = passwordEncoder;
         this.userRepository = userRepository;
+        this.userMapper = userMapper;
     }
 
     @Override
-    public UserEntity create(UserEntity userEntity) {
+    public UserEntity create(UserDto userDto) {
 
-        userEntity.setPassword(passwordEncoder.encode(userEntity.getPassword()));
+        UserEntity userEntity = userMapper.mapFrom(userDto);
 
         return userRepository.save(userEntity);
     }
@@ -36,8 +41,16 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserEntity update(UserEntity userEntity) {
-        return userRepository.save(userEntity);
+    public Optional<UserEntity> update(UserDto userDto) {
+        Optional<UserEntity> user = userRepository.findByEmail(userDto.getEmail());
+        if (user.isEmpty()) {
+            return user;
+        }
+
+        UserEntity updatedUser = user.get();
+        userMapper.updateEntityFromDto(updatedUser, userDto);
+
+        return Optional.of(userRepository.save(updatedUser));
     }
 
     @Override
@@ -57,14 +70,14 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public AuthResult login(String email, String senha) {
-        Optional<UserEntity> userOptional = userRepository.findByEmail(email);
+    public AuthResult login(LoginRequest loginRequest) {
+        Optional<UserEntity> userOptional = userRepository.findByEmail(loginRequest.getEmail());
 
         if (userOptional.isEmpty()) {
             return new AuthResult(AuthResult.Status.USER_NOT_FOUND, null);
         }
 
-        if (passwordEncoder.matches(senha, userOptional.get().getPassword())) {
+        if (passwordEncoder.matches(loginRequest.getPassword(), userOptional.get().getPassword())) {
             return new AuthResult(AuthResult.Status.SUCCESS, "funcionou");
         } else {
             return new AuthResult(AuthResult.Status.INVALID_PASSWORD, null);

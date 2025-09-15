@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.sumus.sumus_backend.domain.dtos.AuthResult;
 import com.sumus.sumus_backend.domain.dtos.LoginRequest;
+import com.sumus.sumus_backend.domain.dtos.UserDto;
 import com.sumus.sumus_backend.domain.entities.UserEntity;
 import com.sumus.sumus_backend.services.UserService;
 
@@ -23,8 +24,8 @@ public class UserControllerImpl {
     }
 
     @PostMapping(path = "/users")
-    public ResponseEntity<UserEntity> createUser(@RequestBody UserEntity userEntity) {
-        return new ResponseEntity<>(userService.create(userEntity), HttpStatus.CREATED);
+    public ResponseEntity<UserEntity> createUser(@RequestBody UserDto userDto) {
+        return new ResponseEntity<>(userService.create(userDto), HttpStatus.CREATED);
     }
 
     @GetMapping(path = "/users")
@@ -34,7 +35,7 @@ public class UserControllerImpl {
 
     @PostMapping(path = "/login")
     public ResponseEntity<String> login(@RequestBody LoginRequest loginRequest) {
-        AuthResult authResult = userService.login(loginRequest.getEmail(), loginRequest.getPassword());
+        AuthResult authResult = userService.login(loginRequest);
         HttpStatus httpStatus = HttpStatus.OK;
         if (authResult.getStatus() == AuthResult.Status.USER_NOT_FOUND) {
             httpStatus = HttpStatus.NOT_FOUND;

@@ -1,3 +1,4 @@
+
 package com.sumus.sumus_backend;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -8,7 +9,10 @@ import java.util.List;
 import java.util.Optional;
 
 import com.sumus.sumus_backend.domain.dtos.AuthResult;
+import com.sumus.sumus_backend.domain.dtos.LoginRequest;
+import com.sumus.sumus_backend.domain.dtos.UserDto;
 import com.sumus.sumus_backend.domain.entities.UserEntity;
+import com.sumus.sumus_backend.mappers.impl.UserMapper;
 import com.sumus.sumus_backend.repositories.UserRepository;
 import com.sumus.sumus_backend.services.impl.UserServiceImpl;
 
@@ -27,6 +31,9 @@ public class UserServiceImplTest {
     @Mock
     private PasswordEncoder passwordEncoder;
 
+    @Mock
+    private UserMapper userMapper;
+
     @InjectMocks
     private UserServiceImpl userService;
 
@@ -37,37 +44,35 @@ public class UserServiceImplTest {
 
     @Test
     void testCreate() {
-        UserEntity user = new UserEntity();
+        UserDto user = new UserDto();
         user.setEmail("test@example.com");
-        user.setId(1L);
         user.setUsername("teste");
         user.setPassword("123");
         user.setTelefone("11 123456789");
 
+        UserEntity userEntity = new UserEntity();
+        userEntity.setEmail(user.getEmail());
+        userEntity.setUsername(user.getUsername());
+        userEntity.setTelefone(user.getTelefone());
+        userEntity.setPassword("encoded");
 
-        when(userRepository.save(user)).thenReturn(user);
+        when(userMapper.mapFrom(user)).thenReturn(userEntity);
+        when(userRepository.save(userEntity)).thenReturn(userEntity);
 
         UserEntity created = userService.create(user);
 
         assertNotNull(created);
         assertEquals("test@example.com", created.getEmail());
-        verify(userRepository, times(1)).save(user);
+        verify(userMapper, times(1)).mapFrom(user);
+        verify(userRepository, times(1)).save(userEntity);
     }
 
     @Test
     void testListAll() {
         UserEntity user1 = new UserEntity();
-        user1.setEmail("teste@gmail.com");
-        user1.setUsername("teste");
-        user1.setPassword("123");
-        user1.setTelefone("11 123456789");
-
+        user1.setEmail("teste1@gmail.com");
         UserEntity user2 = new UserEntity();
-        user2.setEmail("teste@gmail.com");
-        user2.setUsername("teste");
-        user2.setPassword("123");
-        user2.setTelefone("11 123456789");
-
+        user2.setEmail("teste2@gmail.com");
 
         when(userRepository.findAll()).thenReturn(Arrays.asList(user1, user2));
 
@@ -77,34 +82,58 @@ public class UserServiceImplTest {
         verify(userRepository, times(1)).findAll();
     }
 
-    @Test
-    void testUpdate() {
-        UserEntity user = new UserEntity();
-        user.setEmail("teste@gmail.com");
-        user.setId(1L);
-        user.setUsername("teste");
-        user.setPassword("123");
-        user.setTelefone("11 123456789");
+    
+@Test
+void testUpdate() {
+    UserDto userDto = new UserDto();
+    userDto.setEmail("teste@gmail.com");
+    userDto.setUsername("novoNome");
+    userDto.setTelefone("11 987654321");
+    userDto.setPassword(null);
 
-        when(userRepository.save(user)).thenReturn(user);
+    UserEntity existingUser = new UserEntity();
+    existingUser.setId(1L);
+    existingUser.setEmail("teste@gmail.com");
+    existingUser.setUsername("teste");
+    existingUser.setTelefone("11 123456789");
+    existingUser.setPassword("123");
 
-        UserEntity updated = user;
-        updated.setEmail("updated@example.com");
+    UserEntity savedUser = new UserEntity();
+    savedUser.setId(1L);
+    savedUser.setEmail("teste@gmail.com");
+    savedUser.setUsername("novoNome");
+    savedUser.setTelefone("11 987654321");
+    savedUser.setPassword("123");
 
-        updated = userService.update(user);
+    when(userRepository.findByEmail("teste@gmail.com")).thenReturn(Optional.of(existingUser));
 
-        assertEquals("updated@example.com", updated.getEmail());
-        verify(userRepository, times(1)).save(user);
-    }
+    doAnswer(invocation -> {
+        UserEntity entity = invocation.getArgument(0);
+        UserDto dto = invocation.getArgument(1);
+        entity.setUsername(dto.getUsername());
+        entity.setTelefone(dto.getTelefone());
+        return null;
+    }).when(userMapper).updateEntityFromDto(any(UserEntity.class), any(UserDto.class));
+
+    when(userRepository.save(existingUser)).thenReturn(savedUser);
+
+    Optional<UserEntity> result = userService.update(userDto);
+
+    assertTrue(result.isPresent());
+    assertEquals("novoNome", result.get().getUsername());
+    assertEquals("11 987654321", result.get().getTelefone());
+
+    verify(userRepository, times(1)).findByEmail("teste@gmail.com");
+    verify(userMapper, times(1)).updateEntityFromDto(existingUser, userDto);
+    verify(userRepository, times(1)).save(existingUser);
+}
+
 
     @Test
     void testDelete_UserExists() {
         UserEntity user = new UserEntity();
         user.setId(1L);
         user.setEmail("toDelete@example.com");
-        user.setUsername("teste");
-        user.setPassword("123");
-        user.setTelefone("11 123456789");
 
         when(userRepository.findByEmail("toDelete@example.com")).thenReturn(Optional.of(user));
         doNothing().when(userRepository).deleteById(1L);
@@ -131,9 +160,6 @@ public class UserServiceImplTest {
     void testFindByEmail() {
         UserEntity user = new UserEntity();
         user.setEmail("findme@example.com");
-        user.setUsername("teste");
-        user.setPassword("123");
-        user.setTelefone("11 123456789");
 
         when(userRepository.findByEmail("findme@example.com")).thenReturn(Optional.of(user));
 
@@ -148,18 +174,22 @@ public class UserServiceImplTest {
     void testLogin() {
         UserEntity user = new UserEntity();
         user.setEmail("teste@gmail.com");
-        user.setUsername("teste");
-        user.setPassword("123");
-        user.setTelefone("11 123456789");
+        user.setPassword("encoded");
 
         when(userRepository.findByEmail("teste@gmail.com")).thenReturn(Optional.of(user));
-        when(passwordEncoder.matches("123", user.getPassword())).thenReturn(true);
+        when(passwordEncoder.matches("123", "encoded")).thenReturn(true);
 
-        AuthResult authResult = userService.login("teste@gmail.com", "123");
+        LoginRequest loginRequest = new LoginRequest();
+        loginRequest.setEmail("teste@gmail.com");
+        loginRequest.setPassword("123");
+
+        AuthResult authResult = userService.login(loginRequest);
 
         assertNotNull(authResult);
-        assertFalse(authResult.getToken().isEmpty());
         assertEquals(AuthResult.Status.SUCCESS, authResult.getStatus());
+        assertNotNull(authResult.getToken());
         verify(userRepository, times(1)).findByEmail("teste@gmail.com");
+        verify(passwordEncoder, times(1)).matches("123", "encoded");
     }
 }
+
