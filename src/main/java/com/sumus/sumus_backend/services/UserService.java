@@ -1,5 +1,6 @@
 package com.sumus.sumus_backend.services;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
@@ -11,7 +12,7 @@ import com.sumus.sumus_backend.domain.entities.UserEntity;
 
 public interface UserService {
     
-    UserEntity create(UserDto userDto);
+    UserEntity create(UserDto userDto) throws IOException;
 
     List<UserEntity> listAll();
 

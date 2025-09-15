@@ -27,6 +27,24 @@ public class UserEntity {
         @Column(nullable = false)
         private String telefone;
 
+        @Column(nullable = true)
+        private byte[] foto;
+
+        @Column(nullable = true)
+        private String contentType;
+
+        public void setFoto(byte[] foto) {
+                this.foto = foto;
+        }
+
+        public String getContentType() {
+                return contentType;
+        }
+
+        public void setContentType(String contentType) {
+                this.contentType = contentType;
+        }
+
         public Long getId() {
                 return id;
         }
@@ -75,15 +93,14 @@ public class UserEntity {
                 this.tipo = tipo;
         }
 
-        public String getFotoPath() {
-                return fotoPath;
+        public byte[] getFoto() {
+                return foto;
         }
 
-        public void setFotoPath(String fotoPath) {
-                this.fotoPath = fotoPath;
+        public void setFotoPath(byte[] foto) {
+                this.foto = foto;
         }
 
         private String tipo;
 
-        private String fotoPath;
 }

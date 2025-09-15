@@ -1,5 +1,6 @@
 package com.sumus.sumus_backend.controllers.impl;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
@@ -25,7 +26,13 @@ public class UserControllerImpl {
 
     @PostMapping(path = "/users")
     public ResponseEntity<UserEntity> createUser(@RequestBody UserDto userDto) {
-        return new ResponseEntity<>(userService.create(userDto), HttpStatus.CREATED);
+        UserEntity user;
+        try {
+            user = userService.create(userDto);
+        } catch (IOException e) {
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return new ResponseEntity<>(user, HttpStatus.CREATED);
     }
 
     @GetMapping(path = "/users")
