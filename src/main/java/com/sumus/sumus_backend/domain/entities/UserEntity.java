@@ -1,5 +1,6 @@
-package com.sumus.sumus_backend.entities;
+package com.sumus.sumus_backend.domain.entities;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -14,12 +15,16 @@ public class UserEntity {
         @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "user_id_seq")
         private Long id;
 
-        private String nome;
+        @Column(nullable = false)
+        private String username;
 
+        @Column(nullable = false)
         private String email;
 
-        private String senha;
+        @Column(nullable = false)
+        private String password;
 
+        @Column(nullable = false)
         private String telefone;
 
         public Long getId() {
@@ -30,12 +35,12 @@ public class UserEntity {
                 this.id = id;
         }
 
-        public String getNome() {
-                return nome;
+        public String getUsername() {
+                return username;
         }
 
-        public void setNome(String nome) {
-                this.nome = nome;
+        public void setUsername(String nome) {
+                this.username = nome;
         }
 
         public String getEmail() {
@@ -46,12 +51,12 @@ public class UserEntity {
                 this.email = email;
         }
 
-        public String getSenha() {
-                return senha;
+        public String getPassword() {
+                return password;
         }
 
-        public void setSenha(String senha) {
-                this.senha = senha;
+        public void setPassword(String senha) {
+                this.password = senha;
         }
 
         public String getTelefone() {
