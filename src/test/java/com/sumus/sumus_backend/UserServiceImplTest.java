@@ -60,7 +60,6 @@ public class UserServiceImplTest {
             "image/jpeg",
             "dados_da_foto".getBytes()
         );
-        user.setFoto(mockFoto);
 
         // 3. Prepara a entidade esperada após mapeamento
         UserEntity userEntity = new UserEntity();

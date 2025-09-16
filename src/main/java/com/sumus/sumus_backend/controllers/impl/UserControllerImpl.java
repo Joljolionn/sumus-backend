@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.sumus.sumus_backend.controllers.docs.UserControllerDocs;
 import com.sumus.sumus_backend.domain.dtos.AuthResult;
 import com.sumus.sumus_backend.domain.dtos.LoginRequest;
 import com.sumus.sumus_backend.domain.dtos.UserDto;
@@ -19,7 +20,7 @@ import com.sumus.sumus_backend.services.UserService;
 
 // Classe para representar os endpoints da aplicação
 @RestController
-public class UserControllerImpl {
+public class UserControllerImpl implements UserControllerDocs {
     private UserService userService;
 
     UserControllerImpl(UserService userService) {
