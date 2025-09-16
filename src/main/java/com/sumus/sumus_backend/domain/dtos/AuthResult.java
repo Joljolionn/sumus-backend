@@ -1,5 +1,6 @@
 package com.sumus.sumus_backend.domain.dtos;
 
+// Classe para representar a resposta para pedido de auth de usuário
 public class AuthResult {
 
     public enum Status {
@@ -20,7 +21,5 @@ public class AuthResult {
 	public String getToken() {
 		return token;
 	}
-
-
 
 }

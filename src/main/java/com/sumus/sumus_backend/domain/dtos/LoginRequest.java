@@ -1,5 +1,6 @@
 package com.sumus.sumus_backend.domain.dtos;
 
+// Classe para representar como o request de login será recebido
 public class LoginRequest {
 
     private String email;

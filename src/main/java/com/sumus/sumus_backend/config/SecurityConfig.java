@@ -8,6 +8,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
+// Classe para configurar segurança da aplicação
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
@@ -19,9 +20,9 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .csrf().disable() // cuidado: só se precisar
+                .csrf().disable() // Disativa necessidade de tokens CSRF
                 .authorizeHttpRequests(auth -> auth
-                        .anyRequest().permitAll() // permite tudo
+                        .anyRequest().permitAll() // permite todas as rotas sem necessidade de autenticação
                 )
                 .formLogin().disable(); // remove a página de login padrão
 

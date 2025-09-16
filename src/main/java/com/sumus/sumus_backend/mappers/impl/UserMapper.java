@@ -9,6 +9,7 @@ import com.sumus.sumus_backend.domain.dtos.UserDto;
 import com.sumus.sumus_backend.domain.entities.UserEntity;
 import com.sumus.sumus_backend.mappers.Mapper;
 
+// Classe para mapear DTO em Entidade e vice-versa
 @Component
 public class UserMapper implements Mapper<UserEntity, UserDto> {
 
