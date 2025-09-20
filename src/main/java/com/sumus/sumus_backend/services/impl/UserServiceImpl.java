@@ -10,13 +10,12 @@ import org.springframework.stereotype.Service;
 import com.sumus.sumus_backend.domain.dtos.AuthResult;
 import com.sumus.sumus_backend.domain.dtos.LoginRequest;
 import com.sumus.sumus_backend.domain.dtos.UserDto;
-import com.sumus.sumus_backend.domain.entities.UserEntity;
+import com.sumus.sumus_backend.domain.entities.UserDocuments;
 import com.sumus.sumus_backend.mappers.impl.UserMapper;
 import com.sumus.sumus_backend.repositories.UserRepository;
 import com.sumus.sumus_backend.services.UserService;
 
-// Classe com responsabilidade de tratar a lógica em si do precessamento dos
-// dados, mediadora entre a camada do banco de dados e a camada de apresentação
+
 @Service
 public class UserServiceImpl implements UserService {
 
@@ -31,26 +30,32 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserEntity create(UserDto userDto) throws IOException {
+    public UserDocuments create(UserDto userDto) throws IOException {
 
-        UserEntity userEntity = userMapper.mapFrom(userDto);
 
-        return userRepository.save(userEntity);
+        if (userRepository.existsByEmail(userDto.getEmail())) {
+            // Lança uma exceção se o e-mail já estiver em uso, garantindo que a regra de negócio seja respeitada.
+            throw new IllegalArgumentException("Erro: O e-mail " + userDto.getEmail() + " já está cadastrado no sistema.");
+        }
+
+
+        UserDocuments userDocument = userMapper.mapFrom(userDto);
+        return userRepository.save(userDocument);
     }
 
     @Override
-    public List<UserEntity> listAll() {
+    public List<UserDocuments> listAll() {
         return userRepository.findAll();
     }
 
     @Override
-    public Optional<UserEntity> update(UserDto userDto) {
-        Optional<UserEntity> user = userRepository.findByEmail(userDto.getEmail());
+    public Optional<UserDocuments> update(UserDto userDto) {
+        Optional<UserDocuments> user = userRepository.findByEmail(userDto.getEmail());
         if (user.isEmpty()) {
             return user;
         }
 
-        UserEntity updatedUser = user.get();
+        UserDocuments updatedUser = user.get();
         userMapper.updateEntityFromDto(updatedUser, userDto);
 
         return Optional.of(userRepository.save(updatedUser));
@@ -58,7 +63,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Boolean delete(String email) {
-        Optional<UserEntity> user = userRepository.findByEmail(email);
+        Optional<UserDocuments> user = userRepository.findByEmail(email);
         if (user.isEmpty()) {
             return false;
         } else {
@@ -68,17 +73,18 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Optional<UserEntity> findByEmail(String email) {
+    public Optional<UserDocuments> findByEmail(String email) {
         return userRepository.findByEmail(email);
     }
 
     @Override
     public AuthResult login(LoginRequest loginRequest) {
-        Optional<UserEntity> userOptional = userRepository.findByEmail(loginRequest.getEmail());
+        Optional<UserDocuments> userOptional = userRepository.findByEmail(loginRequest.getEmail());
 
         if (userOptional.isEmpty()) {
             return new AuthResult(AuthResult.Status.USER_NOT_FOUND, null);
         }
+
 
         if (passwordEncoder.matches(loginRequest.getPassword(), userOptional.get().getPassword())) {
             return new AuthResult(AuthResult.Status.SUCCESS, "funcionou");

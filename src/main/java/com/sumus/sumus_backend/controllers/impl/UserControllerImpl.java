@@ -15,7 +15,8 @@ import com.sumus.sumus_backend.controllers.docs.UserControllerDocs;
 import com.sumus.sumus_backend.domain.dtos.AuthResult;
 import com.sumus.sumus_backend.domain.dtos.LoginRequest;
 import com.sumus.sumus_backend.domain.dtos.UserDto;
-import com.sumus.sumus_backend.domain.entities.UserEntity;
+// ADICIONADO: Importação do novo modelo de dados do MongoDB!
+import com.sumus.sumus_backend.domain.entities.UserDocuments;
 import com.sumus.sumus_backend.services.UserService;
 
 // Classe para representar os endpoints da aplicação
@@ -28,9 +29,12 @@ public class UserControllerImpl implements UserControllerDocs {
     }
 
     @PostMapping(path = "/signup")
-    public ResponseEntity<UserEntity> createUser(@ModelAttribute UserDto userDto) {
-        UserEntity user;
+    // CORRIGIDO: Tipo de retorno agora é UserDocuments
+    public ResponseEntity<UserDocuments> createUser(@ModelAttribute UserDto userDto) {
+        // CORRIGIDO: Variável local agora é UserDocuments
+        UserDocuments user;
         try {
+            // O serviço retorna UserDocuments
             user = userService.create(userDto);
         } catch (IOException e) {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -39,7 +43,9 @@ public class UserControllerImpl implements UserControllerDocs {
     }
 
     @GetMapping(path = "/users")
-    public ResponseEntity<List<UserEntity>> getAllUsers() {
+    // CORRIGIDO: Tipo de retorno agora é List<UserDocuments>
+    public ResponseEntity<List<UserDocuments>> getAllUsers() {
+        // O serviço retorna List<UserDocuments>
         return new ResponseEntity<>(userService.listAll(), HttpStatus.OK);
     }
 

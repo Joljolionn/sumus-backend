@@ -8,9 +8,10 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
+// ADICIONADO: Importação do novo modelo de dados do MongoDB!
+import com.sumus.sumus_backend.domain.entities.UserDocuments;
 import com.sumus.sumus_backend.domain.dtos.LoginRequest;
 import com.sumus.sumus_backend.domain.dtos.UserDto;
-import com.sumus.sumus_backend.domain.entities.UserEntity;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -27,18 +28,21 @@ public interface UserControllerDocs {
             @ApiResponse(responseCode = "500", description = "Erro interno no servidor (possivelmente ao processar a imagem do usuário", content = @Content)
     })
     @PostMapping(path = "/signup")
-    public ResponseEntity<UserEntity> createUser(@ModelAttribute UserDto userDto);
+    // CORRIGIDO: O tipo de retorno agora é UserDocuments
+    public ResponseEntity<UserDocuments> createUser(@ModelAttribute UserDto userDto);
 
     @Operation(summary = "Visualiza todos os usuários inseridos no banco", description = "Retorna uma lista com todos os usuários inseridos no sistema", responses = {
-            @ApiResponse(responseCode = "200", description = "Retorna uma array com todos os usuários inseridos no banco (vazia se o banco estiver vazio)", content = @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = UserEntity.class))))
+            // CORRIGIDO: ArraySchema usa UserDocuments
+            @ApiResponse(responseCode = "200", description = "Retorna uma array com todos os usuários inseridos no banco (vazia se o banco estiver vazio)", content = @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = UserDocuments.class))))
     })
     @GetMapping(path = "/users")
-    public ResponseEntity<List<UserEntity>> getAllUsers();
+    // CORRIGIDO: O tipo de retorno agora é List<UserDocuments>
+    public ResponseEntity<List<UserDocuments>> getAllUsers();
 
     @Operation(summary = "Faz o login do usuário no sistema", description = "Recebe um email e uma senha e faz a busca no banco para confirmar se acha o email do usuário e se a senha está correta e retorna um 'token' de autenticação (por enquanto não implementado, retorna somente 'funcionou')", responses = {
-        @ApiResponse(responseCode = "404", description = "Usuário com email enviado não foi encontrado no banco de dados", content = @Content),
-        @ApiResponse(responseCode = "401", description = "Usuário com email enviado foi encontrado porém a senha fornecida não está correta", content = @Content),
-        @ApiResponse(responseCode = "200", description = "Login bem sucedido", content = @Content(mediaType = "application/json", schema = @Schema(implementation = String.class)))
+            @ApiResponse(responseCode = "404", description = "Usuário com email enviado não foi encontrado no banco de dados", content = @Content),
+            @ApiResponse(responseCode = "401", description = "Usuário com email enviado foi encontrado porém a senha fornecida não está correta", content = @Content),
+            @ApiResponse(responseCode = "200", description = "Login bem sucedido", content = @Content(mediaType = "application/json", schema = @Schema(implementation = String.class)))
     })
     @PostMapping(path = "/login")
     public ResponseEntity<String> login(@RequestBody LoginRequest loginRequest);
