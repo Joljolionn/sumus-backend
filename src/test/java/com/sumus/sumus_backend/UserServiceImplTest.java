@@ -11,7 +11,6 @@ import java.util.Optional;
 import com.sumus.sumus_backend.domain.dtos.AuthResult;
 import com.sumus.sumus_backend.domain.dtos.LoginRequest;
 import com.sumus.sumus_backend.domain.dtos.UserDto;
-import com.sumus.sumus_backend.domain.entities.UserEntity;
 import com.sumus.sumus_backend.mappers.impl.UserMapper;
 import com.sumus.sumus_backend.repositories.UserRepository;
 import com.sumus.sumus_backend.services.impl.UserServiceImpl;

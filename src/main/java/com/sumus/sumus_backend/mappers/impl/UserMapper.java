@@ -6,12 +6,14 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import com.sumus.sumus_backend.domain.dtos.UserDto;
-import com.sumus.sumus_backend.domain.entities.UserEntity;
+// NOVO IMPORT: Importa o modelo de MongoDB
+import com.sumus.sumus_backend.domain.entities.UserDocuments;
 import com.sumus.sumus_backend.mappers.Mapper;
 
-// Classe para mapear DTO em Entidade e vice-versa
+// Classe para mapear DTO em Documento e vice-versa
 @Component
-public class UserMapper implements Mapper<UserEntity, UserDto> {
+// CORRIGIDO: Implementa Mapper<UserDocuments, UserDto>
+public class UserMapper implements Mapper<UserDocuments, UserDto> {
 
     private PasswordEncoder passwordEncoder;
 
@@ -20,19 +22,26 @@ public class UserMapper implements Mapper<UserEntity, UserDto> {
     }
 
     @Override
-    public UserEntity mapFrom(UserDto b) throws IOException{
-        UserEntity userEntity = new UserEntity();
-        userEntity.setEmail(b.getEmail());
-        userEntity.setUsername(b.getUsername());
-        userEntity.setTelefone(b.getTelefone());
-        userEntity.setPassword(passwordEncoder.encode(b.getPassword()));
-        userEntity.setContentType(b.getFoto().getContentType());
-        userEntity.setFoto(b.getFoto().getBytes());
-        return userEntity;
+    // CORRIGIDO: Tipo de retorno e objeto criado agora é UserDocuments
+    public UserDocuments mapFrom(UserDto b) throws IOException{
+        UserDocuments userDocument = new UserDocuments(); // Usa o construtor do novo modelo
+        userDocument.setEmail(b.getEmail());
+        userDocument.setUsername(b.getUsername());
+        userDocument.setTelefone(b.getTelefone());
+        userDocument.setPassword(passwordEncoder.encode(b.getPassword()));
+
+        // Trata a foto se houver
+        if (b.getFoto() != null) {
+            userDocument.setContentType(b.getFoto().getContentType());
+            userDocument.setFoto(b.getFoto().getBytes());
+        }
+
+        return userDocument;
     }
 
     @Override
-    public UserDto mapTo(UserEntity a) {
+    // CORRIGIDO: Argumento do método é UserDocuments
+    public UserDto mapTo(UserDocuments a) {
         UserDto userDto = new UserDto();
         userDto.setEmail(a.getEmail());
         userDto.setUsername(a.getUsername());
@@ -43,7 +52,8 @@ public class UserMapper implements Mapper<UserEntity, UserDto> {
     }
 
     @Override
-    public void updateEntityFromDto(UserEntity entity, UserDto dto) {
+    // CORRIGIDO: Argumento do método é UserDocuments
+    public void updateEntityFromDto(UserDocuments entity, UserDto dto) {
         if (dto.getEmail() != null)
             entity.setEmail(dto.getEmail());
         if (dto.getUsername() != null)

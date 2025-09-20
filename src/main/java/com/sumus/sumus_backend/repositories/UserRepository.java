@@ -1,20 +1,20 @@
 package com.sumus.sumus_backend.repositories;
 
-import java.util.List;
-import java.util.Optional;
-
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 
-import com.sumus.sumus_backend.domain.entities.UserEntity;
+import com.sumus.sumus_backend.domain.entities.UserDocuments;
 
+import java.util.Optional;
+import java.util.List;
 
-// Interface para fazer uso de metodos crús disponibilizadas pelo JPA para
-// interagir com o banco de dados usando a classe de Entidade e o seu ID (Long)
 @Repository
-public interface UserRepository extends CrudRepository<UserEntity, Long>{
-    @Override
-    List<UserEntity> findAll();
+public interface UserRepository extends MongoRepository<UserDocuments, String> {
 
-    Optional<UserEntity> findByEmail(String email);
+    @Override
+    List<UserDocuments> findAll();
+
+    Optional<UserDocuments> findByEmail(String email);
+
+    boolean existsByEmail(String email);
 }

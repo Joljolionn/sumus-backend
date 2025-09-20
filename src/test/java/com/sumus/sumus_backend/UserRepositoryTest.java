@@ -4,7 +4,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Optional;
 
-import com.sumus.sumus_backend.domain.entities.UserEntity;
 import com.sumus.sumus_backend.repositories.UserRepository;
 
 import org.junit.jupiter.api.Test;
