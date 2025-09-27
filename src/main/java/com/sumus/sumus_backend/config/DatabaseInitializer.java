@@ -16,7 +16,7 @@ public class DatabaseInitializer {
     public CommandLineRunner initUserCollection(UserRepository repository, PasswordEncoder passwordEncoder) {
         return args -> {
 
-            String testEmail = "SuzaninhaQQ@sumus.com";
+            String testEmail = "Luzinete@sumus.com";
 
             System.out.println("---------------------------------------------");
             System.out.println(">>> INICIANDO CRIAÇÃO DE USUÁRIO DE TESTE <<<");
@@ -33,7 +33,7 @@ public class DatabaseInitializer {
 
 
             UserDocuments novoUsuario = new UserDocuments(
-                    "Suzana PP",
+                    "Luzinete PP",
                     testEmail,
                     passwordEncoder.encode("senha321"), // Senha criptografada
                     "11999999999",

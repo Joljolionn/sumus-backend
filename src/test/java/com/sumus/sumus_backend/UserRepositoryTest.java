@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Optional;
 
+import com.sumus.sumus_backend.domain.entities.UserDocuments;
 import com.sumus.sumus_backend.repositories.UserRepository;
 
 import org.junit.jupiter.api.Test;
@@ -18,7 +19,7 @@ public class UserRepositoryTest {
 
     @Test
     void testSaveAndFindByEmail() {
-        UserEntity user = new UserEntity();
+        UserDocuments user = new UserDocuments();
         user.setEmail("integration@example.com");
         user.setUsername("teste");
         user.setPassword("123");
@@ -26,7 +27,7 @@ public class UserRepositoryTest {
 
         userRepository.save(user);
 
-        Optional<UserEntity> found = userRepository.findByEmail("integration@example.com");
+        Optional<UserDocuments> found = userRepository.findByEmail("integration@example.com");
 
         assertTrue(found.isPresent());
         assertEquals("integration@example.com", found.get().getEmail());
@@ -34,12 +35,12 @@ public class UserRepositoryTest {
 
     @Test
     void testFindAll() {
-        UserEntity userEntity1 = new UserEntity();
+        UserDocuments userEntity1 = new UserDocuments();
         userEntity1.setEmail("user1@example.com");
         userEntity1.setUsername("teste");
         userEntity1.setPassword("123");
         userEntity1.setTelefone("11 123456789");
-        UserEntity userEntity2 = new UserEntity();
+        UserDocuments userEntity2 = new UserDocuments();
         userEntity2.setEmail("user2@example.com");
         userEntity2.setPassword("123");
         userEntity2.setUsername("teste");
