@@ -7,15 +7,31 @@ import java.util.Optional;
 import com.sumus.sumus_backend.domain.entities.UserDocuments;
 import com.sumus.sumus_backend.repositories.UserRepository;
 
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
+import org.springframework.data.mongodb.core.MongoTemplate;
 
-@DataJpaTest
+@DataMongoTest
 public class UserRepositoryTest {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private MongoTemplate mongoTemplate;
+
+
+    /**
+     * Limpa a coleção de usuários após a execução de cada método de teste.
+     */
+    @BeforeEach
+    void tearDown() {
+        // Deleta todos os documentos da coleção UserDocuments
+        mongoTemplate.dropCollection(UserDocuments.class);
+    }
 
     @Test
     void testSaveAndFindByEmail() {
