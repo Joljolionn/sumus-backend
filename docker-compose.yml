@@ -1,0 +1,48 @@
+services:
+    # Serviço onde o banco de dados irá rodar
+    mongodb:
+        container_name: mongodb-sumus # Nome amigável para o container
+
+        image: mongo:latest # Imagem oficial do MongoDB
+
+        # Mapeia a rota padrão do MongoDB para a porta local
+        ports:
+            - "27018:27017"
+
+        volumes:
+            # Volume para persistência dos dados.
+            # 'mongo-data' (nome do volume) -> /data/db (diretório interno do Mongo)
+            - mongo-data:/data/db
+
+        environment:
+            # Configura o nome do banco de dados inicial (para referência)
+            MONGO_INITDB_DATABASE: sumus_db
+        
+        restart: always
+
+    # Serviço onde o Spring irá rodar
+    backend:
+        container_name: backend-sumus
+
+        # Constrói a imagem do Dockerfile nesse ponto
+        build: .
+
+        # Mapeia a rota padrão do Spring para a porta local
+        # OBS: Caso não estiver funcionando na sua máquina, altere a segunda porta
+        # para uma que esteja livre no seu PC
+        ports:
+            - "8080:8080"
+
+        # Depende do serviço do banco de dados Mongo para poder funcionar
+        depends_on:
+            - mongodb
+
+        # Define a URL de conexão do banco via variável de ambiente para poder se
+        # conectar ao serviço
+        environment:
+            SPRING_DATA_MONGODB_URI: mongodb://mongodb:27017/sumus_db
+
+# Definição dos volumes persistentes
+volumes:
+    # Garante que os dados do mongo se manterão mesmo após desligar o serviço
+    mongo-data:
