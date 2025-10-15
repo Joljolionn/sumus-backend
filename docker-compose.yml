@@ -1,48 +1,49 @@
 services:
-    # Serviço onde o banco de dados irá rodar
+    # --------------------------------------------------------------------------------
+    # Serviço do Banco de Dados (Usado em DEV e no modo SÓ-DB)
+    # --------------------------------------------------------------------------------
     mongodb:
-        container_name: mongodb-sumus # Nome amigável para o container
-
-        image: mongo:latest # Imagem oficial do MongoDB
-
-        # Mapeia a rota padrão do MongoDB para a porta local
+        container_name: mongodb-sumus
+        image: mongo:latest
+        
+        # O serviço sobe com o perfil 'dev' OU com o perfil 'db'
+        profiles:
+            - dev
+            - db  
+            
         ports:
             - "27018:27017"
-
         volumes:
-            # Volume para persistência dos dados.
-            # 'mongo-data' (nome do volume) -> /data/db (diretório interno do Mongo)
             - mongo-data:/data/db
-
         environment:
-            # Configura o nome do banco de dados inicial (para referência)
             MONGO_INITDB_DATABASE: sumus_db
-        
         restart: always
 
-    # Serviço onde o Spring irá rodar
-    backend:
-        container_name: backend-sumus
+    # --------------------------------------------------------------------------------
+    # Serviço do Backend para Desenvolvimento (com Build)
+    # --------------------------------------------------------------------------------
+    backend-dev:
+        container_name: backend-sumus-dev
 
-        # Constrói a imagem do Dockerfile nesse ponto
-        build: .
+        # O perfil 'dev' faz com que este serviço só suba se o perfil 'dev' for ativado
+        profiles:
+            - dev 
 
-        # Mapeia a rota padrão do Spring para a porta local
-        # OBS: Caso não estiver funcionando na sua máquina, altere a segunda porta
-        # para uma que esteja livre no seu PC
+        build: . # Constrói a imagem do Dockerfile
         ports:
             - "8080:8080"
-
-        # Depende do serviço do banco de dados Mongo para poder funcionar
+        
+        # Depende do Mongo no Docker (que também está no perfil 'dev')
         depends_on:
-            - mongodb
-
-        # Define a URL de conexão do banco via variável de ambiente para poder se
-        # conectar ao serviço
+            - mongodb 
+        
         environment:
-            SPRING_DATA_MONGODB_URI: mongodb://mongodb:27017/sumus_db
-
+            # 1. Ativa o perfil 'dev' do Spring (application-dev.properties)
+            SPRING_PROFILES_ACTIVE: dev 
+            
+            # 2. **CORREÇÃO:** Define a URI do MongoDB usando o NOME DO SERVIÇO ('mongodb')
+            # Assim, dentro do container, ele sabe como encontrar o Mongo.
+            SPRING_DATA_MONGODB_URI: mongodb://mongodb:27017/sumus_db                     
 # Definição dos volumes persistentes
 volumes:
-    # Garante que os dados do mongo se manterão mesmo após desligar o serviço
     mongo-data:
