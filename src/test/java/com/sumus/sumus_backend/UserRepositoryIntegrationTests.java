@@ -2,26 +2,32 @@ package com.sumus.sumus_backend;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.util.List;
 import java.util.Optional;
 
 import com.sumus.sumus_backend.domain.entities.UserDocuments;
 import com.sumus.sumus_backend.repositories.UserRepository;
+import com.sumus.sumus_backend.utils.TestEntities;
 
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.data.mongodb.core.MongoTemplate;
 
 @DataMongoTest
-public class UserRepositoryTest {
+@Import(TestEntities.class)
+public class UserRepositoryIntegrationTests {
 
     @Autowired
     private UserRepository userRepository;
 
     @Autowired
     private MongoTemplate mongoTemplate;
+
+    @Autowired
+    private TestEntities testEntities;
 
 
     /**
@@ -35,39 +41,28 @@ public class UserRepositoryTest {
 
     @Test
     void testSaveAndFindByEmail() {
-        UserDocuments user = new UserDocuments();
-        user.setEmail("integration@example.com");
-        user.setUsername("teste");
-        user.setPassword("123");
-        user.setTelefone("11 123456789");
+        UserDocuments user = testEntities.entityOne();
 
         userRepository.save(user);
 
-        Optional<UserDocuments> found = userRepository.findByEmail("integration@example.com");
+        Optional<UserDocuments> found = userRepository.findByEmail(user.getEmail());
 
         assertTrue(found.isPresent());
-        assertEquals("integration@example.com", found.get().getEmail());
+        assertEquals(user.getEmail(), found.get().getEmail());
+        assertEquals(user.getUsername(), found.get().getUsername());
     }
 
     @Test
     void testFindAll() {
-        UserDocuments userEntity1 = new UserDocuments();
-        userEntity1.setEmail("user1@example.com");
-        userEntity1.setUsername("teste");
-        userEntity1.setPassword("123");
-        userEntity1.setTelefone("11 123456789");
-        UserDocuments userEntity2 = new UserDocuments();
-        userEntity2.setEmail("user2@example.com");
-        userEntity2.setPassword("123");
-        userEntity2.setUsername("teste");
-        userEntity2.setPassword("123");
-        userEntity2.setTelefone("11 123456789");
+        UserDocuments userEntity1 = testEntities.entityOne();
+        UserDocuments userEntity2 = testEntities.entityTwo();
 
         userRepository.save(userEntity1);
         userRepository.save(userEntity2);
 
-        var users = userRepository.findAll();
+        List<UserDocuments> users = userRepository.findAll();
 
         assertEquals(2, users.size());
     }
+
 }
