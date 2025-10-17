@@ -1,28 +1,23 @@
 package com.sumus.sumus_backend.domain.entities;
 
-
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 import org.springframework.data.mongodb.core.index.Indexed; // NOVA IMPORTAÇÃO AQUI!
 
-
 @Document(collection = "users")
 public class UserDocuments {
-
 
     @Id
     private String id;
 
     private String username;
 
-
     @Indexed(unique = true)
     private String email;
 
     private String password;
     private String telefone;
-
 
     private byte[] foto;
 
@@ -31,10 +26,20 @@ public class UserDocuments {
 
     private String tipo;
 
-
     public UserDocuments() {
     }
 
+    public UserDocuments(String id, String tipo, String username, String email, String password, String telefone,
+            byte[] foto, String contentType) {
+        this.id = id;
+        this.tipo = tipo;
+        this.username = username;
+        this.email = email;
+        this.password = password;
+        this.telefone = telefone;
+        this.foto = foto;
+        this.contentType = contentType;
+    }
 
     public UserDocuments(String username, String email, String password, String telefone, String tipo) {
         this.username = username;
@@ -43,9 +48,6 @@ public class UserDocuments {
         this.telefone = telefone;
         this.tipo = tipo;
     }
-
-
-
 
     public String getId() {
         return id;

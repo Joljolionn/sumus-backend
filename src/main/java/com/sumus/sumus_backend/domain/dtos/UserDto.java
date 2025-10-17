@@ -9,6 +9,24 @@ public class UserDto {
 	public UserDto() {
 	}
 
+	public UserDto(String username, String email, String password, String telefone, MultipartFile foto,
+			String contentType, byte[] fotoBytes) {
+		this.username = username;
+		this.email = email;
+		this.password = password;
+		this.telefone = telefone;
+		this.foto = foto;
+		this.contentType = contentType;
+		this.fotoBytes = fotoBytes;
+	}
+
+	public UserDto(String username, String email, String password, String telefone) {
+		this.username = username;
+		this.email = email;
+		this.password = password;
+		this.telefone = telefone;
+	}
+
 	private String username;
 
 	private String email;

@@ -24,7 +24,7 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.mock.web.MockMultipartFile;
 
-public class UserServiceUnitaryTests {
+public class UserServiceUnitTests {
 
     @Mock
     private UserRepository userRepository; // 1. Mock do repositório de usuários
