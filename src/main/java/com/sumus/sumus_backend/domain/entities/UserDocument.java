@@ -6,7 +6,7 @@ import org.springframework.data.mongodb.core.mapping.Field;
 import org.springframework.data.mongodb.core.index.Indexed; // NOVA IMPORTAÇÃO AQUI!
 
 @Document(collection = "users")
-public class UserDocuments {
+public class UserDocument {
 
     @Id
     private String id;
@@ -26,10 +26,10 @@ public class UserDocuments {
 
     private String tipo;
 
-    public UserDocuments() {
+    public UserDocument() {
     }
 
-    public UserDocuments(String id, String tipo, String username, String email, String password, String telefone,
+    public UserDocument(String id, String tipo, String username, String email, String password, String telefone,
             byte[] foto, String contentType) {
         this.id = id;
         this.tipo = tipo;
@@ -41,7 +41,7 @@ public class UserDocuments {
         this.contentType = contentType;
     }
 
-    public UserDocuments(String username, String email, String password, String telefone, String tipo) {
+    public UserDocument(String username, String email, String password, String telefone, String tipo) {
         this.username = username;
         this.email = email;
         this.password = password;

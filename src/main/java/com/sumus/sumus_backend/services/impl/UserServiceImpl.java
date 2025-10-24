@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 import com.sumus.sumus_backend.domain.dtos.AuthResult;
 import com.sumus.sumus_backend.domain.dtos.LoginRequest;
 import com.sumus.sumus_backend.domain.dtos.UserDto;
-import com.sumus.sumus_backend.domain.entities.UserDocuments;
+import com.sumus.sumus_backend.domain.entities.UserDocument;
 import com.sumus.sumus_backend.mappers.impl.UserMapper;
 import com.sumus.sumus_backend.repositories.UserRepository;
 import com.sumus.sumus_backend.services.UserService;
@@ -30,7 +30,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDocuments create(UserDto userDto) throws IOException {
+    public UserDocument create(UserDto userDto) throws IOException {
 
 
         if (userRepository.existsByEmail(userDto.getEmail())) {
@@ -39,23 +39,23 @@ public class UserServiceImpl implements UserService {
         }
 
 
-        UserDocuments userDocument = userMapper.mapFrom(userDto);
+        UserDocument userDocument = userMapper.mapFrom(userDto);
         return userRepository.save(userDocument);
     }
 
     @Override
-    public List<UserDocuments> listAll() {
+    public List<UserDocument> listAll() {
         return userRepository.findAll();
     }
 
     @Override
-    public Optional<UserDocuments> update(UserDto userDto) {
-        Optional<UserDocuments> user = userRepository.findByEmail(userDto.getEmail());
+    public Optional<UserDocument> update(UserDto userDto) {
+        Optional<UserDocument> user = userRepository.findByEmail(userDto.getEmail());
         if (user.isEmpty()) {
             return user;
         }
 
-        UserDocuments updatedUser = user.get();
+        UserDocument updatedUser = user.get();
         userMapper.updateEntityFromDto(updatedUser, userDto);
 
         return Optional.of(userRepository.save(updatedUser));
@@ -63,7 +63,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Boolean delete(String email) {
-        Optional<UserDocuments> user = userRepository.findByEmail(email);
+        Optional<UserDocument> user = userRepository.findByEmail(email);
         if (user.isEmpty()) {
             return false;
         } else {
@@ -73,13 +73,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Optional<UserDocuments> findByEmail(String email) {
+    public Optional<UserDocument> findByEmail(String email) {
         return userRepository.findByEmail(email);
     }
 
     @Override
     public AuthResult login(LoginRequest loginRequest) {
-        Optional<UserDocuments> userOptional = userRepository.findByEmail(loginRequest.getEmail());
+        Optional<UserDocument> userOptional = userRepository.findByEmail(loginRequest.getEmail());
 
         if (userOptional.isEmpty()) {
             return new AuthResult(AuthResult.Status.USER_NOT_FOUND, null);

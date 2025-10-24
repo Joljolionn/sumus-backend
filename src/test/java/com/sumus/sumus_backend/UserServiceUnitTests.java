@@ -11,7 +11,7 @@ import java.util.Optional;
 import com.sumus.sumus_backend.domain.dtos.AuthResult;
 import com.sumus.sumus_backend.domain.dtos.LoginRequest;
 import com.sumus.sumus_backend.domain.dtos.UserDto;
-import com.sumus.sumus_backend.domain.entities.UserDocuments;
+import com.sumus.sumus_backend.domain.entities.UserDocument;
 import com.sumus.sumus_backend.mappers.impl.UserMapper;
 import com.sumus.sumus_backend.repositories.UserRepository;
 import com.sumus.sumus_backend.services.impl.UserServiceImpl;
@@ -62,7 +62,7 @@ public class UserServiceUnitTests {
         );
 
         // 3. Prepara a entidade esperada após mapeamento
-        UserDocuments userEntity = new UserDocuments();
+        UserDocument userEntity = new UserDocument();
         userEntity.setEmail(user.getEmail());
         userEntity.setUsername(user.getUsername());
         userEntity.setTelefone(user.getTelefone());
@@ -75,7 +75,7 @@ public class UserServiceUnitTests {
         when(userRepository.save(userEntity)).thenReturn(userEntity); // quando salvar a entidade, retorna ela mesma
 
         // 5. Executa o método create
-        UserDocuments created = userService.create(user);
+        UserDocument created = userService.create(user);
 
         // 6. Verifica se o resultado está correto
         assertNotNull(created);
@@ -107,7 +107,7 @@ public class UserServiceUnitTests {
         assertThrows(IOException.class, () -> userService.create(user));
 
         // 4. Verifica que o save do repositório nunca foi chamado
-        verify(userRepository, never()).save(any(UserDocuments.class));
+        verify(userRepository, never()).save(any(UserDocument.class));
     }
 
     @Test
@@ -115,16 +115,16 @@ public class UserServiceUnitTests {
         // Teste de listagem de todos os usuários
 
         // 1. Prepara usuários simulados
-        UserDocuments user1 = new UserDocuments();
+        UserDocument user1 = new UserDocument();
         user1.setEmail("teste1@gmail.com");
-        UserDocuments user2 = new UserDocuments();
+        UserDocument user2 = new UserDocument();
         user2.setEmail("teste2@gmail.com");
 
         // 2. Configura o repositório para retornar esses usuários
         when(userRepository.findAll()).thenReturn(Arrays.asList(user1, user2));
 
         // 3. Executa o método listAll
-        List<UserDocuments> users = userService.listAll();
+        List<UserDocument> users = userService.listAll();
 
         // 4. Verifica se todos os usuários foram retornados
         assertEquals(2, users.size());
@@ -152,14 +152,14 @@ public class UserServiceUnitTests {
         userDto.setFoto(mockFoto);
 
         // 3. Prepara o usuário existente antes da atualização
-        UserDocuments existingUser = new UserDocuments();
+        UserDocument existingUser = new UserDocument();
         existingUser.setEmail("teste@gmail.com");
         existingUser.setUsername("teste");
         existingUser.setTelefone("11 123456789");
         existingUser.setPassword("123");
 
         // 4. Define como o usuário atualizado deverá ficar
-        UserDocuments savedUser = new UserDocuments();
+        UserDocument savedUser = new UserDocument();
         savedUser.setEmail("teste@gmail.com");
         savedUser.setUsername("novoNome");
         savedUser.setTelefone("11 987654321");
@@ -172,7 +172,7 @@ public class UserServiceUnitTests {
 
         // 6. Configura o mapper para atualizar a entidade com base no DTO
         doAnswer(invocation -> {
-            UserDocuments entity = invocation.getArgument(0);
+            UserDocument entity = invocation.getArgument(0);
             UserDto dto = invocation.getArgument(1);
             entity.setUsername(dto.getUsername());
             entity.setTelefone(dto.getTelefone());
@@ -181,13 +181,13 @@ public class UserServiceUnitTests {
                 entity.setFoto(dto.getFoto().getBytes());
             }
             return null;
-        }).when(userMapper).updateEntityFromDto(any(UserDocuments.class), any(UserDto.class));
+        }).when(userMapper).updateEntityFromDto(any(UserDocument.class), any(UserDto.class));
 
         // 7. Configura o repositório para salvar a entidade atualizada
         when(userRepository.save(existingUser)).thenReturn(savedUser);
 
         // 8. Executa o método update
-        Optional<UserDocuments> result = userService.update(userDto);
+        Optional<UserDocument> result = userService.update(userDto);
 
         // 9. Verifica se a atualização foi correta
         assertTrue(result.isPresent());
@@ -207,7 +207,7 @@ public class UserServiceUnitTests {
         // Teste de exclusão de usuário existente
 
         // 1. Prepara usuário a ser deletado
-        UserDocuments user = new UserDocuments();
+        UserDocument user = new UserDocument();
         user.setEmail("toDelete@example.com");
 
         // 2. Configura o repositório para encontrar o usuário
@@ -250,14 +250,14 @@ public class UserServiceUnitTests {
         // Teste de busca de usuário por email
 
         // 1. Prepara usuário simulado
-        UserDocuments user = new UserDocuments();
+        UserDocument user = new UserDocument();
         user.setEmail("findme@example.com");
 
         // 2. Configura o repositório para retornar o usuário
         when(userRepository.findByEmail("findme@example.com")).thenReturn(Optional.of(user));
 
         // 3. Executa o método findByEmail
-        Optional<UserDocuments> found = userService.findByEmail("findme@example.com");
+        Optional<UserDocument> found = userService.findByEmail("findme@example.com");
 
         // 4. Verifica se o usuário foi encontrado
         assertTrue(found.isPresent());
@@ -272,7 +272,7 @@ public class UserServiceUnitTests {
         // Teste de login com email e senha corretos
 
         // 1. Prepara usuário simulado com senha codificada
-        UserDocuments user = new UserDocuments();
+        UserDocument user = new UserDocument();
         user.setEmail("teste@gmail.com");
         user.setPassword("encoded");
 

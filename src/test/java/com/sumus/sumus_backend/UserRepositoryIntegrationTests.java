@@ -5,7 +5,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.util.List;
 import java.util.Optional;
 
-import com.sumus.sumus_backend.domain.entities.UserDocuments;
+import com.sumus.sumus_backend.domain.entities.UserDocument;
 import com.sumus.sumus_backend.repositories.UserRepository;
 import com.sumus.sumus_backend.utils.TestEntities;
 
@@ -35,17 +35,17 @@ public class UserRepositoryIntegrationTests {
      */
     @BeforeEach
     void tearDown() {
-        // Deleta todos os documentos da coleção UserDocuments
-        mongoTemplate.dropCollection(UserDocuments.class);
+        // Deleta todos os documentos da coleção UserDocument
+        mongoTemplate.dropCollection(UserDocument.class);
     }
 
     @Test
     void testSaveAndFindByEmail() {
-        UserDocuments user = testEntities.entityOne();
+        UserDocument user = testEntities.entityOne();
 
         userRepository.save(user);
 
-        Optional<UserDocuments> found = userRepository.findByEmail(user.getEmail());
+        Optional<UserDocument> found = userRepository.findByEmail(user.getEmail());
 
         assertTrue(found.isPresent());
         assertEquals(user.getEmail(), found.get().getEmail());
@@ -54,13 +54,13 @@ public class UserRepositoryIntegrationTests {
 
     @Test
     void testFindAll() {
-        UserDocuments userEntity1 = testEntities.entityOne();
-        UserDocuments userEntity2 = testEntities.entityTwo();
+        UserDocument userEntity1 = testEntities.entityOne();
+        UserDocument userEntity2 = testEntities.entityTwo();
 
         userRepository.save(userEntity1);
         userRepository.save(userEntity2);
 
-        List<UserDocuments> users = userRepository.findAll();
+        List<UserDocument> users = userRepository.findAll();
 
         assertEquals(2, users.size());
     }
