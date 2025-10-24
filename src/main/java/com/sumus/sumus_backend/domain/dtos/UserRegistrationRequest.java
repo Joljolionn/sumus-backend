@@ -7,7 +7,7 @@ import jakarta.validation.Valid;
 public class UserRegistrationRequest {
     @Valid
     private UserDto userDto;
-    private MultipartFile foto;
+    private MultipartFile photo;
 
 	public UserDto getUserDto() {
 		return userDto;
@@ -15,10 +15,10 @@ public class UserRegistrationRequest {
 	public void setUserDto(UserDto userDto) {
 		this.userDto = userDto;
 	}
-	public MultipartFile getFoto() {
-		return foto;
+	public MultipartFile getPhoto() {
+		return photo;
 	}
-	public void setFoto(MultipartFile foto) {
-		this.foto = foto;
+	public void setPhoto(MultipartFile photo) {
+		this.photo = photo;
 	}
 }

@@ -49,7 +49,7 @@ public class UserRepositoryIntegrationTests {
 
         assertTrue(found.isPresent());
         assertEquals(user.getEmail(), found.get().getEmail());
-        assertEquals(user.getUsername(), found.get().getUsername());
+        assertEquals(user.getName(), found.get().getName());
     }
 
     @Test

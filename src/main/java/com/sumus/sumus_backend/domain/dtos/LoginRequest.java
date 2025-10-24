@@ -20,8 +20,8 @@ public class LoginRequest {
 		return password;
 	}
 
-	public void setPassword(String senha) {
-		this.password = senha;
+	public void setPassword(String password) {
+		this.password = password;
 	}
 
      

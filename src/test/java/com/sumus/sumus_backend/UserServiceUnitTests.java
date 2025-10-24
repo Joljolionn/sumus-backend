@@ -64,11 +64,11 @@ public class UserServiceUnitTests {
         // 3. Prepara a entidade esperada após mapeamento
         UserDocument userEntity = new UserDocument();
         userEntity.setEmail(user.getEmail());
-        userEntity.setUsername(user.getUsername());
-        userEntity.setTelefone(user.getTelefone());
+        userEntity.setName(user.getUsername());
+        userEntity.setPhone(user.getTelefone());
         userEntity.setPassword("encoded");
         userEntity.setContentType("image/jpeg");
-        userEntity.setFoto("dados_da_foto".getBytes());
+        userEntity.setPhoto("dados_da_foto".getBytes());
 
         // 4. Configura os mocks para simular o comportamento do mapper e do repositório
         when(userMapper.mapFrom(user)).thenReturn(userEntity); // quando mapear DTO -> entidade
@@ -80,7 +80,7 @@ public class UserServiceUnitTests {
         // 6. Verifica se o resultado está correto
         assertNotNull(created);
         assertEquals("test@example.com", created.getEmail());
-        assertArrayEquals("dados_da_foto".getBytes(), created.getFoto());
+        assertArrayEquals("dados_da_foto".getBytes(), created.getPhoto());
         assertEquals("image/jpeg", created.getContentType());
 
         // 7. Confirma que os mocks foram chamados corretamente
@@ -154,18 +154,18 @@ public class UserServiceUnitTests {
         // 3. Prepara o usuário existente antes da atualização
         UserDocument existingUser = new UserDocument();
         existingUser.setEmail("teste@gmail.com");
-        existingUser.setUsername("teste");
-        existingUser.setTelefone("11 123456789");
+        existingUser.setName("teste");
+        existingUser.setPhone("11 123456789");
         existingUser.setPassword("123");
 
         // 4. Define como o usuário atualizado deverá ficar
         UserDocument savedUser = new UserDocument();
         savedUser.setEmail("teste@gmail.com");
-        savedUser.setUsername("novoNome");
-        savedUser.setTelefone("11 987654321");
+        savedUser.setName("novoNome");
+        savedUser.setPhone("11 987654321");
         savedUser.setPassword("123");
         savedUser.setContentType("image/png");
-        savedUser.setFoto("novos_dados".getBytes());
+        savedUser.setPhoto("novos_dados".getBytes());
 
         // 5. Configura o repositório para encontrar o usuário pelo email
         when(userRepository.findByEmail("teste@gmail.com")).thenReturn(Optional.of(existingUser));
@@ -174,11 +174,11 @@ public class UserServiceUnitTests {
         doAnswer(invocation -> {
             UserDocument entity = invocation.getArgument(0);
             UserDto dto = invocation.getArgument(1);
-            entity.setUsername(dto.getUsername());
-            entity.setTelefone(dto.getTelefone());
+            entity.setName(dto.getUsername());
+            entity.setPhone(dto.getTelefone());
             if(dto.getFoto() != null){
                 entity.setContentType(dto.getFoto().getContentType());
-                entity.setFoto(dto.getFoto().getBytes());
+                entity.setPhoto(dto.getFoto().getBytes());
             }
             return null;
         }).when(userMapper).updateEntityFromDto(any(UserDocument.class), any(UserDto.class));
@@ -191,9 +191,9 @@ public class UserServiceUnitTests {
 
         // 9. Verifica se a atualização foi correta
         assertTrue(result.isPresent());
-        assertEquals("novoNome", result.get().getUsername());
-        assertEquals("11 987654321", result.get().getTelefone());
-        assertArrayEquals("novos_dados".getBytes(), result.get().getFoto());
+        assertEquals("novoNome", result.get().getName());
+        assertEquals("11 987654321", result.get().getPhone());
+        assertArrayEquals("novos_dados".getBytes(), result.get().getPhoto());
         assertEquals("image/png", result.get().getContentType());
 
         // 10. Confirma as interações com mocks

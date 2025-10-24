@@ -9,60 +9,60 @@ public class UserDto {
 	public UserDto() {
 	}
 
-	public UserDto(String username, String email, String password, String telefone, MultipartFile foto,
-			String contentType, byte[] fotoBytes) {
-		this.username = username;
+	public UserDto(String name, String email, String password, String phone, MultipartFile photo,
+			String contentType, byte[] photoBytes) {
+		this.name = name;
 		this.email = email;
 		this.password = password;
-		this.telefone = telefone;
-		this.foto = foto;
+		this.phone = phone;
+		this.photo = photo;
 		this.contentType = contentType;
-		this.fotoBytes = fotoBytes;
+		this.photoBytes = photoBytes;
 	}
 
-	public UserDto(String username, String email, String password, String telefone) {
-		this.username = username;
+	public UserDto(String name, String email, String password, String phone) {
+		this.name = name;
 		this.email = email;
 		this.password = password;
-		this.telefone = telefone;
+		this.phone = phone;
 	}
 
-	private String username;
+	private String name;
 
 	private String email;
 
 	private String password;
 
-	private String telefone;
+	private String phone;
 
-	private MultipartFile foto;
+	private MultipartFile photo;
 
 	private String contentType;
 
-	private byte[] fotoBytes;
+	private byte[] photoBytes;
 
 	public byte[] getFotoBytes() {
-		return fotoBytes;
+		return photoBytes;
 	}
 
-	public void setFotoBytes(byte[] fotoBytes) {
-		this.fotoBytes = fotoBytes;
+	public void setFotoBytes(byte[] photoBytes) {
+		this.photoBytes = photoBytes;
 	}
 
 	public MultipartFile getFoto() {
-		return foto;
+		return photo;
 	}
 
-	public void setFoto(MultipartFile foto) {
-		this.foto = foto;
+	public void setFoto(MultipartFile photo) {
+		this.photo = photo;
 	}
 
 	public String getUsername() {
-		return username;
+		return name;
 	}
 
-	public void setUsername(String username) {
-		this.username = username;
+	public void setUsername(String name) {
+		this.name = name;
 	}
 
 	public String getEmail() {
@@ -82,11 +82,11 @@ public class UserDto {
 	}
 
 	public String getTelefone() {
-		return telefone;
+		return phone;
 	}
 
-	public void setTelefone(String telefone) {
-		this.telefone = telefone;
+	public void setTelefone(String phone) {
+		this.phone = phone;
 	}
 
 	public String getContentType() {

@@ -24,14 +24,14 @@ public class UserMapper implements Mapper<UserDocument, UserDto> {
     public UserDocument mapFrom(UserDto b) throws IOException{
         UserDocument userDocument = new UserDocument(); // Usa o construtor do novo modelo
         userDocument.setEmail(b.getEmail());
-        userDocument.setUsername(b.getUsername());
-        userDocument.setTelefone(b.getTelefone());
+        userDocument.setName(b.getUsername());
+        userDocument.setPhone(b.getTelefone());
         userDocument.setPassword(passwordEncoder.encode(b.getPassword()));
 
         // Trata a foto se houver
         if (b.getFoto() != null) {
             userDocument.setContentType(b.getFoto().getContentType());
-            userDocument.setFoto(b.getFoto().getBytes());
+            userDocument.setPhoto(b.getFoto().getBytes());
         }
 
         return userDocument;
@@ -42,10 +42,10 @@ public class UserMapper implements Mapper<UserDocument, UserDto> {
     public UserDto mapTo(UserDocument a) {
         UserDto userDto = new UserDto();
         userDto.setEmail(a.getEmail());
-        userDto.setUsername(a.getUsername());
-        userDto.setTelefone(a.getTelefone());
+        userDto.setUsername(a.getName());
+        userDto.setTelefone(a.getPhone());
         userDto.setContentType(a.getContentType());
-        userDto.setFotoBytes(a.getFoto());
+        userDto.setFotoBytes(a.getPhoto());
         return userDto;
     }
 
@@ -55,9 +55,9 @@ public class UserMapper implements Mapper<UserDocument, UserDto> {
         if (dto.getEmail() != null)
             entity.setEmail(dto.getEmail());
         if (dto.getUsername() != null)
-            entity.setUsername(dto.getUsername());
+            entity.setName(dto.getUsername());
         if (dto.getTelefone() != null)
-            entity.setTelefone(dto.getTelefone());
+            entity.setPhone(dto.getTelefone());
         if (dto.getPassword() != null)
             entity.setPassword(passwordEncoder.encode(dto.getPassword()));
     }

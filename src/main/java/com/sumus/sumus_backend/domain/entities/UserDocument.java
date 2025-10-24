@@ -11,42 +11,42 @@ public class UserDocument {
     @Id
     private String id;
 
-    private String username;
+    private String name;
 
     @Indexed(unique = true)
     private String email;
 
     private String password;
-    private String telefone;
+    private String phone;
 
-    private byte[] foto;
+    private byte[] photo;
 
     @Field("content_type")
     private String contentType;
 
-    private String tipo;
+    private String role;
 
     public UserDocument() {
     }
 
-    public UserDocument(String id, String tipo, String username, String email, String password, String telefone,
-            byte[] foto, String contentType) {
+    public UserDocument(String id, String role, String name, String email, String password, String phone,
+            byte[] photo, String contentType) {
         this.id = id;
-        this.tipo = tipo;
-        this.username = username;
+        this.role = role;
+        this.name = name;
         this.email = email;
         this.password = password;
-        this.telefone = telefone;
-        this.foto = foto;
+        this.phone = phone;
+        this.photo = photo;
         this.contentType = contentType;
     }
 
-    public UserDocument(String username, String email, String password, String telefone, String tipo) {
-        this.username = username;
+    public UserDocument(String name, String email, String password, String phone, String role) {
+        this.name = name;
         this.email = email;
         this.password = password;
-        this.telefone = telefone;
-        this.tipo = tipo;
+        this.phone = phone;
+        this.role = role;
     }
 
     public String getId() {
@@ -57,12 +57,12 @@ public class UserDocument {
         this.id = id;
     }
 
-    public String getUsername() {
-        return username;
+    public String getName() {
+        return name;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getEmail() {
@@ -81,32 +81,32 @@ public class UserDocument {
         this.password = password;
     }
 
-    public String getTelefone() {
-        return telefone;
+    public String getPhone() {
+        return phone;
     }
 
-    public void setTelefone(String telefone) {
-        this.telefone = telefone;
+    public void setPhone(String phone) {
+        this.phone = phone;
     }
 
-    public String getTipo() {
-        return tipo;
+    public String getRole() {
+        return role;
     }
 
-    public void setTipo(String tipo) {
-        this.tipo = tipo;
+    public void setRole(String role) {
+        this.role = role;
     }
 
-    public byte[] getFoto() {
-        return foto;
+    public byte[] getPhoto() {
+        return photo;
     }
 
-    public void setFoto(byte[] foto) {
-        this.foto = foto;
+    public void setPhoto(byte[] photo) {
+        this.photo = photo;
     }
 
-    public void setFotoPath(byte[] foto) {
-        this.foto = foto;
+    public void setFotoPath(byte[] photo) {
+        this.photo = photo;
     }
 
     public String getContentType() {
