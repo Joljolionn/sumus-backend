@@ -2,6 +2,7 @@ package com.sumus.sumus_backend.mappers.impl;
 
 import java.io.IOException;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
@@ -15,11 +16,8 @@ import com.sumus.sumus_backend.mappers.Mapper;
 // CORRIGIDO: Implementa Mapper<UserDocument, UserDto>
 public class UserMapper implements Mapper<UserDocument, UserDto> {
 
+    @Autowired
     private PasswordEncoder passwordEncoder;
-
-    public UserMapper(PasswordEncoder passwordEncoder) {
-        this.passwordEncoder = passwordEncoder;
-    }
 
     @Override
     // CORRIGIDO: Tipo de retorno e objeto criado agora é UserDocument

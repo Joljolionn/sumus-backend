@@ -3,6 +3,7 @@ package com.sumus.sumus_backend.controllers.impl;
 import java.io.IOException;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,11 +23,9 @@ import com.sumus.sumus_backend.services.UserService;
 // Classe para representar os endpoints da aplicação
 @RestController
 public class UserControllerImpl implements UserControllerDocs {
+    
+    @Autowired
     private UserService userService;
-
-    UserControllerImpl(UserService userService) {
-        this.userService = userService;
-    }
 
     @PostMapping(path = "/signup")
     // CORRIGIDO: Tipo de retorno agora é UserDocument
