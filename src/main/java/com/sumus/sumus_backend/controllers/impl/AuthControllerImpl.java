@@ -28,6 +28,7 @@ public class AuthControllerImpl implements AuthControllerDocs {
     @Autowired
     private UserService userService;
 
+    @Override
     @PostMapping(path = "/signup")
     public ResponseEntity<UserDocument> createUser(@ModelAttribute UserRegistrationDto userDto) {
         UserDocument user;
@@ -40,6 +41,7 @@ public class AuthControllerImpl implements AuthControllerDocs {
     }
 
 
+    @Override
     @PostMapping(path = "/login")
     public ResponseEntity<String> login(@RequestBody LoginRequest loginRequest) {
         AuthResult authResult = userService.login(loginRequest);

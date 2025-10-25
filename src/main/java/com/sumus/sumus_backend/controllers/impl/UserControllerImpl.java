@@ -24,6 +24,7 @@ public class UserControllerImpl implements UserControllerDocs {
     @Autowired
     private UserService userService;
 
+    @Override
     @GetMapping(path = "/all")
     // CORRIGIDO: Tipo de retorno agora é List<UserDocument>
     public ResponseEntity<List<UserDocument>> getAllUsers() {
