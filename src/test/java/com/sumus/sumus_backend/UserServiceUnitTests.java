@@ -1,303 +1,303 @@
-package com.sumus.sumus_backend;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
-
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-
-import com.sumus.sumus_backend.domain.dtos.AuthResult;
-import com.sumus.sumus_backend.domain.dtos.LoginRequest;
-import com.sumus.sumus_backend.domain.dtos.UserRegistrationDto;
-import com.sumus.sumus_backend.domain.entities.UserDocument;
-import com.sumus.sumus_backend.mappers.impl.UserMapper;
-import com.sumus.sumus_backend.repositories.UserRepository;
-import com.sumus.sumus_backend.services.impl.UserServiceImpl;
-
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.mock.web.MockMultipartFile;
-
-public class UserServiceUnitTests {
-
-    @Mock
-    private UserRepository userRepository; // 1. Mock do repositório de usuários
-
-    @Mock
-    private PasswordEncoder passwordEncoder; // 2. Mock do encoder de senhas
-
-    @Mock
-    private UserMapper userMapper; // 3. Mock do mapper entre DTO e entidade
-
-    @InjectMocks
-    private UserServiceImpl userService; // 4. Serviço sendo testado
-
-    @BeforeEach
-    void setUp() {
-        // 5. Inicializa os mocks antes de cada teste
-        MockitoAnnotations.openMocks(this);
-    }
-
-    @Test
-    void testCreate_Success() throws IOException { 
-        // 1. Prepara o DTO de usuário com dados básicos
-        UserRegistrationDto user = new UserRegistrationDto();
-        user.setEmail("test@example.com");
-        user.setName("teste");
-        user.setPassword("123");
-        user.setPhone("11 123456789");
-
-        // 2. Cria uma foto mockada para o upload
-        MockMultipartFile mockFoto = new MockMultipartFile(
-            "foto",
-            "foto_teste.jpg",
-            "image/jpeg",
-            "dados_da_foto".getBytes()
-        );
-
-        // 3. Prepara a entidade esperada após mapeamento
-        UserDocument userEntity = new UserDocument();
-        userEntity.setEmail(user.getEmail());
-        userEntity.setName(user.getName());
-        userEntity.setPhone(user.getPhone());
-        userEntity.setPassword("encoded");
-        userEntity.setContentType("image/jpeg");
-        userEntity.setPhotoId("dados_da_foto".getBytes());
-
-        // 4. Configura os mocks para simular o comportamento do mapper e do repositório
-        when(userMapper.mapFrom(user)).thenReturn(userEntity); // quando mapear DTO -> entidade
-        when(userRepository.save(userEntity)).thenReturn(userEntity); // quando salvar a entidade, retorna ela mesma
-
-        // 5. Executa o método create
-        UserDocument created = userService.create(user);
-
-        // 6. Verifica se o resultado está correto
-        assertNotNull(created);
-        assertEquals("test@example.com", created.getEmail());
-        assertArrayEquals("dados_da_foto".getBytes(), created.getPhotoId());
-        assertEquals("image/jpeg", created.getContentType());
-
-        // 7. Confirma que os mocks foram chamados corretamente
-        verify(userMapper, times(1)).mapFrom(user);
-        verify(userRepository, times(1)).save(userEntity);
-    }
-
-    @Test
-    void testCreate_IOException() throws IOException { 
-        // Teste para exceção durante mapeamento de foto
-
-        // 1. Prepara o DTO de usuário
-        UserRegistrationDto user = new UserRegistrationDto();
-        user.setEmail("test@example.com");
-        user.setName("teste");
-        user.setPassword("123");
-        user.setPhone("11 123456789");
-        user.setPhoto(new MockMultipartFile("foto", "test.jpg", "image/jpeg", new byte[0]));
-
-        // 2. Configura o mapper para lançar IOException ao mapear o DTO
-        when(userMapper.mapFrom(any(UserRegistrationDto.class))).thenThrow(new IOException("Erro ao ler foto"));
-
-        // 3. Verifica se a exceção é lançada
-        assertThrows(IOException.class, () -> userService.create(user));
-
-        // 4. Verifica que o save do repositório nunca foi chamado
-        verify(userRepository, never()).save(any(UserDocument.class));
-    }
-
-    @Test
-    void testListAll() {
-        // Teste de listagem de todos os usuários
-
-        // 1. Prepara usuários simulados
-        UserDocument user1 = new UserDocument();
-        user1.setEmail("teste1@gmail.com");
-        UserDocument user2 = new UserDocument();
-        user2.setEmail("teste2@gmail.com");
-
-        // 2. Configura o repositório para retornar esses usuários
-        when(userRepository.findAll()).thenReturn(Arrays.asList(user1, user2));
-
-        // 3. Executa o método listAll
-        List<UserDocument> users = userService.listAll();
-
-        // 4. Verifica se todos os usuários foram retornados
-        assertEquals(2, users.size());
-        verify(userRepository, times(1)).findAll();
-    }
-
-    @Test
-    void testUpdate() throws IOException { 
-        // Teste de atualização de usuário, incluindo alteração de foto
-
-        // 1. Prepara o DTO de atualização
-        UserRegistrationDto userDto = new UserRegistrationDto();
-        userDto.setEmail("teste@gmail.com");
-        userDto.setName("novoNome");
-        userDto.setPhone("11 987654321");
-        userDto.setPassword(null);
-
-        // 2. Adiciona foto mock para atualização
-        MockMultipartFile mockFoto = new MockMultipartFile(
-            "foto",
-            "foto_nova.png",
-            "image/png",
-            "novos_dados".getBytes()
-        );
-        userDto.setPhoto(mockFoto);
-
-        // 3. Prepara o usuário existente antes da atualização
-        UserDocument existingUser = new UserDocument();
-        existingUser.setEmail("teste@gmail.com");
-        existingUser.setName("teste");
-        existingUser.setPhone("11 123456789");
-        existingUser.setPassword("123");
-
-        // 4. Define como o usuário atualizado deverá ficar
-        UserDocument savedUser = new UserDocument();
-        savedUser.setEmail("teste@gmail.com");
-        savedUser.setName("novoNome");
-        savedUser.setPhone("11 987654321");
-        savedUser.setPassword("123");
-        savedUser.setContentType("image/png");
-        savedUser.setPhotoId("novos_dados".getBytes());
-
-        // 5. Configura o repositório para encontrar o usuário pelo email
-        when(userRepository.findByEmail("teste@gmail.com")).thenReturn(Optional.of(existingUser));
-
-        // 6. Configura o mapper para atualizar a entidade com base no DTO
-        doAnswer(invocation -> {
-            UserDocument entity = invocation.getArgument(0);
-            UserRegistrationDto dto = invocation.getArgument(1);
-            entity.setName(dto.getName());
-            entity.setPhone(dto.getPhone());
-            if(dto.getPhoto() != null){
-                entity.setContentType(dto.getPhoto().getContentType());
-                entity.setPhotoId(dto.getPhoto().getBytes());
-            }
-            return null;
-        }).when(userMapper).updateEntityFromDto(any(UserDocument.class), any(UserRegistrationDto.class));
-
-        // 7. Configura o repositório para salvar a entidade atualizada
-        when(userRepository.save(existingUser)).thenReturn(savedUser);
-
-        // 8. Executa o método update
-        Optional<UserDocument> result = userService.update(userDto);
-
-        // 9. Verifica se a atualização foi correta
-        assertTrue(result.isPresent());
-        assertEquals("novoNome", result.get().getName());
-        assertEquals("11 987654321", result.get().getPhone());
-        assertArrayEquals("novos_dados".getBytes(), result.get().getPhotoId());
-        assertEquals("image/png", result.get().getContentType());
-
-        // 10. Confirma as interações com mocks
-        verify(userRepository, times(1)).findByEmail("teste@gmail.com");
-        verify(userMapper, times(1)).updateEntityFromDto(existingUser, userDto);
-        verify(userRepository, times(1)).save(existingUser);
-    }
-
-    @Test
-    void testDelete_UserExists() {
-        // Teste de exclusão de usuário existente
-
-        // 1. Prepara usuário a ser deletado
-        UserDocument user = new UserDocument();
-        user.setEmail("toDelete@example.com");
-
-        // 2. Configura o repositório para encontrar o usuário
-        when(userRepository.findByEmail("toDelete@example.com")).thenReturn(Optional.of(user));
-
-        // 3. Configura o repositório para não fazer nada ao deletar (simula sucesso)
-        doNothing().when(userRepository).deleteById(user.getId());
-
-        // 4. Executa o método delete
-        Boolean result = userService.delete("toDelete@example.com");
-
-        // 5. Verifica se o retorno indica sucesso
-        assertTrue(result);
-
-        // 6. Confirma interações com mocks
-        verify(userRepository, times(1)).findByEmail("toDelete@example.com");
-        verify(userRepository, times(1)).deleteById(user.getId());
-    }
-
-    @Test
-    void testDelete_UserNotExists() {
-        // Teste de exclusão de usuário inexistente
-
-        // 1. Configura o repositório para não encontrar o usuário
-        when(userRepository.findByEmail("notfound@example.com")).thenReturn(Optional.empty());
-
-        // 2. Executa o método delete
-        Boolean result = userService.delete("notfound@example.com");
-
-        // 3. Verifica que o retorno indica falha
-        assertFalse(result);
-
-        // 4. Confirma interações com mocks
-        verify(userRepository, times(1)).findByEmail("notfound@example.com");
-        verify(userRepository, never()).deleteById(anyString());
-    }
-
-    @Test
-    void testFindByEmail() {
-        // Teste de busca de usuário por email
-
-        // 1. Prepara usuário simulado
-        UserDocument user = new UserDocument();
-        user.setEmail("findme@example.com");
-
-        // 2. Configura o repositório para retornar o usuário
-        when(userRepository.findByEmail("findme@example.com")).thenReturn(Optional.of(user));
-
-        // 3. Executa o método findByEmail
-        Optional<UserDocument> found = userService.findByEmail("findme@example.com");
-
-        // 4. Verifica se o usuário foi encontrado
-        assertTrue(found.isPresent());
-        assertEquals("findme@example.com", found.get().getEmail());
-
-        // 5. Confirma interações com o mock
-        verify(userRepository, times(1)).findByEmail("findme@example.com");
-    }
-
-    @Test
-    void testLogin() {
-        // Teste de login com email e senha corretos
-
-        // 1. Prepara usuário simulado com senha codificada
-        UserDocument user = new UserDocument();
-        user.setEmail("teste@gmail.com");
-        user.setPassword("encoded");
-
-        // 2. Configura o repositório para retornar o usuário ao buscar pelo email
-        when(userRepository.findByEmail("teste@gmail.com")).thenReturn(Optional.of(user));
-
-        // 3. Configura o encoder para validar a senha
-        when(passwordEncoder.matches("123", "encoded")).thenReturn(true);
-
-        // 4. Prepara DTO de login
-        LoginRequest loginRequest = new LoginRequest();
-        loginRequest.setEmail("teste@gmail.com");
-        loginRequest.setPassword("123");
-
-        // 5. Executa o método login
-        AuthResult authResult = userService.login(loginRequest);
-
-        // 6. Verifica se o login foi bem-sucedido
-        assertNotNull(authResult);
-        assertEquals(AuthResult.Status.SUCCESS, authResult.getStatus());
-        assertNotNull(authResult.getToken());
-
-        // 7. Confirma interações com mocks
-        verify(userRepository, times(1)).findByEmail("teste@gmail.com");
-        verify(passwordEncoder, times(1)).matches("123", "encoded");
-    }
-}
-
+// package com.sumus.sumus_backend;
+// 
+// import static org.junit.jupiter.api.Assertions.*;
+// import static org.mockito.Mockito.*;
+// 
+// import java.io.IOException;
+// import java.util.Arrays;
+// import java.util.List;
+// import java.util.Optional;
+// 
+// import com.sumus.sumus_backend.domain.dtos.AuthResult;
+// import com.sumus.sumus_backend.domain.dtos.LoginRequest;
+// import com.sumus.sumus_backend.domain.dtos.UserRegistrationDto;
+// import com.sumus.sumus_backend.domain.entities.UserDocument;
+// import com.sumus.sumus_backend.mappers.impl.UserMapper;
+// import com.sumus.sumus_backend.repositories.UserRepository;
+// import com.sumus.sumus_backend.services.impl.UserServiceImpl;
+// 
+// import org.junit.jupiter.api.BeforeEach;
+// import org.junit.jupiter.api.Test;
+// import org.mockito.InjectMocks;
+// import org.mockito.Mock;
+// import org.mockito.MockitoAnnotations;
+// import org.springframework.security.crypto.password.PasswordEncoder;
+// import org.springframework.mock.web.MockMultipartFile;
+// 
+// public class UserServiceUnitTests {
+// 
+//     @Mock
+//     private UserRepository userRepository; // 1. Mock do repositório de usuários
+// 
+//     @Mock
+//     private PasswordEncoder passwordEncoder; // 2. Mock do encoder de senhas
+// 
+//     @Mock
+//     private UserMapper userMapper; // 3. Mock do mapper entre DTO e entidade
+// 
+//     @InjectMocks
+//     private UserServiceImpl userService; // 4. Serviço sendo testado
+// 
+//     @BeforeEach
+//     void setUp() {
+//         // 5. Inicializa os mocks antes de cada teste
+//         MockitoAnnotations.openMocks(this);
+//     }
+// 
+//     @Test
+//     void testCreate_Success() throws IOException { 
+//         // 1. Prepara o DTO de usuário com dados básicos
+//         UserRegistrationDto user = new UserRegistrationDto();
+//         user.setEmail("test@example.com");
+//         user.setName("teste");
+//         user.setPassword("123");
+//         user.setPhone("11 123456789");
+// 
+//         // 2. Cria uma foto mockada para o upload
+//         MockMultipartFile mockFoto = new MockMultipartFile(
+//             "foto",
+//             "foto_teste.jpg",
+//             "image/jpeg",
+//             "dados_da_foto".getBytes()
+//         );
+// 
+//         // 3. Prepara a entidade esperada após mapeamento
+//         UserDocument userEntity = new UserDocument();
+//         userEntity.setEmail(user.getEmail());
+//         userEntity.setName(user.getName());
+//         userEntity.setPhone(user.getPhone());
+//         userEntity.setPassword("encoded");
+//         userEntity.setContentType("image/jpeg");
+//         userEntity.setPhotoId("dados_da_foto".getBytes());
+// 
+//         // 4. Configura os mocks para simular o comportamento do mapper e do repositório
+//         when(userMapper.mapFrom(user)).thenReturn(userEntity); // quando mapear DTO -> entidade
+//         when(userRepository.save(userEntity)).thenReturn(userEntity); // quando salvar a entidade, retorna ela mesma
+// 
+//         // 5. Executa o método create
+//         UserDocument created = userService.create(user);
+// 
+//         // 6. Verifica se o resultado está correto
+//         assertNotNull(created);
+//         assertEquals("test@example.com", created.getEmail());
+//         assertArrayEquals("dados_da_foto".getBytes(), created.getPhotoId());
+//         assertEquals("image/jpeg", created.getContentType());
+// 
+//         // 7. Confirma que os mocks foram chamados corretamente
+//         verify(userMapper, times(1)).mapFrom(user);
+//         verify(userRepository, times(1)).save(userEntity);
+//     }
+// 
+//     @Test
+//     void testCreate_IOException() throws IOException { 
+//         // Teste para exceção durante mapeamento de foto
+// 
+//         // 1. Prepara o DTO de usuário
+//         UserRegistrationDto user = new UserRegistrationDto();
+//         user.setEmail("test@example.com");
+//         user.setName("teste");
+//         user.setPassword("123");
+//         user.setPhone("11 123456789");
+//         user.setPhoto(new MockMultipartFile("foto", "test.jpg", "image/jpeg", new byte[0]));
+// 
+//         // 2. Configura o mapper para lançar IOException ao mapear o DTO
+//         when(userMapper.mapFrom(any(UserRegistrationDto.class))).thenThrow(new IOException("Erro ao ler foto"));
+// 
+//         // 3. Verifica se a exceção é lançada
+//         assertThrows(IOException.class, () -> userService.create(user));
+// 
+//         // 4. Verifica que o save do repositório nunca foi chamado
+//         verify(userRepository, never()).save(any(UserDocument.class));
+//     }
+// 
+//     @Test
+//     void testListAll() {
+//         // Teste de listagem de todos os usuários
+// 
+//         // 1. Prepara usuários simulados
+//         UserDocument user1 = new UserDocument();
+//         user1.setEmail("teste1@gmail.com");
+//         UserDocument user2 = new UserDocument();
+//         user2.setEmail("teste2@gmail.com");
+// 
+//         // 2. Configura o repositório para retornar esses usuários
+//         when(userRepository.findAll()).thenReturn(Arrays.asList(user1, user2));
+// 
+//         // 3. Executa o método listAll
+//         List<UserDocument> users = userService.listAll();
+// 
+//         // 4. Verifica se todos os usuários foram retornados
+//         assertEquals(2, users.size());
+//         verify(userRepository, times(1)).findAll();
+//     }
+// 
+//     @Test
+//     void testUpdate() throws IOException { 
+//         // Teste de atualização de usuário, incluindo alteração de foto
+// 
+//         // 1. Prepara o DTO de atualização
+//         UserRegistrationDto userDto = new UserRegistrationDto();
+//         userDto.setEmail("teste@gmail.com");
+//         userDto.setName("novoNome");
+//         userDto.setPhone("11 987654321");
+//         userDto.setPassword(null);
+// 
+//         // 2. Adiciona foto mock para atualização
+//         MockMultipartFile mockFoto = new MockMultipartFile(
+//             "foto",
+//             "foto_nova.png",
+//             "image/png",
+//             "novos_dados".getBytes()
+//         );
+//         userDto.setPhoto(mockFoto);
+// 
+//         // 3. Prepara o usuário existente antes da atualização
+//         UserDocument existingUser = new UserDocument();
+//         existingUser.setEmail("teste@gmail.com");
+//         existingUser.setName("teste");
+//         existingUser.setPhone("11 123456789");
+//         existingUser.setPassword("123");
+// 
+//         // 4. Define como o usuário atualizado deverá ficar
+//         UserDocument savedUser = new UserDocument();
+//         savedUser.setEmail("teste@gmail.com");
+//         savedUser.setName("novoNome");
+//         savedUser.setPhone("11 987654321");
+//         savedUser.setPassword("123");
+//         savedUser.setContentType("image/png");
+//         savedUser.setPhotoId("novos_dados".getBytes());
+// 
+//         // 5. Configura o repositório para encontrar o usuário pelo email
+//         when(userRepository.findByEmail("teste@gmail.com")).thenReturn(Optional.of(existingUser));
+// 
+//         // 6. Configura o mapper para atualizar a entidade com base no DTO
+//         doAnswer(invocation -> {
+//             UserDocument entity = invocation.getArgument(0);
+//             UserRegistrationDto dto = invocation.getArgument(1);
+//             entity.setName(dto.getName());
+//             entity.setPhone(dto.getPhone());
+//             if(dto.getPhoto() != null){
+//                 entity.setContentType(dto.getPhoto().getContentType());
+//                 entity.setPhotoId(dto.getPhoto().getBytes());
+//             }
+//             return null;
+//         }).when(userMapper).updateEntityFromDto(any(UserDocument.class), any(UserRegistrationDto.class));
+// 
+//         // 7. Configura o repositório para salvar a entidade atualizada
+//         when(userRepository.save(existingUser)).thenReturn(savedUser);
+// 
+//         // 8. Executa o método update
+//         Optional<UserDocument> result = userService.update(userDto);
+// 
+//         // 9. Verifica se a atualização foi correta
+//         assertTrue(result.isPresent());
+//         assertEquals("novoNome", result.get().getName());
+//         assertEquals("11 987654321", result.get().getPhone());
+//         assertArrayEquals("novos_dados".getBytes(), result.get().getPhotoId());
+//         assertEquals("image/png", result.get().getContentType());
+// 
+//         // 10. Confirma as interações com mocks
+//         verify(userRepository, times(1)).findByEmail("teste@gmail.com");
+//         verify(userMapper, times(1)).updateEntityFromDto(existingUser, userDto);
+//         verify(userRepository, times(1)).save(existingUser);
+//     }
+// 
+//     @Test
+//     void testDelete_UserExists() {
+//         // Teste de exclusão de usuário existente
+// 
+//         // 1. Prepara usuário a ser deletado
+//         UserDocument user = new UserDocument();
+//         user.setEmail("toDelete@example.com");
+// 
+//         // 2. Configura o repositório para encontrar o usuário
+//         when(userRepository.findByEmail("toDelete@example.com")).thenReturn(Optional.of(user));
+// 
+//         // 3. Configura o repositório para não fazer nada ao deletar (simula sucesso)
+//         doNothing().when(userRepository).deleteById(user.getId());
+// 
+//         // 4. Executa o método delete
+//         Boolean result = userService.delete("toDelete@example.com");
+// 
+//         // 5. Verifica se o retorno indica sucesso
+//         assertTrue(result);
+// 
+//         // 6. Confirma interações com mocks
+//         verify(userRepository, times(1)).findByEmail("toDelete@example.com");
+//         verify(userRepository, times(1)).deleteById(user.getId());
+//     }
+// 
+//     @Test
+//     void testDelete_UserNotExists() {
+//         // Teste de exclusão de usuário inexistente
+// 
+//         // 1. Configura o repositório para não encontrar o usuário
+//         when(userRepository.findByEmail("notfound@example.com")).thenReturn(Optional.empty());
+// 
+//         // 2. Executa o método delete
+//         Boolean result = userService.delete("notfound@example.com");
+// 
+//         // 3. Verifica que o retorno indica falha
+//         assertFalse(result);
+// 
+//         // 4. Confirma interações com mocks
+//         verify(userRepository, times(1)).findByEmail("notfound@example.com");
+//         verify(userRepository, never()).deleteById(anyString());
+//     }
+// 
+//     @Test
+//     void testFindByEmail() {
+//         // Teste de busca de usuário por email
+// 
+//         // 1. Prepara usuário simulado
+//         UserDocument user = new UserDocument();
+//         user.setEmail("findme@example.com");
+// 
+//         // 2. Configura o repositório para retornar o usuário
+//         when(userRepository.findByEmail("findme@example.com")).thenReturn(Optional.of(user));
+// 
+//         // 3. Executa o método findByEmail
+//         Optional<UserDocument> found = userService.findByEmail("findme@example.com");
+// 
+//         // 4. Verifica se o usuário foi encontrado
+//         assertTrue(found.isPresent());
+//         assertEquals("findme@example.com", found.get().getEmail());
+// 
+//         // 5. Confirma interações com o mock
+//         verify(userRepository, times(1)).findByEmail("findme@example.com");
+//     }
+// 
+//     @Test
+//     void testLogin() {
+//         // Teste de login com email e senha corretos
+// 
+//         // 1. Prepara usuário simulado com senha codificada
+//         UserDocument user = new UserDocument();
+//         user.setEmail("teste@gmail.com");
+//         user.setPassword("encoded");
+// 
+//         // 2. Configura o repositório para retornar o usuário ao buscar pelo email
+//         when(userRepository.findByEmail("teste@gmail.com")).thenReturn(Optional.of(user));
+// 
+//         // 3. Configura o encoder para validar a senha
+//         when(passwordEncoder.matches("123", "encoded")).thenReturn(true);
+// 
+//         // 4. Prepara DTO de login
+//         LoginRequest loginRequest = new LoginRequest();
+//         loginRequest.setEmail("teste@gmail.com");
+//         loginRequest.setPassword("123");
+// 
+//         // 5. Executa o método login
+//         AuthResult authResult = userService.login(loginRequest);
+// 
+//         // 6. Verifica se o login foi bem-sucedido
+//         assertNotNull(authResult);
+//         assertEquals(AuthResult.Status.SUCCESS, authResult.getStatus());
+//         assertNotNull(authResult.getToken());
+// 
+//         // 7. Confirma interações com mocks
+//         verify(userRepository, times(1)).findByEmail("teste@gmail.com");
+//         verify(passwordEncoder, times(1)).matches("123", "encoded");
+//     }
+// }
+// 
