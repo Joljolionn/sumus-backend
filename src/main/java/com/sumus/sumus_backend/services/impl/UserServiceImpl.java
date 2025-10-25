@@ -4,10 +4,17 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.gridfs.GridFsResource;
+import org.springframework.data.mongodb.gridfs.GridFsTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import com.mongodb.client.gridfs.model.GridFSFile;
 import com.sumus.sumus_backend.domain.dtos.AuthResult;
 import com.sumus.sumus_backend.domain.dtos.LoginRequest;
 import com.sumus.sumus_backend.domain.dtos.UserDto;
@@ -16,9 +23,11 @@ import com.sumus.sumus_backend.mappers.impl.UserMapper;
 import com.sumus.sumus_backend.repositories.UserRepository;
 import com.sumus.sumus_backend.services.UserService;
 
-
 @Service
 public class UserServiceImpl implements UserService {
+
+    @Autowired
+    private GridFsTemplate gridFsTemplate;
 
     @Autowired
     private UserRepository userRepository;
@@ -32,14 +41,26 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDocument create(UserDto userDto) throws IOException {
 
-
         if (userRepository.existsByEmail(userDto.getEmail())) {
-            // Lança uma exceção se o e-mail já estiver em uso, garantindo que a regra de negócio seja respeitada.
-            throw new IllegalArgumentException("Erro: O e-mail " + userDto.getEmail() + " já está cadastrado no sistema.");
+            // Lança uma exceção se o e-mail já estiver em uso, garantindo que a regra de
+            // negócio seja respeitada.
+            throw new IllegalArgumentException(
+                    "Erro: O e-mail " + userDto.getEmail() + " já está cadastrado no sistema.");
         }
 
-
         UserDocument userDocument = userMapper.mapFrom(userDto);
+
+        if (userDto.getFoto() != null && !userDto.getFoto().isEmpty()) {
+            MultipartFile file = userDto.getFoto();
+
+            ObjectId fileId = gridFsTemplate.store(
+                    file.getInputStream(),
+                    file.getOriginalFilename(),
+                    file.getContentType());
+
+            userDocument.setPhotoGridFsId(fileId);
+        }
+
         return userRepository.save(userDocument);
     }
 
@@ -85,12 +106,35 @@ public class UserServiceImpl implements UserService {
             return new AuthResult(AuthResult.Status.USER_NOT_FOUND, null);
         }
 
-
         if (passwordEncoder.matches(loginRequest.getPassword(), userOptional.get().getPassword())) {
             return new AuthResult(AuthResult.Status.SUCCESS, "funcionou");
         } else {
             return new AuthResult(AuthResult.Status.INVALID_PASSWORD, null);
         }
+    }
+
+    @Override
+    public GridFsResource getPhotoResourceByUserEmail(String email) {
+        Optional<UserDocument> found = userRepository.findByEmail(email);
+
+        if (found.isEmpty()) {
+            return null;
+        }
+
+        UserDocument user = found.get();
+
+        if (user.getPhotoGridFsId() == null) {
+            return null;
+        }
+
+        GridFSFile file = gridFsTemplate.findOne(
+                Query.query(Criteria.where("_id").is(user.getPhotoGridFsId())));
+
+        if (file == null) {
+            return null;
+        }
+
+        return gridFsTemplate.getResource(file);
     }
 
 }

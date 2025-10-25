@@ -1,9 +1,9 @@
 package com.sumus.sumus_backend.domain.entities;
 
+import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
-import org.springframework.data.mongodb.core.mapping.Field;
-import org.springframework.data.mongodb.core.index.Indexed; // NOVA IMPORTAÇÃO AQUI!
+import org.springframework.data.mongodb.core.index.Indexed;
 
 @Document(collection = "users")
 public class UserDocument {
@@ -19,26 +19,11 @@ public class UserDocument {
     private String password;
     private String phone;
 
-    private byte[] photo;
-
-    @Field("content_type")
-    private String contentType;
+    private ObjectId photoGridFsId;
 
     private String role;
 
     public UserDocument() {
-    }
-
-    public UserDocument(String id, String role, String name, String email, String password, String phone,
-            byte[] photo, String contentType) {
-        this.id = id;
-        this.role = role;
-        this.name = name;
-        this.email = email;
-        this.password = password;
-        this.phone = phone;
-        this.photo = photo;
-        this.contentType = contentType;
     }
 
     public UserDocument(String name, String email, String password, String phone, String role) {
@@ -97,23 +82,11 @@ public class UserDocument {
         this.role = role;
     }
 
-    public byte[] getPhoto() {
-        return photo;
-    }
+	public ObjectId getPhotoGridFsId() {
+		return photoGridFsId;
+	}
 
-    public void setPhoto(byte[] photo) {
-        this.photo = photo;
-    }
-
-    public void setFotoPath(byte[] photo) {
-        this.photo = photo;
-    }
-
-    public String getContentType() {
-        return contentType;
-    }
-
-    public void setContentType(String contentType) {
-        this.contentType = contentType;
-    }
+	public void setPhotoGridFsId(ObjectId photoGridFsId) {
+		this.photoGridFsId = photoGridFsId;
+	}
 }

@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.mongodb.gridfs.GridFsResource;
+
 // Importação do modelo de dados do MongoDB que criamos!
 import com.sumus.sumus_backend.domain.entities.UserDocument;
 import com.sumus.sumus_backend.domain.dtos.AuthResult;
@@ -25,4 +27,6 @@ public interface UserService {
     Optional<UserDocument> findByEmail(String email);
 
     AuthResult login(LoginRequest loginRequest);
+
+    GridFsResource getPhotoResourceByUserEmail(String email);
 }

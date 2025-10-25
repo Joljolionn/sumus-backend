@@ -68,7 +68,7 @@ public class UserServiceUnitTests {
         userEntity.setPhone(user.getTelefone());
         userEntity.setPassword("encoded");
         userEntity.setContentType("image/jpeg");
-        userEntity.setPhoto("dados_da_foto".getBytes());
+        userEntity.setPhotoGridFsId("dados_da_foto".getBytes());
 
         // 4. Configura os mocks para simular o comportamento do mapper e do repositório
         when(userMapper.mapFrom(user)).thenReturn(userEntity); // quando mapear DTO -> entidade
@@ -80,7 +80,7 @@ public class UserServiceUnitTests {
         // 6. Verifica se o resultado está correto
         assertNotNull(created);
         assertEquals("test@example.com", created.getEmail());
-        assertArrayEquals("dados_da_foto".getBytes(), created.getPhoto());
+        assertArrayEquals("dados_da_foto".getBytes(), created.getPhotoGridFsId());
         assertEquals("image/jpeg", created.getContentType());
 
         // 7. Confirma que os mocks foram chamados corretamente
@@ -165,7 +165,7 @@ public class UserServiceUnitTests {
         savedUser.setPhone("11 987654321");
         savedUser.setPassword("123");
         savedUser.setContentType("image/png");
-        savedUser.setPhoto("novos_dados".getBytes());
+        savedUser.setPhotoGridFsId("novos_dados".getBytes());
 
         // 5. Configura o repositório para encontrar o usuário pelo email
         when(userRepository.findByEmail("teste@gmail.com")).thenReturn(Optional.of(existingUser));
@@ -178,7 +178,7 @@ public class UserServiceUnitTests {
             entity.setPhone(dto.getTelefone());
             if(dto.getFoto() != null){
                 entity.setContentType(dto.getFoto().getContentType());
-                entity.setPhoto(dto.getFoto().getBytes());
+                entity.setPhotoGridFsId(dto.getFoto().getBytes());
             }
             return null;
         }).when(userMapper).updateEntityFromDto(any(UserDocument.class), any(UserDto.class));
@@ -193,7 +193,7 @@ public class UserServiceUnitTests {
         assertTrue(result.isPresent());
         assertEquals("novoNome", result.get().getName());
         assertEquals("11 987654321", result.get().getPhone());
-        assertArrayEquals("novos_dados".getBytes(), result.get().getPhoto());
+        assertArrayEquals("novos_dados".getBytes(), result.get().getPhotoGridFsId());
         assertEquals("image/png", result.get().getContentType());
 
         // 10. Confirma as interações com mocks
