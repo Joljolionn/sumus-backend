@@ -38,6 +38,7 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private UserMapper userMapper;
 
+    // TODO: Fazer com que esse método retorne um DTO
     @Override
     public UserDocument create(UserRegistrationDto userDto) throws IOException {
 
@@ -50,15 +51,15 @@ public class UserServiceImpl implements UserService {
 
         UserDocument userDocument = userMapper.mapFrom(userDto);
 
-        if (userDto.getFoto() != null && !userDto.getFoto().isEmpty()) {
-            MultipartFile file = userDto.getFoto();
+        if (userDto.getPhoto() != null && !userDto.getPhoto().isEmpty()) {
+            MultipartFile file = userDto.getPhoto();
 
             ObjectId fileId = gridFsTemplate.store(
                     file.getInputStream(),
                     file.getOriginalFilename(),
                     file.getContentType());
 
-            userDocument.setPhotoGridFsId(fileId);
+            userDocument.setPhotoId(fileId);
         }
 
         return userRepository.save(userDocument);
@@ -69,6 +70,7 @@ public class UserServiceImpl implements UserService {
         return userRepository.findAll();
     }
 
+    // TODO: Fazer que esse método retorne um DTO
     @Override
     public Optional<UserDocument> update(UserRegistrationDto userDto) {
         Optional<UserDocument> user = userRepository.findByEmail(userDto.getEmail());
@@ -93,6 +95,7 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+    // TODO: Fazer que esse método retorne um DTO
     @Override
     public Optional<UserDocument> findByEmail(String email) {
         return userRepository.findByEmail(email);
@@ -123,12 +126,12 @@ public class UserServiceImpl implements UserService {
 
         UserDocument user = found.get();
 
-        if (user.getPhotoGridFsId() == null) {
+        if (user.getPhotoId() == null) {
             return null;
         }
 
         GridFSFile file = gridFsTemplate.findOne(
-                Query.query(Criteria.where("_id").is(user.getPhotoGridFsId())));
+                Query.query(Criteria.where("_id").is(user.getPhotoId())));
 
         if (file == null) {
             return null;

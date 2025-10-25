@@ -16,36 +16,39 @@ public class UserMapper implements Mapper<UserDocument, UserRegistrationDto> {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    // Mapeia um RegisterDTO para entidade do banco
     @Override
     public UserDocument mapFrom(UserRegistrationDto b) throws IOException{
         UserDocument userDocument = new UserDocument(); 
         userDocument.setEmail(b.getEmail());
-        userDocument.setName(b.getUsername());
-        userDocument.setPhone(b.getTelefone());
+        userDocument.setName(b.getName());
+        userDocument.setPhone(b.getPhone());
         userDocument.setPassword(passwordEncoder.encode(b.getPassword()));
 
         return userDocument;
     }
 
+    // Mapeia uma entidade do banco para ResponseDTO
     @Override
     public UserRegistrationDto mapTo(UserDocument a) {
         UserRegistrationDto userDto = new UserRegistrationDto();
         userDto.setEmail(a.getEmail());
-        userDto.setUsername(a.getName());
-        userDto.setTelefone(a.getPhone());
+        userDto.setName(a.getName());
+        userDto.setPhone(a.getPhone());
         return userDto;
     }
 
+    // Atualiza uma entidade com base em um RegisterDTO
     @Override
     public void updateEntityFromDto(UserDocument entity, UserRegistrationDto dto) {
+        if (dto.getName() != null)
+            entity.setName(dto.getName());
         if (dto.getEmail() != null)
             entity.setEmail(dto.getEmail());
-        if (dto.getUsername() != null)
-            entity.setName(dto.getUsername());
-        if (dto.getTelefone() != null)
-            entity.setPhone(dto.getTelefone());
         if (dto.getPassword() != null)
             entity.setPassword(passwordEncoder.encode(dto.getPassword()));
+        if (dto.getPhone() != null)
+            entity.setPhone(dto.getPhone());
     }
 
 }

@@ -49,9 +49,9 @@ public class UserServiceUnitTests {
         // 1. Prepara o DTO de usuário com dados básicos
         UserRegistrationDto user = new UserRegistrationDto();
         user.setEmail("test@example.com");
-        user.setUsername("teste");
+        user.setName("teste");
         user.setPassword("123");
-        user.setTelefone("11 123456789");
+        user.setPhone("11 123456789");
 
         // 2. Cria uma foto mockada para o upload
         MockMultipartFile mockFoto = new MockMultipartFile(
@@ -64,11 +64,11 @@ public class UserServiceUnitTests {
         // 3. Prepara a entidade esperada após mapeamento
         UserDocument userEntity = new UserDocument();
         userEntity.setEmail(user.getEmail());
-        userEntity.setName(user.getUsername());
-        userEntity.setPhone(user.getTelefone());
+        userEntity.setName(user.getName());
+        userEntity.setPhone(user.getPhone());
         userEntity.setPassword("encoded");
         userEntity.setContentType("image/jpeg");
-        userEntity.setPhotoGridFsId("dados_da_foto".getBytes());
+        userEntity.setPhotoId("dados_da_foto".getBytes());
 
         // 4. Configura os mocks para simular o comportamento do mapper e do repositório
         when(userMapper.mapFrom(user)).thenReturn(userEntity); // quando mapear DTO -> entidade
@@ -80,7 +80,7 @@ public class UserServiceUnitTests {
         // 6. Verifica se o resultado está correto
         assertNotNull(created);
         assertEquals("test@example.com", created.getEmail());
-        assertArrayEquals("dados_da_foto".getBytes(), created.getPhotoGridFsId());
+        assertArrayEquals("dados_da_foto".getBytes(), created.getPhotoId());
         assertEquals("image/jpeg", created.getContentType());
 
         // 7. Confirma que os mocks foram chamados corretamente
@@ -95,10 +95,10 @@ public class UserServiceUnitTests {
         // 1. Prepara o DTO de usuário
         UserRegistrationDto user = new UserRegistrationDto();
         user.setEmail("test@example.com");
-        user.setUsername("teste");
+        user.setName("teste");
         user.setPassword("123");
-        user.setTelefone("11 123456789");
-        user.setFoto(new MockMultipartFile("foto", "test.jpg", "image/jpeg", new byte[0]));
+        user.setPhone("11 123456789");
+        user.setPhoto(new MockMultipartFile("foto", "test.jpg", "image/jpeg", new byte[0]));
 
         // 2. Configura o mapper para lançar IOException ao mapear o DTO
         when(userMapper.mapFrom(any(UserRegistrationDto.class))).thenThrow(new IOException("Erro ao ler foto"));
@@ -138,8 +138,8 @@ public class UserServiceUnitTests {
         // 1. Prepara o DTO de atualização
         UserRegistrationDto userDto = new UserRegistrationDto();
         userDto.setEmail("teste@gmail.com");
-        userDto.setUsername("novoNome");
-        userDto.setTelefone("11 987654321");
+        userDto.setName("novoNome");
+        userDto.setPhone("11 987654321");
         userDto.setPassword(null);
 
         // 2. Adiciona foto mock para atualização
@@ -149,7 +149,7 @@ public class UserServiceUnitTests {
             "image/png",
             "novos_dados".getBytes()
         );
-        userDto.setFoto(mockFoto);
+        userDto.setPhoto(mockFoto);
 
         // 3. Prepara o usuário existente antes da atualização
         UserDocument existingUser = new UserDocument();
@@ -165,7 +165,7 @@ public class UserServiceUnitTests {
         savedUser.setPhone("11 987654321");
         savedUser.setPassword("123");
         savedUser.setContentType("image/png");
-        savedUser.setPhotoGridFsId("novos_dados".getBytes());
+        savedUser.setPhotoId("novos_dados".getBytes());
 
         // 5. Configura o repositório para encontrar o usuário pelo email
         when(userRepository.findByEmail("teste@gmail.com")).thenReturn(Optional.of(existingUser));
@@ -174,11 +174,11 @@ public class UserServiceUnitTests {
         doAnswer(invocation -> {
             UserDocument entity = invocation.getArgument(0);
             UserRegistrationDto dto = invocation.getArgument(1);
-            entity.setName(dto.getUsername());
-            entity.setPhone(dto.getTelefone());
-            if(dto.getFoto() != null){
-                entity.setContentType(dto.getFoto().getContentType());
-                entity.setPhotoGridFsId(dto.getFoto().getBytes());
+            entity.setName(dto.getName());
+            entity.setPhone(dto.getPhone());
+            if(dto.getPhoto() != null){
+                entity.setContentType(dto.getPhoto().getContentType());
+                entity.setPhotoId(dto.getPhoto().getBytes());
             }
             return null;
         }).when(userMapper).updateEntityFromDto(any(UserDocument.class), any(UserRegistrationDto.class));
@@ -193,7 +193,7 @@ public class UserServiceUnitTests {
         assertTrue(result.isPresent());
         assertEquals("novoNome", result.get().getName());
         assertEquals("11 987654321", result.get().getPhone());
-        assertArrayEquals("novos_dados".getBytes(), result.get().getPhotoGridFsId());
+        assertArrayEquals("novos_dados".getBytes(), result.get().getPhotoId());
         assertEquals("image/png", result.get().getContentType());
 
         // 10. Confirma as interações com mocks

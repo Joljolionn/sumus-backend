@@ -19,7 +19,7 @@ public class UserDocument {
     private String password;
     private String phone;
 
-    private ObjectId photoGridFsId;
+    private ObjectId photoId;
 
     private String role;
 
@@ -82,11 +82,11 @@ public class UserDocument {
         this.role = role;
     }
 
-	public ObjectId getPhotoGridFsId() {
-		return photoGridFsId;
+	public ObjectId getPhotoId() {
+		return photoId;
 	}
 
-	public void setPhotoGridFsId(ObjectId photoGridFsId) {
-		this.photoGridFsId = photoGridFsId;
+	public void setPhotoId(ObjectId photoId) {
+		this.photoId = photoId;
 	}
 }

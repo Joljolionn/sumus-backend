@@ -6,94 +6,71 @@ import org.springframework.web.multipart.MultipartFile;
 // os usuários
 public class UserRegistrationDto {
 
-	public UserRegistrationDto() {
-	}
+    private String name;
 
-	public UserRegistrationDto(String name, String email, String password, String phone, MultipartFile photo,
-			String contentType, byte[] photoBytes) {
-		this.name = name;
-		this.email = email;
-		this.password = password;
-		this.phone = phone;
-		this.photo = photo;
-		this.contentType = contentType;
-		this.photoBytes = photoBytes;
-	}
+    private String email;
 
-	public UserRegistrationDto(String name, String email, String password, String phone) {
-		this.name = name;
-		this.email = email;
-		this.password = password;
-		this.phone = phone;
-	}
+    private String password;
 
-	private String name;
+    private String phone;
 
-	private String email;
+    private MultipartFile photo;
 
-	private String password;
+    public UserRegistrationDto() {
+    }
 
-	private String phone;
+    public UserRegistrationDto(String name, String email, String password, String phone, MultipartFile photo) {
+        this.name = name;
+        this.email = email;
+        this.password = password;
+        this.phone = phone;
+        this.photo = photo;
+    }
 
-	private MultipartFile photo;
+    public UserRegistrationDto(String name, String email, String password, String phone) {
+        this.name = name;
+        this.email = email;
+        this.password = password;
+        this.phone = phone;
+    }
 
-	private String contentType;
+    public MultipartFile getPhoto() {
+        return photo;
+    }
 
-	private byte[] photoBytes;
+    public void setPhoto(MultipartFile photo) {
+        this.photo = photo;
+    }
 
-	public byte[] getFotoBytes() {
-		return photoBytes;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public void setFotoBytes(byte[] photoBytes) {
-		this.photoBytes = photoBytes;
-	}
+    public void setName(String name) {
+        this.name = name;
+    }
 
-	public MultipartFile getFoto() {
-		return photo;
-	}
+    public String getEmail() {
+        return email;
+    }
 
-	public void setFoto(MultipartFile photo) {
-		this.photo = photo;
-	}
+    public void setEmail(String email) {
+        this.email = email;
+    }
 
-	public String getUsername() {
-		return name;
-	}
+    public String getPassword() {
+        return password;
+    }
 
-	public void setUsername(String name) {
-		this.name = name;
-	}
+    public void setPassword(String password) {
+        this.password = password;
+    }
 
-	public String getEmail() {
-		return email;
-	}
+    public String getPhone() {
+        return phone;
+    }
 
-	public void setEmail(String email) {
-		this.email = email;
-	}
-
-	public String getPassword() {
-		return password;
-	}
-
-	public void setPassword(String password) {
-		this.password = password;
-	}
-
-	public String getTelefone() {
-		return phone;
-	}
-
-	public void setTelefone(String phone) {
-		this.phone = phone;
-	}
-
-	public String getContentType() {
-		return contentType;
-	}
-
-	public void setContentType(String contentType) {
-		this.contentType = contentType;
-	}
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
 }
