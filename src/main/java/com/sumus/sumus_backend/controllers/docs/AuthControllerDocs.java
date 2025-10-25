@@ -8,9 +8,9 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import com.sumus.sumus_backend.domain.dtos.request.LoginRequest;
+import com.sumus.sumus_backend.domain.dtos.request.UserRegistrationDto;
 import com.sumus.sumus_backend.domain.entities.UserDocument;
-import com.sumus.sumus_backend.domain.dtos.LoginRequest;
-import com.sumus.sumus_backend.domain.dtos.UserDto;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -22,11 +22,11 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 public interface AuthControllerDocs {
 
     @Operation(summary = "Cadastra um novo usuário no sistema", description = "Recebe os dados iniciais de um usuário, o cadastra no sistema e retorna o usuário cadastrado no sistema", responses = {
-            @ApiResponse(responseCode = "201", description = "Usuário criado com sucesso", content = @Content(mediaType = "application/json", schema = @Schema(implementation = UserDto.class))),
+            @ApiResponse(responseCode = "201", description = "Usuário criado com sucesso", content = @Content(mediaType = "application/json", schema = @Schema(implementation = UserRegistrationDto.class))),
             @ApiResponse(responseCode = "500", description = "Erro interno no servidor (possivelmente ao processar a imagem do usuário", content = @Content)
     })
     @PostMapping(path = "/auth/signup")
-    public ResponseEntity<UserDocument> createUser(@ModelAttribute UserDto userDto);
+    public ResponseEntity<UserDocument> createUser(@ModelAttribute UserRegistrationDto userDto);
 
     @Operation(summary = "Faz o login do usuário no sistema", description = "Recebe um email e uma senha e faz a busca no banco para confirmar se acha o email do usuário e se a senha está correta e retorna um 'token' de autenticação (por enquanto não implementado, retorna somente 'funcionou')", responses = {
             @ApiResponse(responseCode = "404", description = "Usuário com email enviado não foi encontrado no banco de dados", content = @Content),

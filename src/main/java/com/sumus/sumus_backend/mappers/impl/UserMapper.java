@@ -6,18 +6,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
-import com.sumus.sumus_backend.domain.dtos.UserDto;
+import com.sumus.sumus_backend.domain.dtos.request.UserRegistrationDto;
 import com.sumus.sumus_backend.domain.entities.UserDocument;
 import com.sumus.sumus_backend.mappers.Mapper;
 
 @Component
-public class UserMapper implements Mapper<UserDocument, UserDto> {
+public class UserMapper implements Mapper<UserDocument, UserRegistrationDto> {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
 
     @Override
-    public UserDocument mapFrom(UserDto b) throws IOException{
+    public UserDocument mapFrom(UserRegistrationDto b) throws IOException{
         UserDocument userDocument = new UserDocument(); 
         userDocument.setEmail(b.getEmail());
         userDocument.setName(b.getUsername());
@@ -28,8 +28,8 @@ public class UserMapper implements Mapper<UserDocument, UserDto> {
     }
 
     @Override
-    public UserDto mapTo(UserDocument a) {
-        UserDto userDto = new UserDto();
+    public UserRegistrationDto mapTo(UserDocument a) {
+        UserRegistrationDto userDto = new UserRegistrationDto();
         userDto.setEmail(a.getEmail());
         userDto.setUsername(a.getName());
         userDto.setTelefone(a.getPhone());
@@ -37,7 +37,7 @@ public class UserMapper implements Mapper<UserDocument, UserDto> {
     }
 
     @Override
-    public void updateEntityFromDto(UserDocument entity, UserDto dto) {
+    public void updateEntityFromDto(UserDocument entity, UserRegistrationDto dto) {
         if (dto.getEmail() != null)
             entity.setEmail(dto.getEmail());
         if (dto.getUsername() != null)

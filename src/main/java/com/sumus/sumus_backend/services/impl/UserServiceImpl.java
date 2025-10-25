@@ -15,9 +15,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.mongodb.client.gridfs.model.GridFSFile;
-import com.sumus.sumus_backend.domain.dtos.AuthResult;
-import com.sumus.sumus_backend.domain.dtos.LoginRequest;
-import com.sumus.sumus_backend.domain.dtos.UserDto;
+import com.sumus.sumus_backend.domain.dtos.request.LoginRequest;
+import com.sumus.sumus_backend.domain.dtos.request.UserRegistrationDto;
+import com.sumus.sumus_backend.domain.dtos.response.AuthResult;
 import com.sumus.sumus_backend.domain.entities.UserDocument;
 import com.sumus.sumus_backend.mappers.impl.UserMapper;
 import com.sumus.sumus_backend.repositories.UserRepository;
@@ -39,7 +39,7 @@ public class UserServiceImpl implements UserService {
     private UserMapper userMapper;
 
     @Override
-    public UserDocument create(UserDto userDto) throws IOException {
+    public UserDocument create(UserRegistrationDto userDto) throws IOException {
 
         if (userRepository.existsByEmail(userDto.getEmail())) {
             // Lança uma exceção se o e-mail já estiver em uso, garantindo que a regra de
@@ -70,7 +70,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Optional<UserDocument> update(UserDto userDto) {
+    public Optional<UserDocument> update(UserRegistrationDto userDto) {
         Optional<UserDocument> user = userRepository.findByEmail(userDto.getEmail());
         if (user.isEmpty()) {
             return user;

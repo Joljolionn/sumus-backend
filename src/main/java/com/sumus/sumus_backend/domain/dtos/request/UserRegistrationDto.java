@@ -1,15 +1,15 @@
-package com.sumus.sumus_backend.domain.dtos;
+package com.sumus.sumus_backend.domain.dtos.request;
 
 import org.springframework.web.multipart.MultipartFile;
 
 // Classe usada na camada de apresentação para mostrar e transferir dados para
 // os usuários
-public class UserDto {
+public class UserRegistrationDto {
 
-	public UserDto() {
+	public UserRegistrationDto() {
 	}
 
-	public UserDto(String name, String email, String password, String phone, MultipartFile photo,
+	public UserRegistrationDto(String name, String email, String password, String phone, MultipartFile photo,
 			String contentType, byte[] photoBytes) {
 		this.name = name;
 		this.email = email;
@@ -20,7 +20,7 @@ public class UserDto {
 		this.photoBytes = photoBytes;
 	}
 
-	public UserDto(String name, String email, String password, String phone) {
+	public UserRegistrationDto(String name, String email, String password, String phone) {
 		this.name = name;
 		this.email = email;
 		this.password = password;

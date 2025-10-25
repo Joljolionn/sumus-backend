@@ -1,4 +1,4 @@
-package com.sumus.sumus_backend.domain.dtos;
+package com.sumus.sumus_backend.domain.dtos.request;
 
 // Classe para representar como o request de login será recebido
 public class LoginRequest {

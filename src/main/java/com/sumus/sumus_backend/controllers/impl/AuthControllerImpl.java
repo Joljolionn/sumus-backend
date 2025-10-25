@@ -14,9 +14,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.sumus.sumus_backend.controllers.docs.AuthControllerDocs;
-import com.sumus.sumus_backend.domain.dtos.AuthResult;
-import com.sumus.sumus_backend.domain.dtos.LoginRequest;
-import com.sumus.sumus_backend.domain.dtos.UserDto;
+import com.sumus.sumus_backend.domain.dtos.request.LoginRequest;
+import com.sumus.sumus_backend.domain.dtos.request.UserRegistrationDto;
+import com.sumus.sumus_backend.domain.dtos.response.AuthResult;
 import com.sumus.sumus_backend.domain.entities.UserDocument;
 import com.sumus.sumus_backend.services.UserService;
 
@@ -29,7 +29,7 @@ public class AuthControllerImpl implements AuthControllerDocs {
     private UserService userService;
 
     @PostMapping(path = "/signup")
-    public ResponseEntity<UserDocument> createUser(@ModelAttribute UserDto userDto) {
+    public ResponseEntity<UserDocument> createUser(@ModelAttribute UserRegistrationDto userDto) {
         UserDocument user;
         try {
             user = userService.create(userDto);

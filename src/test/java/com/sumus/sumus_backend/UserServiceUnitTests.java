@@ -10,7 +10,7 @@ import java.util.Optional;
 
 import com.sumus.sumus_backend.domain.dtos.AuthResult;
 import com.sumus.sumus_backend.domain.dtos.LoginRequest;
-import com.sumus.sumus_backend.domain.dtos.UserDto;
+import com.sumus.sumus_backend.domain.dtos.UserRegistrationDto;
 import com.sumus.sumus_backend.domain.entities.UserDocument;
 import com.sumus.sumus_backend.mappers.impl.UserMapper;
 import com.sumus.sumus_backend.repositories.UserRepository;
@@ -47,7 +47,7 @@ public class UserServiceUnitTests {
     @Test
     void testCreate_Success() throws IOException { 
         // 1. Prepara o DTO de usuário com dados básicos
-        UserDto user = new UserDto();
+        UserRegistrationDto user = new UserRegistrationDto();
         user.setEmail("test@example.com");
         user.setUsername("teste");
         user.setPassword("123");
@@ -93,7 +93,7 @@ public class UserServiceUnitTests {
         // Teste para exceção durante mapeamento de foto
 
         // 1. Prepara o DTO de usuário
-        UserDto user = new UserDto();
+        UserRegistrationDto user = new UserRegistrationDto();
         user.setEmail("test@example.com");
         user.setUsername("teste");
         user.setPassword("123");
@@ -101,7 +101,7 @@ public class UserServiceUnitTests {
         user.setFoto(new MockMultipartFile("foto", "test.jpg", "image/jpeg", new byte[0]));
 
         // 2. Configura o mapper para lançar IOException ao mapear o DTO
-        when(userMapper.mapFrom(any(UserDto.class))).thenThrow(new IOException("Erro ao ler foto"));
+        when(userMapper.mapFrom(any(UserRegistrationDto.class))).thenThrow(new IOException("Erro ao ler foto"));
 
         // 3. Verifica se a exceção é lançada
         assertThrows(IOException.class, () -> userService.create(user));
@@ -136,7 +136,7 @@ public class UserServiceUnitTests {
         // Teste de atualização de usuário, incluindo alteração de foto
 
         // 1. Prepara o DTO de atualização
-        UserDto userDto = new UserDto();
+        UserRegistrationDto userDto = new UserRegistrationDto();
         userDto.setEmail("teste@gmail.com");
         userDto.setUsername("novoNome");
         userDto.setTelefone("11 987654321");
@@ -173,7 +173,7 @@ public class UserServiceUnitTests {
         // 6. Configura o mapper para atualizar a entidade com base no DTO
         doAnswer(invocation -> {
             UserDocument entity = invocation.getArgument(0);
-            UserDto dto = invocation.getArgument(1);
+            UserRegistrationDto dto = invocation.getArgument(1);
             entity.setName(dto.getUsername());
             entity.setPhone(dto.getTelefone());
             if(dto.getFoto() != null){
@@ -181,7 +181,7 @@ public class UserServiceUnitTests {
                 entity.setPhotoGridFsId(dto.getFoto().getBytes());
             }
             return null;
-        }).when(userMapper).updateEntityFromDto(any(UserDocument.class), any(UserDto.class));
+        }).when(userMapper).updateEntityFromDto(any(UserDocument.class), any(UserRegistrationDto.class));
 
         // 7. Configura o repositório para salvar a entidade atualizada
         when(userRepository.save(existingUser)).thenReturn(savedUser);
