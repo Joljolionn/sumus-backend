@@ -2,7 +2,8 @@ package com.sumus.sumus_backend.utils;
 
 import org.springframework.stereotype.Component;
 
-import com.sumus.sumus_backend.domain.dtos.UserRegistrationDto;
+import com.sumus.sumus_backend.domain.dtos.request.UserRegistrationDto;
+
 
 @Component
 public class TestDtos {

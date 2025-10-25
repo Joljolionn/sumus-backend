@@ -19,7 +19,6 @@ import com.sumus.sumus_backend.domain.dtos.request.LoginRequest;
 import com.sumus.sumus_backend.domain.dtos.request.UserRegistrationDto;
 import com.sumus.sumus_backend.domain.dtos.response.AuthResult;
 import com.sumus.sumus_backend.domain.entities.UserDocument;
-import com.sumus.sumus_backend.mappers.impl.UserMapper;
 import com.sumus.sumus_backend.repositories.UserRepository;
 import com.sumus.sumus_backend.services.UserService;
 
@@ -35,9 +34,6 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    @Autowired
-    private UserMapper userMapper;
-
     // TODO: Fazer com que esse método retorne um DTO
     @Override
     public UserDocument create(UserRegistrationDto userDto) throws IOException {
@@ -49,7 +45,14 @@ public class UserServiceImpl implements UserService {
                     "Erro: O e-mail " + userDto.getEmail() + " já está cadastrado no sistema.");
         }
 
-        UserDocument userDocument = userMapper.mapFrom(userDto);
+        // Role é null pois ainda não está implementado com JWT
+        UserDocument userDocument = new UserDocument(
+                userDto.getName(),
+                userDto.getEmail(),
+                userDto.getPassword(),
+                userDto.getPhone(),
+                null // Role do usuário
+        );
 
         if (userDto.getPhoto() != null && !userDto.getPhoto().isEmpty()) {
             MultipartFile file = userDto.getPhoto();
@@ -72,14 +75,36 @@ public class UserServiceImpl implements UserService {
 
     // TODO: Fazer que esse método retorne um DTO
     @Override
-    public Optional<UserDocument> update(UserRegistrationDto userDto) {
+    public Optional<UserDocument> update(UserRegistrationDto userDto) throws IOException {
         Optional<UserDocument> user = userRepository.findByEmail(userDto.getEmail());
         if (user.isEmpty()) {
             return user;
         }
 
         UserDocument updatedUser = user.get();
-        userMapper.updateEntityFromDto(updatedUser, userDto);
+
+        if (userDto.getName() != null)
+            updatedUser.setName(userDto.getName());
+        if (userDto.getEmail() != null)
+            updatedUser.setEmail(userDto.getEmail());
+        if (userDto.getPassword() != null)
+            updatedUser.setPassword(passwordEncoder.encode(userDto.getPassword()));
+        if (userDto.getPhone() != null)
+            updatedUser.setPhone(userDto.getPhone());
+
+        // Atualizar a foto
+
+        if (userDto.getPhoto() != null && !userDto.getPhoto().isEmpty()) {
+            if (updatedUser.getPhotoId() != null) {
+                gridFsTemplate.delete(Query.query(Criteria.where("_id").is(updatedUser.getPhotoId())));
+            }
+            ObjectId fileId = gridFsTemplate.store(
+                    userDto.getPhoto().getInputStream(),
+                    userDto.getPhoto().getOriginalFilename(),
+                    userDto.getPhoto().getContentType());
+
+            updatedUser.setPhotoId(fileId);
+        }
 
         return Optional.of(userRepository.save(updatedUser));
     }

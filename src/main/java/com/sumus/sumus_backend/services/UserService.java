@@ -20,7 +20,7 @@ public interface UserService {
 
     List<UserDocument> listAll();
 
-    Optional<UserDocument> update(UserRegistrationDto userDto);
+    Optional<UserDocument> update(UserRegistrationDto userDto) throws IOException;
 
     Boolean delete(String email);
 

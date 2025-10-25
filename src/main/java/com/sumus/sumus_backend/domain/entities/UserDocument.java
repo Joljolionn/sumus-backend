@@ -82,11 +82,11 @@ public class UserDocument {
         this.role = role;
     }
 
-	public ObjectId getPhotoId() {
-		return photoId;
-	}
+    public ObjectId getPhotoId() {
+        return photoId;
+    }
 
-	public void setPhotoId(ObjectId photoId) {
-		this.photoId = photoId;
-	}
+    public void setPhotoId(ObjectId photoId) {
+        this.photoId = photoId;
+    }
 }
