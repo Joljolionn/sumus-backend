@@ -1,4 +1,4 @@
-package com.sumus.sumus_backend.domain.dtos;
+package com.sumus.sumus_backend.domain.dtos.response;
 
 // Classe para representar a resposta para pedido de auth de usuário
 public class AuthResult {

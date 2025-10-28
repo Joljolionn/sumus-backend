@@ -4,25 +4,29 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.mongodb.gridfs.GridFsResource;
+
+import com.sumus.sumus_backend.domain.dtos.request.LoginRequest;
+import com.sumus.sumus_backend.domain.dtos.request.UserRegistrationDto;
+import com.sumus.sumus_backend.domain.dtos.response.AuthResult;
 // Importação do modelo de dados do MongoDB que criamos!
-import com.sumus.sumus_backend.domain.entities.UserDocuments;
-import com.sumus.sumus_backend.domain.dtos.AuthResult;
-import com.sumus.sumus_backend.domain.dtos.LoginRequest;
-import com.sumus.sumus_backend.domain.dtos.UserDto;
+import com.sumus.sumus_backend.domain.entities.UserDocument;
 
 
 public interface UserService {
 
-    // CORREÇÃO DE IMPORTS: Se o UserDocuments não estiver importado, o Java não o encontra.
-    UserDocuments create(UserDto userDto) throws IOException;
+    // CORREÇÃO DE IMPORTS: Se o UserDocument não estiver importado, o Java não o encontra.
+    UserDocument create(UserRegistrationDto userDto) throws IOException;
 
-    List<UserDocuments> listAll();
+    List<UserDocument> listAll();
 
-    Optional<UserDocuments> update(UserDto userDto);
+    Optional<UserDocument> update(UserRegistrationDto userDto) throws IOException;
 
     Boolean delete(String email);
 
-    Optional<UserDocuments> findByEmail(String email);
+    Optional<UserDocument> findByEmail(String email);
 
     AuthResult login(LoginRequest loginRequest);
+
+    GridFsResource getPhotoResourceByUserEmail(String email);
 }

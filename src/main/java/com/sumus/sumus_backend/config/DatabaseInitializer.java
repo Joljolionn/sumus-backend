@@ -4,7 +4,7 @@ import com.sumus.sumus_backend.repositories.UserRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import com.sumus.sumus_backend.domain.entities.UserDocuments;
+import com.sumus.sumus_backend.domain.entities.UserDocument;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Optional;
@@ -22,7 +22,7 @@ public class DatabaseInitializer {
             System.out.println(">>> INICIANDO CRIAÇÃO DE USUÁRIO DE TESTE <<<");
 
 
-            Optional<UserDocuments> userOptional = repository.findByEmail(testEmail);
+            Optional<UserDocument> userOptional = repository.findByEmail(testEmail);
 
 
             if (userOptional.isPresent()) {
@@ -32,7 +32,7 @@ public class DatabaseInitializer {
             }
 
 
-            UserDocuments novoUsuario = new UserDocuments(
+            UserDocument novoUsuario = new UserDocument(
                     "Luzinete PP",
                     testEmail,
                     passwordEncoder.encode("senha321"), // Senha criptografada
@@ -41,7 +41,7 @@ public class DatabaseInitializer {
             );
 
             // 4. Salva o documento
-            UserDocuments savedUser = repository.save(novoUsuario);
+            UserDocument savedUser = repository.save(novoUsuario);
 
             System.out.println("SUCESSO! Novo usuário de teste criado. Email: " + savedUser.getEmail());
             System.out.println("Senha de teste para login: senha123");
