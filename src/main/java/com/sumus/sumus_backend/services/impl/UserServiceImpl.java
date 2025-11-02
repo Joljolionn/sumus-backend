@@ -51,7 +51,7 @@ public class UserServiceImpl implements UserService {
         UserDocument userDocument = new UserDocument(
                 userDto.getName(),
                 userDto.getEmail(),
-                userDto.getPassword(),
+                passwordEncoder.encode(userDto.getPassword()),
                 userDto.getPhone(),
                 null // Role do usuário
         );
