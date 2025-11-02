@@ -19,7 +19,7 @@ public interface UserControllerDocs {
         @Operation(summary = "Visualiza todos os usuários inseridos no banco", description = "Retorna uma lista com todos os usuários inseridos no sistema", responses = {
             @ApiResponse(responseCode = "200", description = "Retorna uma array com todos os usuários inseridos no banco (vazia se o banco estiver vazio)", content = @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = UserDocument.class))))
     })
-    @GetMapping(path = "/auth/users")
+    @GetMapping(path = "/users/all")
     public ResponseEntity<List<UserDocument>> getAllUsers();
 
     // TODO: Adicionar documentação do endpoint para receber a foto do usuário
