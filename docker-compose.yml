@@ -40,9 +40,6 @@ services:
             # 1. Ativa o perfil 'dev' do Spring (application-dev.properties)
             SPRING_PROFILES_ACTIVE: dev 
             
-            # 2. **CORREÇÃO:** Define a URI do MongoDB usando o NOME DO SERVIÇO ('mongodb')
-            # Assim, dentro do container, ele sabe como encontrar o Mongo.
-            SPRING_DATA_MONGODB_URI: mongodb://mongodb:27017/sumus_db                     
 # Definição dos volumes persistentes
 volumes:
     mongo-data:
