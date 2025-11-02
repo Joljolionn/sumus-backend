@@ -38,6 +38,8 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDocument create(UserRegistrationDto userDto) throws IOException {
 
+
+        // TODO: Revisar se essa verificação já não é redundante com a regra de negócio do banco
         if (userRepository.existsByEmail(userDto.getEmail())) {
             // Lança uma exceção se o e-mail já estiver em uso, garantindo que a regra de
             // negócio seja respeitada.

@@ -17,7 +17,6 @@ services:
             - mongo-data:/data/db
         environment:
             MONGO_INITDB_DATABASE: sumus_db
-        restart: always
 
     # --------------------------------------------------------------------------------
     # Serviço do Backend para Desenvolvimento (com Build)
