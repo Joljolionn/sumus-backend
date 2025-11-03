@@ -1,4 +1,4 @@
-package com.sumus.sumus_backend.config;
+package com.sumus.sumus_backend.infra.config;
 
 import com.sumus.sumus_backend.repositories.UserRepository;
 import org.springframework.boot.CommandLineRunner;

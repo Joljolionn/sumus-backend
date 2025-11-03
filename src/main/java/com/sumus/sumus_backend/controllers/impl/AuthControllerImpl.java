@@ -20,6 +20,8 @@ import com.sumus.sumus_backend.domain.dtos.response.AuthResult;
 import com.sumus.sumus_backend.domain.entities.UserDocument;
 import com.sumus.sumus_backend.services.UserService;
 
+import jakarta.validation.Valid;
+
 // Classe para representar os endpoints da aplicação
 @RestController
 @RequestMapping("/auth")
@@ -30,7 +32,7 @@ public class AuthControllerImpl implements AuthControllerDocs {
 
     @Override
     @PostMapping(path = "/signup")
-    public ResponseEntity<UserDocument> createUser(@ModelAttribute UserRegistrationDto userDto) {
+    public ResponseEntity<UserDocument> createUser(@ModelAttribute @Valid UserRegistrationDto userDto) {
         UserDocument user;
         try {
             user = userService.create(userDto);
@@ -43,7 +45,7 @@ public class AuthControllerImpl implements AuthControllerDocs {
 
     @Override
     @PostMapping(path = "/login")
-    public ResponseEntity<String> login(@RequestBody LoginRequest loginRequest) {
+    public ResponseEntity<String> login(@RequestBody @Valid LoginRequest loginRequest) {
         AuthResult authResult = userService.login(loginRequest);
         HttpStatus httpStatus = HttpStatus.OK;
         if (authResult.getStatus() == AuthResult.Status.USER_NOT_FOUND) {
