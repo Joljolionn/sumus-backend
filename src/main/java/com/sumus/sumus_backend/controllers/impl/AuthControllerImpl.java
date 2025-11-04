@@ -15,10 +15,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.sumus.sumus_backend.controllers.docs.AuthControllerDocs;
 import com.sumus.sumus_backend.domain.dtos.request.LoginRequest;
-import com.sumus.sumus_backend.domain.dtos.request.UserRegistrationDto;
+import com.sumus.sumus_backend.domain.dtos.request.PassengerRegistrationDto;
 import com.sumus.sumus_backend.domain.dtos.response.AuthResult;
-import com.sumus.sumus_backend.domain.entities.UserDocument;
-import com.sumus.sumus_backend.services.UserService;
+import com.sumus.sumus_backend.domain.entities.PassengerDocument;
+import com.sumus.sumus_backend.services.PassengerService;
 
 import jakarta.validation.Valid;
 
@@ -28,12 +28,12 @@ import jakarta.validation.Valid;
 public class AuthControllerImpl implements AuthControllerDocs {
     
     @Autowired
-    private UserService userService;
+    private PassengerService userService;
 
     @Override
     @PostMapping(path = "/signup")
-    public ResponseEntity<UserDocument> createUser(@ModelAttribute @Valid UserRegistrationDto userDto) {
-        UserDocument user;
+    public ResponseEntity<PassengerDocument> createPassenger(@ModelAttribute @Valid PassengerRegistrationDto userDto) {
+        PassengerDocument user;
         try {
             user = userService.create(userDto);
         } catch (IOException e) {

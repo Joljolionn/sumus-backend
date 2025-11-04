@@ -13,29 +13,29 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.sumus.sumus_backend.controllers.docs.UserControllerDocs;
-import com.sumus.sumus_backend.domain.entities.UserDocument;
-import com.sumus.sumus_backend.services.UserService;
+import com.sumus.sumus_backend.controllers.docs.PassengerControllerDocs;
+import com.sumus.sumus_backend.domain.entities.PassengerDocument;
+import com.sumus.sumus_backend.services.PassengerService;
 
 @RestController
-@RequestMapping("/users")
-public class UserControllerImpl implements UserControllerDocs {
+@RequestMapping("/passengers")
+public class PassengerControllerImpl implements PassengerControllerDocs {
 
     @Autowired
-    private UserService userService;
+    private PassengerService userService;
 
     @Override
     @GetMapping(path = "/all")
-    // CORRIGIDO: Tipo de retorno agora é List<UserDocument>
-    public ResponseEntity<List<UserDocument>> getAllUsers() {
-        // O serviço retorna List<UserDocument>
+    // CORRIGIDO: Tipo de retorno agora é List<PassengerDocument>
+    public ResponseEntity<List<PassengerDocument>> getAllPassengers() {
+        // O serviço retorna List<PassengerDocument>
         return new ResponseEntity<>(userService.listAll(), HttpStatus.OK);
     }
 
     @GetMapping(path = "/{email}/photo")
-    public ResponseEntity<byte[]> getUserPhoto(@PathVariable String email) throws IOException {
+    public ResponseEntity<byte[]> getPassengerPhoto(@PathVariable String email) throws IOException {
 
-        GridFsResource photoResource = userService.getPhotoResourceByUserEmail(email);
+        GridFsResource photoResource = userService.getPhotoResourceByPassengerEmail(email);
 
         if (photoResource == null) {
             return ResponseEntity.notFound().build();

@@ -8,7 +8,7 @@ import jakarta.validation.constraints.Pattern;
 
 // Classe usada na camada de apresentação para mostrar e transferir dados para
 // os usuários
-public class UserRegistrationDto {
+public class PassengerRegistrationDto {
 
     @NotBlank(message = "O nome é obrigatório")
     private String name;
@@ -26,10 +26,10 @@ public class UserRegistrationDto {
 
     private MultipartFile photo;
 
-    public UserRegistrationDto() {
+    public PassengerRegistrationDto() {
     }
 
-    public UserRegistrationDto(String name, String email, String password, String phone, MultipartFile photo) {
+    public PassengerRegistrationDto(String name, String email, String password, String phone, MultipartFile photo) {
         this.name = name;
         this.email = email;
         this.password = password;
@@ -37,7 +37,7 @@ public class UserRegistrationDto {
         this.photo = photo;
     }
 
-    public UserRegistrationDto(String name, String email, String password, String phone) {
+    public PassengerRegistrationDto(String name, String email, String password, String phone) {
         this.name = name;
         this.email = email;
         this.password = password;

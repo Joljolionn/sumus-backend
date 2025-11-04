@@ -5,8 +5,8 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.util.List;
 import java.util.Optional;
 
-import com.sumus.sumus_backend.domain.entities.UserDocument;
-import com.sumus.sumus_backend.repositories.UserRepository;
+import com.sumus.sumus_backend.domain.entities.PassengerDocument;
+import com.sumus.sumus_backend.repositories.PassengerRepository;
 import com.sumus.sumus_backend.utils.TestEntities;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -21,7 +21,7 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 public class UserRepositoryIntegrationTests {
 
     @Autowired
-    private UserRepository userRepository;
+    private PassengerRepository userRepository;
 
     @Autowired
     private MongoTemplate mongoTemplate;
@@ -36,16 +36,16 @@ public class UserRepositoryIntegrationTests {
     @BeforeEach
     void tearDown() {
         // Deleta todos os documentos da coleção UserDocument
-        mongoTemplate.dropCollection(UserDocument.class);
+        mongoTemplate.dropCollection(PassengerDocument.class);
     }
 
     @Test
     void testSaveAndFindByEmail() {
-        UserDocument user = testEntities.entityOne();
+        PassengerDocument user = testEntities.entityOne();
 
         userRepository.save(user);
 
-        Optional<UserDocument> found = userRepository.findByEmail(user.getEmail());
+        Optional<PassengerDocument> found = userRepository.findByEmail(user.getEmail());
 
         assertTrue(found.isPresent());
         assertEquals(user.getEmail(), found.get().getEmail());
@@ -54,13 +54,13 @@ public class UserRepositoryIntegrationTests {
 
     @Test
     void testFindAll() {
-        UserDocument userEntity1 = testEntities.entityOne();
-        UserDocument userEntity2 = testEntities.entityTwo();
+        PassengerDocument userEntity1 = testEntities.entityOne();
+        PassengerDocument userEntity2 = testEntities.entityTwo();
 
         userRepository.save(userEntity1);
         userRepository.save(userEntity2);
 
-        List<UserDocument> users = userRepository.findAll();
+        List<PassengerDocument> users = userRepository.findAll();
 
         assertEquals(2, users.size());
     }

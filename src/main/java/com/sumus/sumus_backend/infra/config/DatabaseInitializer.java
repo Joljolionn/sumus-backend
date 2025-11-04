@@ -1,10 +1,10 @@
 package com.sumus.sumus_backend.infra.config;
 
-import com.sumus.sumus_backend.repositories.UserRepository;
+import com.sumus.sumus_backend.repositories.PassengerRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import com.sumus.sumus_backend.domain.entities.UserDocument;
+import com.sumus.sumus_backend.domain.entities.PassengerDocument;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Optional;
@@ -13,7 +13,7 @@ import java.util.Optional;
 public class DatabaseInitializer {
 
     @Bean
-    public CommandLineRunner initUserCollection(UserRepository repository, PasswordEncoder passwordEncoder) {
+    public CommandLineRunner initPassengerCollection(PassengerRepository repository, PasswordEncoder passwordEncoder) {
         return args -> {
 
             String testEmail = "Luzinete@sumus.com";
@@ -22,7 +22,7 @@ public class DatabaseInitializer {
             System.out.println(">>> INICIANDO CRIAÇÃO DE USUÁRIO DE TESTE <<<");
 
 
-            Optional<UserDocument> userOptional = repository.findByEmail(testEmail);
+            Optional<PassengerDocument> userOptional = repository.findByEmail(testEmail);
 
 
             if (userOptional.isPresent()) {
@@ -32,7 +32,7 @@ public class DatabaseInitializer {
             }
 
 
-            UserDocument novoUsuario = new UserDocument(
+            PassengerDocument novoUsuario = new PassengerDocument(
                     "Luzinete PP",
                     testEmail,
                     passwordEncoder.encode("senha321"), // Senha criptografada
@@ -41,7 +41,7 @@ public class DatabaseInitializer {
             );
 
             // 4. Salva o documento
-            UserDocument savedUser = repository.save(novoUsuario);
+            PassengerDocument savedUser = repository.save(novoUsuario);
 
             System.out.println("SUCESSO! Novo usuário de teste criado. Email: " + savedUser.getEmail());
             System.out.println("Senha de teste para login: senha123");

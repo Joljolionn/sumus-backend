@@ -2,7 +2,7 @@ package com.sumus.sumus_backend.domain.dtos.response;
 
 import org.bson.types.ObjectId;
 
-public class UserResponseDto {
+public class PassengerResponseDto {
 
 	private String name;
 
@@ -12,22 +12,14 @@ public class UserResponseDto {
 
 	private ObjectId photoId;
 
-    public UserResponseDto() {
+    public PassengerResponseDto() {
     }
 
-    public UserResponseDto(String name, String email, String phone) {
+    public PassengerResponseDto(String name, String email, String phone) {
         this.name = name;
         this.email = email;
         this.phone = phone;
     }
-
-	public String getUsername() {
-		return name;
-	}
-
-	public void setUsername(String name) {
-		this.name = name;
-	}
 
 	public String getEmail() {
 		return email;
