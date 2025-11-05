@@ -10,6 +10,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -44,6 +45,20 @@ public class PassengerControllerImpl implements PassengerControllerDocs {
         return ResponseEntity.ok()
                 .contentType(MediaType.parseMediaType(contentType))
                 .body(photoResource.getContentAsByteArray());
+    }
+
+    @Override
+    @GetMapping(path = "/{email}/active")
+    public ResponseEntity<Boolean> getPassengerActiveStatus(String email) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getPassengerActiveStatus'");
+    }
+
+    @Override
+    @PostMapping(path = "/pcd/{email}/verifyConditions")
+    public ResponseEntity<PassengerDocument> verifyPcdPassengerConditions(String email) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'verifyPcdPassengerConditions'");
     }
 
 }
