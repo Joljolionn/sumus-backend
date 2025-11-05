@@ -1,37 +1,59 @@
 package com.sumus.sumus_backend.domain.entities;
 
+import java.util.List;
+
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 import org.springframework.data.mongodb.core.index.Indexed;
 
-@Document(collection = "users")
+@Document(collection = "passengers")
 public class PassengerDocument {
 
     @Id
     private String id;
 
+    @Field("name")
     private String name;
 
     @Indexed(unique = true)
+    @Field("email")
     private String email;
 
+    @Field("password")
     private String password;
+
+    @Field("phone")
     private String phone;
 
+    @Field("photoId")
     private ObjectId photoId;
 
-    private String role;
+    @Field("isPcd")
+    private Boolean isPcd = false;
+
+    @Field("statusCadastro")
+    private StatusCadastro statusCadastro;
+
+    @Field("pcdConditions")
+    private List<PcdCondition> pcdConditions;
+
+	public enum StatusCadastro {
+        ATIVO, PENDENTE_PCD, REPROVADO_PCD
+    }
 
     public PassengerDocument() {
     }
 
-    public PassengerDocument(String name, String email, String password, String phone, String role) {
+    public PassengerDocument(String name, String email, String password, String phone, Boolean isPcd, List<PcdCondition> pcdConditions) {
         this.name = name;
         this.email = email;
         this.password = password;
         this.phone = phone;
-        this.role = role;
+        this.isPcd = isPcd;
+        this.statusCadastro = isPcd ? StatusCadastro.ATIVO : StatusCadastro.PENDENTE_PCD;
+        this.pcdConditions = pcdConditions;
     }
 
     public String getId() {
@@ -74,12 +96,12 @@ public class PassengerDocument {
         this.phone = phone;
     }
 
-    public String getRole() {
-        return role;
+    public Boolean getIsPcd() {
+        return isPcd;
     }
 
-    public void setRole(String role) {
-        this.role = role;
+    public void setIsPcd(Boolean isPcd) {
+        this.isPcd = isPcd;
     }
 
     public ObjectId getPhotoId() {
@@ -88,5 +110,21 @@ public class PassengerDocument {
 
     public void setPhotoId(ObjectId photoId) {
         this.photoId = photoId;
+    }
+
+    public List<PcdCondition> getPcdConditions() {
+        return pcdConditions;
+    }
+
+    public void setPcdConditions(List<PcdCondition> pcdConditions) {
+        this.pcdConditions = pcdConditions;
+    }
+
+    public StatusCadastro getStatusCadastro() {
+        return statusCadastro;
+    }
+
+    public void setStatusCadastro(StatusCadastro statusCadastro) {
+        this.statusCadastro = statusCadastro;
     }
 }

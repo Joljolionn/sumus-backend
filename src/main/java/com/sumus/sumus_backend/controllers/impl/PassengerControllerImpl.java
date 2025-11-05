@@ -26,9 +26,7 @@ public class PassengerControllerImpl implements PassengerControllerDocs {
 
     @Override
     @GetMapping(path = "/all")
-    // CORRIGIDO: Tipo de retorno agora é List<PassengerDocument>
     public ResponseEntity<List<PassengerDocument>> getAllPassengers() {
-        // O serviço retorna List<PassengerDocument>
         return new ResponseEntity<>(userService.listAll(), HttpStatus.OK);
     }
 

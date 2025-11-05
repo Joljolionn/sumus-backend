@@ -37,7 +37,8 @@ public class DatabaseInitializer {
                     testEmail,
                     passwordEncoder.encode("senha321"), // Senha criptografada
                     "11999999999",
-                    "Pass"
+                    false,
+                    null
             );
 
             // 4. Salva o documento

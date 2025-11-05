@@ -47,13 +47,13 @@ public class PassengerServiceImpl implements PassengerService {
                     "Erro: O e-mail " + userDto.getEmail() + " já está cadastrado no sistema.");
         }
 
-        // Role é null pois ainda não está implementado com JWT
         PassengerDocument userDocument = new PassengerDocument(
                 userDto.getName(),
                 userDto.getEmail(),
                 passwordEncoder.encode(userDto.getPassword()),
                 userDto.getPhone(),
-                null // Role do usuário
+                false,
+                null
         );
 
         if (userDto.getPhoto() != null && !userDto.getPhoto().isEmpty()) {
