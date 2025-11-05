@@ -52,7 +52,7 @@ public class PassengerDocument {
         this.password = password;
         this.phone = phone;
         this.isPcd = isPcd;
-        this.statusCadastro = isPcd ? StatusCadastro.ATIVO : StatusCadastro.PENDENTE_PCD;
+        this.statusCadastro = isPcd ? StatusCadastro.PENDENTE_PCD : StatusCadastro.ATIVO;
         this.pcdConditions = pcdConditions;
     }
 

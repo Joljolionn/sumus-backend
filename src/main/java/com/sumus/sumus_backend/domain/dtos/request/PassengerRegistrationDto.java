@@ -1,9 +1,12 @@
 package com.sumus.sumus_backend.domain.dtos.request;
 
+import java.util.List;
+
 import org.springframework.web.multipart.MultipartFile;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 
 // Classe usada na camada de apresentação para mostrar e transferir dados para
@@ -26,15 +29,22 @@ public class PassengerRegistrationDto {
 
     private MultipartFile photo;
 
+    @NotNull(message = "O usuário deve informar se é ou não prioritário")
+    private Boolean isPcd;
+
+    private List<String> conditions;
+
     public PassengerRegistrationDto() {
     }
 
-    public PassengerRegistrationDto(String name, String email, String password, String phone, MultipartFile photo) {
+    public PassengerRegistrationDto(String name, String email, String password, String phone, MultipartFile photo, Boolean isPcd, List<String> conditions) {
         this.name = name;
         this.email = email;
         this.password = password;
         this.phone = phone;
         this.photo = photo;
+        this.isPcd = isPcd;
+        this.conditions = conditions;
     }
 
     public PassengerRegistrationDto(String name, String email, String password, String phone) {
@@ -83,4 +93,20 @@ public class PassengerRegistrationDto {
     public void setPhone(String phone) {
         this.phone = phone;
     }
+
+	public Boolean getIsPcd() {
+		return isPcd;
+	}
+
+	public void setIsPcd(Boolean isPcd) {
+		this.isPcd = isPcd;
+	}
+
+	public List<String> getConditions() {
+		return conditions;
+	}
+
+	public void setConditions(List<String> conditions) {
+		this.conditions = conditions;
+	}
 }
