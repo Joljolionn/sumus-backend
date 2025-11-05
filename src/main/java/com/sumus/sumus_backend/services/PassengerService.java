@@ -20,8 +20,10 @@ public interface PassengerService {
 
     List<PassengerDocument> listAll();
 
+    // TODO: Implementar update de informações do passageiro
     Optional<PassengerDocument> update(PassengerRegistrationDto userDto) throws IOException;
 
+    // TODO: Implementar delete de passageiro
     Boolean delete(String email);
 
     Optional<PassengerDocument> findByEmail(String email);
@@ -29,4 +31,9 @@ public interface PassengerService {
     AuthResult login(LoginRequest loginRequest);
 
     GridFsResource getPhotoResourceByPassengerEmail(String email);
+
+    Boolean getActiveStatus(String email);
+
+    PassengerDocument verifyPcdConditions(String email);
+
 }

@@ -1,6 +1,7 @@
 package com.sumus.sumus_backend.services.impl;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -19,6 +20,7 @@ import com.sumus.sumus_backend.domain.dtos.request.LoginRequest;
 import com.sumus.sumus_backend.domain.dtos.request.PassengerRegistrationDto;
 import com.sumus.sumus_backend.domain.dtos.response.AuthResult;
 import com.sumus.sumus_backend.domain.entities.PassengerDocument;
+import com.sumus.sumus_backend.domain.entities.PcdCondition;
 import com.sumus.sumus_backend.repositories.PassengerRepository;
 import com.sumus.sumus_backend.services.PassengerService;
 
@@ -47,13 +49,26 @@ public class PassengerServiceImpl implements PassengerService {
                     "Erro: O e-mail " + userDto.getEmail() + " já está cadastrado no sistema.");
         }
 
+        List<PcdCondition> pcdConditions = null;
+
+        if (userDto.getIsPcd()){
+            if(userDto.getConditions().isEmpty()){
+                throw new IllegalArgumentException("Erro: O usuário PCD deve informar suas condições");
+            }
+            pcdConditions = new ArrayList<PcdCondition>();
+
+            for (String condition : userDto.getConditions()) {
+                pcdConditions.add(new PcdCondition(condition));
+            }
+        }
+
         PassengerDocument userDocument = new PassengerDocument(
                 userDto.getName(),
                 userDto.getEmail(),
                 passwordEncoder.encode(userDto.getPassword()),
                 userDto.getPhone(),
-                false,
-                null
+                userDto.getIsPcd(),
+                pcdConditions
         );
 
         if (userDto.getPhoto() != null && !userDto.getPhoto().isEmpty()) {
@@ -166,5 +181,46 @@ public class PassengerServiceImpl implements PassengerService {
 
         return gridFsTemplate.getResource(file);
     }
+
+	@Override
+	public Boolean getActiveStatus(String email) {
+        Optional<PassengerDocument> found = userRepository.findByEmail(email);
+
+        // TODO: Adicionar erro para caso usuário não seja achado
+        if (found.isEmpty()) {
+            return null;
+        }
+
+        PassengerDocument passengerDocument = found.get();
+
+        if (passengerDocument.getStatusCadastro() == PassengerDocument.StatusCadastro.ATIVO){
+            return true;
+        }
+
+        return false;
+	}
+
+	@Override
+	public PassengerDocument verifyPcdConditions(String email) {
+        Optional<PassengerDocument> found = userRepository.findByEmail(email);
+
+        if (found.isEmpty()){
+            return null;
+        }
+
+        PassengerDocument passengerDocument = found.get();
+
+        //TODO: limitar isso pra PCDs
+        
+        for (PcdCondition pcdCondition : passengerDocument.getPcdConditions()) {
+            pcdCondition.setValidationStatus(PcdCondition.ValidationStatus.APROVADO);
+        }
+
+        passengerDocument.setStatusCadastro(PassengerDocument.StatusCadastro.ATIVO);
+
+        passengerDocument = userRepository.save(passengerDocument);
+
+        return passengerDocument;
+	}
 
 }

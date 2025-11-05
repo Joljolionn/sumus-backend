@@ -50,15 +50,20 @@ public class PassengerControllerImpl implements PassengerControllerDocs {
     @Override
     @GetMapping(path = "/{email}/active")
     public ResponseEntity<Boolean> getPassengerActiveStatus(String email) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getPassengerActiveStatus'");
+        return new ResponseEntity<>(userService.getActiveStatus(email), HttpStatus.OK);
     }
 
     @Override
     @PostMapping(path = "/pcd/{email}/verifyConditions")
     public ResponseEntity<PassengerDocument> verifyPcdPassengerConditions(String email) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'verifyPcdPassengerConditions'");
+
+        PassengerDocument passengerDocument = userService.verifyPcdConditions(email);
+
+        if (passengerDocument == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        return new ResponseEntity<>(passengerDocument, HttpStatus.OK);
     }
 
 }
