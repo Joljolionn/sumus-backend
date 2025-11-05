@@ -2,40 +2,40 @@ package com.sumus.sumus_backend.utils;
 
 import org.springframework.stereotype.Component;
 
-import com.sumus.sumus_backend.domain.entities.UserDocument;
+import com.sumus.sumus_backend.domain.entities.PassengerDocument;
 
 @Component
 public class TestEntities {
 
-    public UserDocument entityOne() {
-        return new UserDocument("luzinete", "luzinete@gmail.com", "luzinete123", "11 123456789", "passageiro");
+    public PassengerDocument entityOne() {
+        return new PassengerDocument("luzinete", "luzinete@gmail.com", "luzinete123", "11 123456789", false, null);
     }
 
-    public UserDocument entityTwo() {
-        return new UserDocument("livia", "livia@gmail.com", "livia123", "11 123456789", "passageiro");
+    public PassengerDocument entityTwo() {
+        return new PassengerDocument("livia", "livia@gmail.com", "livia123", "11 123456789", false, null);
     }
 
-    public UserDocument entityThree() {
-        return new UserDocument("alessandra", "alessandra@gmail.com", "alessandra123", "11 123456789", "passageiro");
+    public PassengerDocument entityThree() {
+        return new PassengerDocument("alessandra", "alessandra@gmail.com", "alessandra123", "11 123456789", false, null);
     }
 
-    public UserDocument entityFour() {
-        return new UserDocument("katia", "katia@gmail.com", "katia123", "11 123456789", "passageiro");
+    public PassengerDocument entityFour() {
+        return new PassengerDocument("katia", "katia@gmail.com", "katia123", "11 123456789", false, null);
     }
 
-    public UserDocument entityFive() {
-        return new UserDocument("rosangela", "rosangela@gmail.com", "rosangela123", "11 123456789", "passageiro");
+    public PassengerDocument entityFive() {
+        return new PassengerDocument("rosangela", "rosangela@gmail.com", "rosangela123", "11 123456789", false, null);
     }
 
-    public UserDocument entitySix() {
-        return new UserDocument("silvia", "silvia@gmail.com", "silvia123", "11 123456789", "passageiro");
+    public PassengerDocument entitySix() {
+        return new PassengerDocument("silvia", "silvia@gmail.com", "silvia123", "11 123456789", false, null);
     }
 
-    public UserDocument entitySeven() {
-        return new UserDocument("luzinete", "luzinete@gmail.com", "luzinete123", "11 123456789", "passageiro");
+    public PassengerDocument entitySeven() {
+        return new PassengerDocument("luzinete", "luzinete@gmail.com", "luzinete123", "11 123456789", false, null);
     }
 
-    public UserDocument entityEight() {
-        return new UserDocument("marialucia", "marialucia@gmail.com", "marialucia123", "11 123456789", "passageiro");
+    public PassengerDocument entityEight() {
+        return new PassengerDocument("marialucia", "marialucia@gmail.com", "marialucia123", "11 123456789", false, null);
     }
 }

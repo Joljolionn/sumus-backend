@@ -1,6 +1,7 @@
 package com.sumus.sumus_backend.services.impl;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -16,27 +17,28 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.mongodb.client.gridfs.model.GridFSFile;
 import com.sumus.sumus_backend.domain.dtos.request.LoginRequest;
-import com.sumus.sumus_backend.domain.dtos.request.UserRegistrationDto;
+import com.sumus.sumus_backend.domain.dtos.request.PassengerRegistrationDto;
 import com.sumus.sumus_backend.domain.dtos.response.AuthResult;
-import com.sumus.sumus_backend.domain.entities.UserDocument;
-import com.sumus.sumus_backend.repositories.UserRepository;
-import com.sumus.sumus_backend.services.UserService;
+import com.sumus.sumus_backend.domain.entities.PassengerDocument;
+import com.sumus.sumus_backend.domain.entities.PcdCondition;
+import com.sumus.sumus_backend.repositories.PassengerRepository;
+import com.sumus.sumus_backend.services.PassengerService;
 
 @Service
-public class UserServiceImpl implements UserService {
+public class PassengerServiceImpl implements PassengerService {
 
     @Autowired
     private GridFsTemplate gridFsTemplate;
 
     @Autowired
-    private UserRepository userRepository;
+    private PassengerRepository userRepository;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
 
     // TODO: Fazer com que esse método retorne um DTO
     @Override
-    public UserDocument create(UserRegistrationDto userDto) throws IOException {
+    public PassengerDocument create(PassengerRegistrationDto userDto) throws IOException {
 
 
         // TODO: Revisar se essa verificação já não é redundante com a regra de negócio do banco
@@ -47,13 +49,26 @@ public class UserServiceImpl implements UserService {
                     "Erro: O e-mail " + userDto.getEmail() + " já está cadastrado no sistema.");
         }
 
-        // Role é null pois ainda não está implementado com JWT
-        UserDocument userDocument = new UserDocument(
+        List<PcdCondition> pcdConditions = null;
+
+        if (userDto.getIsPcd()){
+            if(userDto.getConditions().isEmpty()){
+                throw new IllegalArgumentException("Erro: O usuário PCD deve informar suas condições");
+            }
+            pcdConditions = new ArrayList<PcdCondition>();
+
+            for (String condition : userDto.getConditions()) {
+                pcdConditions.add(new PcdCondition(condition));
+            }
+        }
+
+        PassengerDocument userDocument = new PassengerDocument(
                 userDto.getName(),
                 userDto.getEmail(),
                 passwordEncoder.encode(userDto.getPassword()),
                 userDto.getPhone(),
-                null // Role do usuário
+                userDto.getIsPcd(),
+                pcdConditions
         );
 
         if (userDto.getPhoto() != null && !userDto.getPhoto().isEmpty()) {
@@ -71,19 +86,19 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<UserDocument> listAll() {
+    public List<PassengerDocument> listAll() {
         return userRepository.findAll();
     }
 
     // TODO: Fazer que esse método retorne um DTO
     @Override
-    public Optional<UserDocument> update(UserRegistrationDto userDto) throws IOException {
-        Optional<UserDocument> user = userRepository.findByEmail(userDto.getEmail());
+    public Optional<PassengerDocument> update(PassengerRegistrationDto userDto) throws IOException {
+        Optional<PassengerDocument> user = userRepository.findByEmail(userDto.getEmail());
         if (user.isEmpty()) {
             return user;
         }
 
-        UserDocument updatedUser = user.get();
+        PassengerDocument updatedUser = user.get();
 
         if (userDto.getName() != null)
             updatedUser.setName(userDto.getName());
@@ -113,7 +128,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Boolean delete(String email) {
-        Optional<UserDocument> user = userRepository.findByEmail(email);
+        Optional<PassengerDocument> user = userRepository.findByEmail(email);
         if (user.isEmpty()) {
             return false;
         } else {
@@ -124,13 +139,13 @@ public class UserServiceImpl implements UserService {
 
     // TODO: Fazer que esse método retorne um DTO
     @Override
-    public Optional<UserDocument> findByEmail(String email) {
+    public Optional<PassengerDocument> findByEmail(String email) {
         return userRepository.findByEmail(email);
     }
 
     @Override
     public AuthResult login(LoginRequest loginRequest) {
-        Optional<UserDocument> userOptional = userRepository.findByEmail(loginRequest.getEmail());
+        Optional<PassengerDocument> userOptional = userRepository.findByEmail(loginRequest.getEmail());
 
         if (userOptional.isEmpty()) {
             return new AuthResult(AuthResult.Status.USER_NOT_FOUND, null);
@@ -144,14 +159,14 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public GridFsResource getPhotoResourceByUserEmail(String email) {
-        Optional<UserDocument> found = userRepository.findByEmail(email);
+    public GridFsResource getPhotoResourceByPassengerEmail(String email) {
+        Optional<PassengerDocument> found = userRepository.findByEmail(email);
 
         if (found.isEmpty()) {
             return null;
         }
 
-        UserDocument user = found.get();
+        PassengerDocument user = found.get();
 
         if (user.getPhotoId() == null) {
             return null;
@@ -166,5 +181,46 @@ public class UserServiceImpl implements UserService {
 
         return gridFsTemplate.getResource(file);
     }
+
+	@Override
+	public Boolean getActiveStatus(String email) {
+        Optional<PassengerDocument> found = userRepository.findByEmail(email);
+
+        // TODO: Adicionar erro para caso usuário não seja achado
+        if (found.isEmpty()) {
+            return null;
+        }
+
+        PassengerDocument passengerDocument = found.get();
+
+        if (passengerDocument.getStatusCadastro() == PassengerDocument.StatusCadastro.ATIVO){
+            return true;
+        }
+
+        return false;
+	}
+
+	@Override
+	public PassengerDocument verifyPcdConditions(String email) {
+        Optional<PassengerDocument> found = userRepository.findByEmail(email);
+
+        if (found.isEmpty()){
+            return null;
+        }
+
+        PassengerDocument passengerDocument = found.get();
+
+        //TODO: limitar isso pra PCDs
+        
+        for (PcdCondition pcdCondition : passengerDocument.getPcdConditions()) {
+            pcdCondition.setValidationStatus(PcdCondition.ValidationStatus.APROVADO);
+        }
+
+        passengerDocument.setStatusCadastro(PassengerDocument.StatusCadastro.ATIVO);
+
+        passengerDocument = userRepository.save(passengerDocument);
+
+        return passengerDocument;
+	}
 
 }
