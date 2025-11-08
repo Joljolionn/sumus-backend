@@ -23,7 +23,7 @@ import jakarta.validation.Valid;
 
 // Classe para representar os endpoints da aplicação
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("/passenger")
 public class PassengerAuthControllerImpl implements PassengerAuthControllerDocs {
     
     @Autowired

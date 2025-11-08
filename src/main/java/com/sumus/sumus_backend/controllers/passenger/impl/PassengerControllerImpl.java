@@ -20,7 +20,7 @@ import com.sumus.sumus_backend.domain.entities.passenger.PassengerDocument;
 import com.sumus.sumus_backend.services.passenger.PassengerService;
 
 @RestController
-@RequestMapping("/passengers")
+@RequestMapping("/passenger")
 public class PassengerControllerImpl implements PassengerControllerDocs {
 
     @Autowired

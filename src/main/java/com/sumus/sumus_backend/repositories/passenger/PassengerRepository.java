@@ -16,5 +16,5 @@ public interface PassengerRepository extends MongoRepository<PassengerDocument, 
 
     Optional<PassengerDocument> findByEmail(String email);
 
-    boolean existsByEmail(String email);
+    Boolean existsByEmail(String email);
 }

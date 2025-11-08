@@ -40,8 +40,8 @@ public class PassengerServiceImpl implements PassengerService {
     @Override
     public PassengerDocument create(PassengerRegistration userDto) throws IOException {
 
-
-        // TODO: Revisar se essa verificação já não é redundante com a regra de negócio do banco
+        // TODO: Revisar se essa verificação já não é redundante com a regra de negócio
+        // do banco
         if (userRepository.existsByEmail(userDto.getEmail())) {
             // Lança uma exceção se o e-mail já estiver em uso, garantindo que a regra de
             // negócio seja respeitada.
@@ -51,8 +51,8 @@ public class PassengerServiceImpl implements PassengerService {
 
         List<PcdCondition> pcdConditions = null;
 
-        if (userDto.getIsPcd()){
-            if(userDto.getConditions().isEmpty()){
+        if (userDto.getIsPcd()) {
+            if (userDto.getConditions().isEmpty()) {
                 throw new IllegalArgumentException("Erro: O usuário PCD deve informar suas condições");
             }
             pcdConditions = new ArrayList<PcdCondition>();
@@ -68,8 +68,7 @@ public class PassengerServiceImpl implements PassengerService {
                 passwordEncoder.encode(userDto.getPassword()),
                 userDto.getPhone(),
                 userDto.getIsPcd(),
-                pcdConditions
-        );
+                pcdConditions);
 
         if (userDto.getPhoto() != null && !userDto.getPhoto().isEmpty()) {
             MultipartFile file = userDto.getPhoto();
@@ -153,9 +152,8 @@ public class PassengerServiceImpl implements PassengerService {
 
         if (passwordEncoder.matches(loginRequest.getPassword(), userOptional.get().getPassword())) {
             return new AuthResult(AuthResult.Status.SUCCESS, "funcionou");
-        } else {
-            return new AuthResult(AuthResult.Status.INVALID_PASSWORD, null);
         }
+        return new AuthResult(AuthResult.Status.INVALID_PASSWORD, null);
     }
 
     @Override
@@ -182,8 +180,8 @@ public class PassengerServiceImpl implements PassengerService {
         return gridFsTemplate.getResource(file);
     }
 
-	@Override
-	public Boolean getActiveStatus(String email) {
+    @Override
+    public Boolean getActiveStatus(String email) {
         Optional<PassengerDocument> found = userRepository.findByEmail(email);
 
         // TODO: Adicionar erro para caso usuário não seja achado
@@ -193,34 +191,32 @@ public class PassengerServiceImpl implements PassengerService {
 
         PassengerDocument passengerDocument = found.get();
 
-        if (passengerDocument.getStatusCadastro() == PassengerDocument.StatusCadastro.ATIVO){
+        if (passengerDocument.getStatusCadastro() == PassengerDocument.StatusCadastro.ATIVO) {
             return true;
         }
 
         return false;
-	}
+    }
 
-	@Override
-	public PassengerDocument verifyPcdConditions(String email) {
+    @Override
+    public PassengerDocument verifyPcdConditions(String email) {
         Optional<PassengerDocument> found = userRepository.findByEmail(email);
 
-        if (found.isEmpty()){
+        if (found.isEmpty()) {
             return null;
         }
 
         PassengerDocument passengerDocument = found.get();
 
-        //TODO: limitar isso pra PCDs
-        
+        // TODO: limitar isso pra PCDs
+
         for (PcdCondition pcdCondition : passengerDocument.getPcdConditions()) {
             pcdCondition.setValidationStatus(PcdCondition.ValidationStatus.APROVADO);
         }
 
         passengerDocument.setStatusCadastro(PassengerDocument.StatusCadastro.ATIVO);
 
-        passengerDocument = userRepository.save(passengerDocument);
-
-        return passengerDocument;
-	}
+        return userRepository.save(passengerDocument);
+    }
 
 }

@@ -9,7 +9,6 @@ import org.springframework.data.mongodb.gridfs.GridFsResource;
 import com.sumus.sumus_backend.domain.dtos.request.LoginRequest;
 import com.sumus.sumus_backend.domain.dtos.request.PassengerRegistration;
 import com.sumus.sumus_backend.domain.dtos.response.AuthResult;
-// Importação do modelo de dados do MongoDB que criamos!
 import com.sumus.sumus_backend.domain.entities.passenger.PassengerDocument;
 
 
