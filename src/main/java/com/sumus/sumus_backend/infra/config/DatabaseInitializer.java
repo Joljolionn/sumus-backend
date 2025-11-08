@@ -1,10 +1,11 @@
 package com.sumus.sumus_backend.infra.config;
 
-import com.sumus.sumus_backend.repositories.PassengerRepository;
+import com.sumus.sumus_backend.domain.entities.passenger.PassengerDocument;
+import com.sumus.sumus_backend.repositories.passenger.PassengerRepository;
+
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import com.sumus.sumus_backend.domain.entities.PassengerDocument;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Optional;

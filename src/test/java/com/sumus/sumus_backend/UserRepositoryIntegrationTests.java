@@ -5,8 +5,8 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.util.List;
 import java.util.Optional;
 
-import com.sumus.sumus_backend.domain.entities.PassengerDocument;
-import com.sumus.sumus_backend.repositories.PassengerRepository;
+import com.sumus.sumus_backend.domain.entities.passenger.PassengerDocument;
+import com.sumus.sumus_backend.repositories.passenger.PassengerRepository;
 import com.sumus.sumus_backend.utils.TestEntities;
 
 import org.junit.jupiter.api.BeforeEach;

@@ -1,4 +1,4 @@
-package com.sumus.sumus_backend.controllers.docs;
+package com.sumus.sumus_backend.controllers.passenger.docs;
 
 import java.util.List;
 
@@ -9,8 +9,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import com.sumus.sumus_backend.domain.dtos.request.LoginRequest;
-import com.sumus.sumus_backend.domain.dtos.request.PassengerRegistrationDto;
-import com.sumus.sumus_backend.domain.entities.PassengerDocument;
+import com.sumus.sumus_backend.domain.dtos.request.PassengerRegistration;
+import com.sumus.sumus_backend.domain.entities.passenger.PassengerDocument;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -19,14 +19,14 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 @Tag(name = "Auth", description = "Endpoints de funcionalidades básicas envolvendo autenticação")
-public interface AuthControllerDocs {
+public interface PassengerAuthControllerDocs {
 
     @Operation(summary = "Cadastra um novo usuário no sistema", description = "Recebe os dados iniciais de um usuário, o cadastra no sistema e retorna o usuário cadastrado no sistema", responses = {
-            @ApiResponse(responseCode = "201", description = "Usuário criado com sucesso", content = @Content(mediaType = "application/json", schema = @Schema(implementation = PassengerRegistrationDto.class))),
+            @ApiResponse(responseCode = "201", description = "Usuário criado com sucesso", content = @Content(mediaType = "application/json", schema = @Schema(implementation = PassengerRegistration.class))),
             @ApiResponse(responseCode = "500", description = "Erro interno no servidor (possivelmente ao processar a imagem do usuário", content = @Content)
     })
     @PostMapping(path = "/auth/signup")
-    public ResponseEntity<PassengerDocument> createPassenger(@ModelAttribute PassengerRegistrationDto userDto);
+    public ResponseEntity<PassengerDocument> createPassenger(@ModelAttribute PassengerRegistration userDto);
 
     @Operation(summary = "Faz o login do usuário no sistema", description = "Recebe um email e uma senha e faz a busca no banco para confirmar se acha o email do usuário e se a senha está correta e retorna um 'token' de autenticação (por enquanto não implementado, retorna somente 'funcionou')", responses = {
             @ApiResponse(responseCode = "404", description = "Usuário com email enviado não foi encontrado no banco de dados", content = @Content),

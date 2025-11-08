@@ -1,4 +1,5 @@
-package com.sumus.sumus_backend.controllers.impl;
+package com.sumus.sumus_backend.controllers.passenger.impl;
+
 
 import java.io.IOException;
 import java.util.List;
@@ -14,9 +15,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.sumus.sumus_backend.controllers.docs.PassengerControllerDocs;
-import com.sumus.sumus_backend.domain.entities.PassengerDocument;
-import com.sumus.sumus_backend.services.PassengerService;
+import com.sumus.sumus_backend.controllers.passenger.docs.PassengerControllerDocs;
+import com.sumus.sumus_backend.domain.entities.passenger.PassengerDocument;
+import com.sumus.sumus_backend.services.passenger.PassengerService;
 
 @RestController
 @RequestMapping("/passengers")

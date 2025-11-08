@@ -1,9 +1,9 @@
-package com.sumus.sumus_backend.repositories;
+package com.sumus.sumus_backend.repositories.passenger;
 
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 
-import com.sumus.sumus_backend.domain.entities.PassengerDocument;
+import com.sumus.sumus_backend.domain.entities.passenger.PassengerDocument;
 
 import java.util.Optional;
 import java.util.List;

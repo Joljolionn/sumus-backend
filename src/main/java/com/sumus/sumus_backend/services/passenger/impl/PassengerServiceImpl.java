@@ -1,4 +1,4 @@
-package com.sumus.sumus_backend.services.impl;
+package com.sumus.sumus_backend.services.passenger.impl;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -17,12 +17,12 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.mongodb.client.gridfs.model.GridFSFile;
 import com.sumus.sumus_backend.domain.dtos.request.LoginRequest;
-import com.sumus.sumus_backend.domain.dtos.request.PassengerRegistrationDto;
+import com.sumus.sumus_backend.domain.dtos.request.PassengerRegistration;
 import com.sumus.sumus_backend.domain.dtos.response.AuthResult;
-import com.sumus.sumus_backend.domain.entities.PassengerDocument;
-import com.sumus.sumus_backend.domain.entities.PcdCondition;
-import com.sumus.sumus_backend.repositories.PassengerRepository;
-import com.sumus.sumus_backend.services.PassengerService;
+import com.sumus.sumus_backend.domain.entities.passenger.PassengerDocument;
+import com.sumus.sumus_backend.domain.entities.passenger.PcdCondition;
+import com.sumus.sumus_backend.repositories.passenger.PassengerRepository;
+import com.sumus.sumus_backend.services.passenger.PassengerService;
 
 @Service
 public class PassengerServiceImpl implements PassengerService {
@@ -38,7 +38,7 @@ public class PassengerServiceImpl implements PassengerService {
 
     // TODO: Fazer com que esse método retorne um DTO
     @Override
-    public PassengerDocument create(PassengerRegistrationDto userDto) throws IOException {
+    public PassengerDocument create(PassengerRegistration userDto) throws IOException {
 
 
         // TODO: Revisar se essa verificação já não é redundante com a regra de negócio do banco
@@ -92,7 +92,7 @@ public class PassengerServiceImpl implements PassengerService {
 
     // TODO: Fazer que esse método retorne um DTO
     @Override
-    public Optional<PassengerDocument> update(PassengerRegistrationDto userDto) throws IOException {
+    public Optional<PassengerDocument> update(PassengerRegistration userDto) throws IOException {
         Optional<PassengerDocument> user = userRepository.findByEmail(userDto.getEmail());
         if (user.isEmpty()) {
             return user;
