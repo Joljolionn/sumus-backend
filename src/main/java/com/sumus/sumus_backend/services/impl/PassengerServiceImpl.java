@@ -24,6 +24,13 @@ import com.sumus.sumus_backend.domain.entities.PcdCondition;
 import com.sumus.sumus_backend.repositories.PassengerRepository;
 import com.sumus.sumus_backend.services.PassengerService;
 
+/**
+ * @Service
+ * Esta classe é a **Implementação Concreta (Estratégia)** da interface 
+ * {@link PassengerService}.
+ * * Ela contém a lógica de negócio real para as operações de Passageiro (CRUD, login,
+ * e manipulação de arquivos). O Spring a gerencia como um **Singleton** * e a utiliza para satisfazer a injeção de dependência da interface.
+ */
 @Service
 public class PassengerServiceImpl implements PassengerService {
 

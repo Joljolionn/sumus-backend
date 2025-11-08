@@ -9,10 +9,14 @@ import org.springframework.data.mongodb.gridfs.GridFsResource;
 import com.sumus.sumus_backend.domain.dtos.request.LoginRequest;
 import com.sumus.sumus_backend.domain.dtos.request.PassengerRegistrationDto;
 import com.sumus.sumus_backend.domain.dtos.response.AuthResult;
-// Importação do modelo de dados do MongoDB que criamos!
 import com.sumus.sumus_backend.domain.entities.PassengerDocument;
 
-
+/**
+ * Define o Contrato de Negócio (API) para a gestão de Passageiros.
+ * * Esta interface representa a **Abstração** no padrão **Strategy**,
+ * permitindo que a lógica de negócio real seja injetada e substituível,
+ * aderindo ao Princípio da Inversão de Dependência (DIP).
+ */
 public interface PassengerService {
 
     // CORREÇÃO DE IMPORTS: Se o PassengerDocument não estiver importado, o Java não o encontra.

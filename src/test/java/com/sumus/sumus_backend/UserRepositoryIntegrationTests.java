@@ -7,7 +7,7 @@ import java.util.Optional;
 
 import com.sumus.sumus_backend.domain.entities.PassengerDocument;
 import com.sumus.sumus_backend.repositories.PassengerRepository;
-import com.sumus.sumus_backend.utils.TestEntities;
+import com.sumus.sumus_backend.utils.PassengerDocumentFactory;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -17,7 +17,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.data.mongodb.core.MongoTemplate;
 
 @DataMongoTest
-@Import(TestEntities.class)
+@Import(PassengerDocumentFactory.class)
 public class UserRepositoryIntegrationTests {
 
     @Autowired
@@ -27,7 +27,7 @@ public class UserRepositoryIntegrationTests {
     private MongoTemplate mongoTemplate;
 
     @Autowired
-    private TestEntities testEntities;
+    private PassengerDocumentFactory testEntities;
 
 
     /**

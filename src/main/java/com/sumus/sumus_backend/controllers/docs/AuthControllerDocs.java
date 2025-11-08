@@ -18,6 +18,12 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
+/**
+ * Define o Contrato de API (Fachada) para todos os endpoints de Autenticação.
+ * * Esta interface representa a **Fachada (Facade)** que define a interface
+ * de comunicação pública para o subsistema de serviços de autenticação,
+ * garantindo o desacoplamento da lógica de negócio.
+ */
 @Tag(name = "Auth", description = "Endpoints de funcionalidades básicas envolvendo autenticação")
 public interface AuthControllerDocs {
 

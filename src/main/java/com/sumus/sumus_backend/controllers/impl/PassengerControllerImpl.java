@@ -18,6 +18,15 @@ import com.sumus.sumus_backend.controllers.docs.PassengerControllerDocs;
 import com.sumus.sumus_backend.domain.entities.PassengerDocument;
 import com.sumus.sumus_backend.services.PassengerService;
 
+/**
+ * @RestController
+ * Implementação da Fachada (Facade) da API REST para Passageiros,
+ * cumprindo o contrato definido por {@link PassengerControllerDocs}.
+ * * Esta classe orquestra as requisições HTTP, delegando a execução de
+ * toda a lógica de negócio para o {@link PassengerService} injetado,
+ * atuando como uma interface simplificada para o subsistema de serviço.
+ */
+
 @RestController
 @RequestMapping("/passengers")
 public class PassengerControllerImpl implements PassengerControllerDocs {

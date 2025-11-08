@@ -9,6 +9,15 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Optional;
 
+/**
+ * @Configuration
+ * Esta classe de configuração atua como uma **Fábrica (Factory)** * para criar e fornecer **Beans de inicialização** (CommandLineRunner) 
+ * ao contêiner IoC do Spring.
+ * * Ela implementa o padrão **Factory Method** no seu método @Bean para
+ * encapsular a lógica de criação e provisionamento de dados de teste no
+ * banco de dados durante o startup da aplicação.
+ * * A própria classe é um **Singleton** gerenciado pelo Spring.
+ */
 @Configuration
 public class DatabaseInitializer {
 

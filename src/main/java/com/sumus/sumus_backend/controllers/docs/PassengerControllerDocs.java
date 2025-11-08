@@ -17,6 +17,13 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
+/**
+ * Define o Contrato de API (Fachada) para todos os endpoints relacionados
+ * a Passageiros.
+ * * Esta interface serve como a **Fachada (Facade)** pública para a camada
+ * de serviços de passageiros, isolando a complexidade da lógica de negócio
+ * da interface de comunicação (HTTP).
+ */
 @Tag(name = "Passengers", description = "Endpoints de funcionalidades básicas envolvendo usuários")
 public interface PassengerControllerDocs {
 

@@ -4,9 +4,18 @@ import org.springframework.stereotype.Component;
 
 import com.sumus.sumus_backend.domain.dtos.request.PassengerRegistrationDto;
 
+/**
+ * @Component
+ * Esta classe é uma **Fábrica (Factory) de Dados de Teste** (Fixtures)
+ * para o Data Transfer Object (DTO) {@link PassengerRegistrationDto}.
+ * * Implementando o padrão **Factory Method** simplificado, ela centraliza
+ * e encapsula a lógica de criação de instâncias de DTOs com dados 
+ * predefinidos, garantindo consistência e reusabilidade em testes de
+ * integração ou unitários.
+ */
 
 @Component
-public class TestDtos {
+public class PassengerDtoFactory {
 
     public PassengerRegistrationDto dtoOne() {
         return new PassengerRegistrationDto("luzinete", "luzinete@gmail.com", "luzinete123", "11 123456789");

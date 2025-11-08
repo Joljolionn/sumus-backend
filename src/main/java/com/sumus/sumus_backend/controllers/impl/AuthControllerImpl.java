@@ -22,7 +22,13 @@ import com.sumus.sumus_backend.services.PassengerService;
 
 import jakarta.validation.Valid;
 
-// Classe para representar os endpoints da aplicação
+/**
+ * @RestController
+ * Implementação da Fachada (Facade) da API REST para Autenticação (Login e Cadastro).
+ * * Atua como uma **Fachada**, orquestrando as requisições HTTP e traduzindo os resultados
+ * do {@link PassengerService} (que é o subsistema de negócio) para respostas HTTP
+ * com status codes apropriados.
+ */
 @RestController
 @RequestMapping("/auth")
 public class AuthControllerImpl implements AuthControllerDocs {
