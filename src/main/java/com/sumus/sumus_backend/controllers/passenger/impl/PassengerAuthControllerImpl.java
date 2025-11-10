@@ -1,4 +1,4 @@
-package com.sumus.sumus_backend.controllers.impl;
+package com.sumus.sumus_backend.controllers.passenger.impl;
 
 import java.io.IOException;
 import java.util.List;
@@ -6,33 +6,32 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.sumus.sumus_backend.controllers.docs.AuthControllerDocs;
+import com.sumus.sumus_backend.controllers.passenger.docs.PassengerAuthControllerDocs;
 import com.sumus.sumus_backend.domain.dtos.request.LoginRequest;
-import com.sumus.sumus_backend.domain.dtos.request.PassengerRegistrationDto;
+import com.sumus.sumus_backend.domain.dtos.request.PassengerRegistration;
 import com.sumus.sumus_backend.domain.dtos.response.AuthResult;
-import com.sumus.sumus_backend.domain.entities.PassengerDocument;
-import com.sumus.sumus_backend.services.PassengerService;
+import com.sumus.sumus_backend.domain.entities.passenger.PassengerDocument;
+import com.sumus.sumus_backend.services.passenger.PassengerService;
 
 import jakarta.validation.Valid;
 
 // Classe para representar os endpoints da aplicação
 @RestController
-@RequestMapping("/auth")
-public class AuthControllerImpl implements AuthControllerDocs {
+@RequestMapping("/passenger")
+public class PassengerAuthControllerImpl implements PassengerAuthControllerDocs {
     
     @Autowired
     private PassengerService userService;
 
     @Override
     @PostMapping(path = "/signup")
-    public ResponseEntity<PassengerDocument> createPassenger(@ModelAttribute @Valid PassengerRegistrationDto userDto) {
+    public ResponseEntity<PassengerDocument> createPassenger(@ModelAttribute @Valid PassengerRegistration userDto) {
         PassengerDocument user;
         try {
             user = userService.create(userDto);

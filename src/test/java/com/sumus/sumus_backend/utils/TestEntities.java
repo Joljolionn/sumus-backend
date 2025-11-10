@@ -2,7 +2,8 @@ package com.sumus.sumus_backend.utils;
 
 import org.springframework.stereotype.Component;
 
-import com.sumus.sumus_backend.domain.entities.PassengerDocument;
+import com.sumus.sumus_backend.domain.entities.passenger.PassengerDocument;
+
 
 @Component
 public class TestEntities {

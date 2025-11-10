@@ -1,4 +1,4 @@
-package com.sumus.sumus_backend.domain.entities;
+package com.sumus.sumus_backend.domain.entities.passenger;
 
 import org.bson.types.ObjectId;
 
