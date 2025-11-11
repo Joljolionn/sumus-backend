@@ -38,7 +38,7 @@ public class DriverServiceImpl implements DriverService {
     public DriverDocument create(DriverRegistration driverRegistration) throws IOException {
 
         DriverDocument driverDocument = new DriverDocument(driverRegistration.getName(), driverRegistration.getEmail(),
-                driverRegistration.getPassword(), driverRegistration.getPhone(), driverRegistration.getCnh());
+                passwordEncoder.encode(driverRegistration.getPassword()), driverRegistration.getPhone(), driverRegistration.getCnh());
 
         if (driverRegistration.getPhoto() != null && !driverRegistration.getPhoto().isEmpty()) {
             MultipartFile file = driverRegistration.getPhoto();
