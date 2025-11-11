@@ -4,8 +4,8 @@ import org.springframework.security.core.GrantedAuthority;
 
 public enum UserRole implements GrantedAuthority {
 
-    DRIVER("driver"),
-    PASSENGER("passenger");
+    DRIVER("ROLE_DRIVER"),
+    PASSENGER("ROLE_PASSENGER");
 
 
 	private String authority;
