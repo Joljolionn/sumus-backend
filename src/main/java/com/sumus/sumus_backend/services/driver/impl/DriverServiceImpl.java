@@ -37,6 +37,13 @@ public class DriverServiceImpl implements DriverService {
     @Override
     public DriverDocument create(DriverRegistration driverRegistration) throws IOException {
 
+        if (driverRepository.existsByEmail(driverRegistration.getEmail())) {
+            // Lança uma exceção se o e-mail já estiver em uso, garantindo que a regra de
+            // negócio seja respeitada.
+            throw new IllegalArgumentException(
+                    "Erro: O e-mail " + driverRegistration.getEmail() + " já está cadastrado no sistema.");
+        }
+
         DriverDocument driverDocument = new DriverDocument(driverRegistration.getName(), driverRegistration.getEmail(),
                 passwordEncoder.encode(driverRegistration.getPassword()), driverRegistration.getPhone(), driverRegistration.getCnh());
 

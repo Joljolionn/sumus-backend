@@ -1,7 +1,9 @@
 package com.sumus.sumus_backend.infra.config;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -9,12 +11,20 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
+import com.sumus.sumus_backend.infra.security.userdetails.driver.DriverDetailsService;
+import com.sumus.sumus_backend.infra.security.userdetails.passenger.PassengerDetailsService;
 import com.sumus.sumus_backend.infra.security.util.UserRole;
 
 // Classe central para configurar segurança da aplicação
 @Configuration
 @EnableWebSecurity
 public class SecurityConfiguration {
+
+    @Autowired
+    private PassengerDetailsService passengerDetailsService;
+
+    @Autowired
+    private DriverDetailsService driverDetailsService;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -24,7 +34,7 @@ public class SecurityConfiguration {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
-                .csrf().disable() // Desativa necessidade de tokens CSRF
+                .csrf(csrf -> csrf.disable()) // Desativa necessidade de tokens CSRF
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 // .formLogin().disable() // remove a página de login padrão
                 .authorizeHttpRequests(auth -> auth
@@ -41,5 +51,23 @@ public class SecurityConfiguration {
 
                         .anyRequest().authenticated())
                 .build();
+    }
+
+    // --- Provedor de Autenticação para Passageiros ---
+    @Bean
+    public DaoAuthenticationProvider passengerAuthenticationProvider() {
+        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
+        provider.setUserDetailsService(passengerDetailsService);
+        provider.setPasswordEncoder(passwordEncoder());
+        return provider;
+    }
+
+    // --- Provedor de Autenticação para Motoristas ---
+    @Bean
+    public DaoAuthenticationProvider driverAuthenticationProvider() {
+        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
+        provider.setUserDetailsService(driverDetailsService);
+        provider.setPasswordEncoder(passwordEncoder());
+        return provider;
     }
 }

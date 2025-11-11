@@ -4,8 +4,12 @@ import java.io.IOException;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -15,7 +19,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.sumus.sumus_backend.controllers.passenger.docs.PassengerAuthControllerDocs;
 import com.sumus.sumus_backend.domain.dtos.request.LoginRequest;
 import com.sumus.sumus_backend.domain.dtos.request.PassengerRegistration;
-import com.sumus.sumus_backend.domain.dtos.response.AuthResult;
 import com.sumus.sumus_backend.domain.entities.passenger.PassengerDocument;
 import com.sumus.sumus_backend.services.passenger.PassengerService;
 
@@ -25,9 +28,16 @@ import jakarta.validation.Valid;
 @RestController
 @RequestMapping("/passenger")
 public class PassengerAuthControllerImpl implements PassengerAuthControllerDocs {
-    
+
     @Autowired
     private PassengerService userService;
+
+    @Autowired
+    @Qualifier("passengerAuthenticationProvider") // Para garantir que o Bean de provedor
+                                                  // utilizado será o especificado
+                                                  // para lidar com motoristas
+
+    private DaoAuthenticationProvider passengerAuthenticationProvider;
 
     @Override
     @PostMapping(path = "/signup")
@@ -41,18 +51,14 @@ public class PassengerAuthControllerImpl implements PassengerAuthControllerDocs 
         return new ResponseEntity<>(user, HttpStatus.CREATED);
     }
 
-
     @Override
     @PostMapping(path = "/login")
     public ResponseEntity<String> login(@RequestBody @Valid LoginRequest loginRequest) {
-        AuthResult authResult = userService.login(loginRequest);
-        HttpStatus httpStatus = HttpStatus.OK;
-        if (authResult.getStatus() == AuthResult.Status.USER_NOT_FOUND) {
-            httpStatus = HttpStatus.NOT_FOUND;
-        }
-        if (authResult.getStatus() == AuthResult.Status.INVALID_PASSWORD) {
-            httpStatus = HttpStatus.UNAUTHORIZED;
-        }
-        return new ResponseEntity<>(authResult.getToken(), httpStatus);
+        UsernamePasswordAuthenticationToken usernamePassword = new UsernamePasswordAuthenticationToken(
+                loginRequest.getEmail(), loginRequest.getPassword());
+
+        Authentication auth = passengerAuthenticationProvider.authenticate(usernamePassword);
+
+        return ResponseEntity.ok("Funcionou");
     }
 }
