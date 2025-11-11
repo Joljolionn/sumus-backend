@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -18,6 +19,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.sumus.sumus_backend.domain.dtos.request.DriverRegistration;
 import com.sumus.sumus_backend.domain.dtos.request.LoginRequest;
 import com.sumus.sumus_backend.domain.entities.driver.DriverDocument;
+import com.sumus.sumus_backend.infra.security.jwt.JwtService;
+import com.sumus.sumus_backend.infra.security.util.UserRole;
 import com.sumus.sumus_backend.services.driver.DriverService;
 
 import jakarta.validation.Valid;
@@ -25,6 +28,9 @@ import jakarta.validation.Valid;
 @RestController
 @RequestMapping("/driver")
 public class DriverAuthController {
+
+    @Autowired
+    private JwtService jwtService;
 
     @Autowired
     private DriverService driverService;
@@ -54,6 +60,8 @@ public class DriverAuthController {
 
         Authentication auth = driverAuthenticationProvider.authenticate(usernamePassword);
 
-        return ResponseEntity.ok("Funcionou");
+        String token = jwtService.generateToken((UserDetails) auth.getPrincipal(), UserRole.DRIVER);
+
+        return ResponseEntity.ok(token);
     }
 }

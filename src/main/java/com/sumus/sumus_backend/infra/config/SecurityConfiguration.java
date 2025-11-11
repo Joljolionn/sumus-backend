@@ -10,7 +10,9 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import com.sumus.sumus_backend.infra.security.jwt.JwtAuthenticationFilter;
 import com.sumus.sumus_backend.infra.security.userdetails.driver.DriverDetailsService;
 import com.sumus.sumus_backend.infra.security.userdetails.passenger.PassengerDetailsService;
 import com.sumus.sumus_backend.infra.security.util.UserRole;
@@ -26,6 +28,9 @@ public class SecurityConfiguration {
     @Autowired
     private DriverDetailsService driverDetailsService;
 
+    @Autowired
+    private JwtAuthenticationFilter jwtAuthenticationFilter;
+
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder(10);
@@ -36,7 +41,7 @@ public class SecurityConfiguration {
         return http
                 .csrf(csrf -> csrf.disable()) // Desativa necessidade de tokens CSRF
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                // .formLogin().disable() // remove a página de login padrão
+                .formLogin().disable() // remove a página de login padrão
                 .authorizeHttpRequests(auth -> auth
                         // .anyRequest().permitAll() // permite todas as rotas sem necessidade de
                         // autenticação
@@ -45,11 +50,18 @@ public class SecurityConfiguration {
                         .requestMatchers("/passenger/login", "/passenger/signup", "/driver/login", "/driver/signup")
                         .permitAll()
 
+                        // Endpoints de documentação são "públicos"
+                        .requestMatchers(
+                                "/v3/api-docs/**",
+                                "/swagger-ui/**",
+                                "/swagger-ui.html")
+                        .permitAll() // <-- Mantemos isso aqui
+
                         // URLs específicas de usuário requerem autorização
                         .requestMatchers("/passenger/**").hasAuthority(UserRole.PASSENGER.getAuthority())
                         .requestMatchers("/driver/**").hasAuthority(UserRole.DRIVER.getAuthority())
-
                         .anyRequest().authenticated())
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
 

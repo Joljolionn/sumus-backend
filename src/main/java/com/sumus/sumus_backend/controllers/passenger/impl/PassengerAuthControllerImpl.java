@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -20,6 +21,8 @@ import com.sumus.sumus_backend.controllers.passenger.docs.PassengerAuthControlle
 import com.sumus.sumus_backend.domain.dtos.request.LoginRequest;
 import com.sumus.sumus_backend.domain.dtos.request.PassengerRegistration;
 import com.sumus.sumus_backend.domain.entities.passenger.PassengerDocument;
+import com.sumus.sumus_backend.infra.security.jwt.JwtService;
+import com.sumus.sumus_backend.infra.security.util.UserRole;
 import com.sumus.sumus_backend.services.passenger.PassengerService;
 
 import jakarta.validation.Valid;
@@ -28,6 +31,9 @@ import jakarta.validation.Valid;
 @RestController
 @RequestMapping("/passenger")
 public class PassengerAuthControllerImpl implements PassengerAuthControllerDocs {
+
+    @Autowired
+    private JwtService jwtService;
 
     @Autowired
     private PassengerService userService;
@@ -59,6 +65,8 @@ public class PassengerAuthControllerImpl implements PassengerAuthControllerDocs 
 
         Authentication auth = passengerAuthenticationProvider.authenticate(usernamePassword);
 
-        return ResponseEntity.ok("Funcionou");
+        String token = jwtService.generateToken((UserDetails) auth.getPrincipal(), UserRole.PASSENGER);
+
+        return ResponseEntity.ok(token);
     }
 }
