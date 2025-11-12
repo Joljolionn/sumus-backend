@@ -16,9 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.mongodb.client.gridfs.model.GridFSFile;
-import com.sumus.sumus_backend.domain.dtos.request.LoginRequest;
 import com.sumus.sumus_backend.domain.dtos.request.PassengerRegistration;
-import com.sumus.sumus_backend.domain.dtos.response.AuthResult;
 import com.sumus.sumus_backend.domain.entities.passenger.PassengerDocument;
 import com.sumus.sumus_backend.domain.entities.passenger.PcdCondition;
 import com.sumus.sumus_backend.repositories.passenger.PassengerRepository;
@@ -139,20 +137,6 @@ public class PassengerServiceImpl implements PassengerService {
     @Override
     public Optional<PassengerDocument> findByEmail(String email) {
         return userRepository.findByEmail(email);
-    }
-
-    @Override
-    public AuthResult login(LoginRequest loginRequest) {
-        Optional<PassengerDocument> userOptional = userRepository.findByEmail(loginRequest.getEmail());
-
-        if (userOptional.isEmpty()) {
-            return new AuthResult(AuthResult.Status.USER_NOT_FOUND, null);
-        }
-
-        if (passwordEncoder.matches(loginRequest.getPassword(), userOptional.get().getPassword())) {
-            return new AuthResult(AuthResult.Status.SUCCESS, "funcionou");
-        }
-        return new AuthResult(AuthResult.Status.INVALID_PASSWORD, null);
     }
 
     @Override
