@@ -9,6 +9,8 @@ import org.springframework.data.mongodb.gridfs.GridFsResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -32,10 +34,10 @@ public class PassengerControllerImpl implements PassengerControllerDocs {
         return new ResponseEntity<>(userService.listAll(), HttpStatus.OK);
     }
 
-    @GetMapping(path = "/{email}/photo")
-    public ResponseEntity<byte[]> getPassengerPhoto(@PathVariable String email) throws IOException {
+    @GetMapping(path = "/photo")
+    public ResponseEntity<byte[]> getPassengerPhoto(@AuthenticationPrincipal UserDetails userDetails) throws IOException {
 
-        GridFsResource photoResource = userService.getPhotoResourceByPassengerEmail(email);
+        GridFsResource photoResource = userService.getPhotoResourceByPassengerEmail(userDetails.getUsername());
 
         if (photoResource == null) {
             return ResponseEntity.notFound().build();
@@ -49,16 +51,16 @@ public class PassengerControllerImpl implements PassengerControllerDocs {
     }
 
     @Override
-    @GetMapping(path = "/{email}/active")
-    public ResponseEntity<Boolean> getPassengerActiveStatus(String email) {
-        return new ResponseEntity<>(userService.getActiveStatus(email), HttpStatus.OK);
+    @GetMapping(path = "/active")
+    public ResponseEntity<Boolean> getPassengerActiveStatus(@AuthenticationPrincipal UserDetails userDetails) {
+        return new ResponseEntity<>(userService.getActiveStatus(userDetails.getUsername()), HttpStatus.OK);
     }
 
     @Override
-    @PostMapping(path = "/pcd/{email}/verifyConditions")
-    public ResponseEntity<PassengerDocument> verifyPcdPassengerConditions(String email) {
+    @PostMapping(path = "/pcd/verifyConditions")
+    public ResponseEntity<PassengerDocument> verifyPcdPassengerConditions(@AuthenticationPrincipal UserDetails userDetails) {
 
-        PassengerDocument passengerDocument = userService.verifyPcdConditions(email);
+        PassengerDocument passengerDocument = userService.verifyPcdConditions(userDetails.getUsername());
 
         if (passengerDocument == null) {
             return ResponseEntity.notFound().build();
