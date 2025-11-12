@@ -9,8 +9,9 @@ import org.springframework.data.mongodb.gridfs.GridFsResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -31,9 +32,9 @@ public class DriverController {
         return new ResponseEntity<>(driverService.listAll(), HttpStatus.OK);
     }
 
-    @GetMapping(path = "/{email}/photo")
-    public ResponseEntity<byte[]> getDriverPhoto(@PathVariable String email) throws IOException {
-        GridFsResource photoResource = driverService.getPhotoResourceByDriverEmail(email);
+    @GetMapping(path = "/photo")
+    public ResponseEntity<byte[]> getDriverPhoto(@AuthenticationPrincipal UserDetails userDetails) throws IOException {
+        GridFsResource photoResource = driverService.getPhotoResourceByDriverEmail(userDetails.getUsername());
 
         if (photoResource == null) {
             return ResponseEntity.notFound().build();
@@ -45,9 +46,9 @@ public class DriverController {
                 .body(photoResource.getContentAsByteArray());
     }
 
-    @GetMapping(path = "/{email}")
-    public ResponseEntity<DriverDocument> findDriverByEmail(@PathVariable String email) {
-        Optional<DriverDocument> driverDocument = driverService.findByEmail(email);
+    @GetMapping(path = "/")
+    public ResponseEntity<DriverDocument> findDriverByEmail(@AuthenticationPrincipal UserDetails userDetails) {
+        Optional<DriverDocument> driverDocument = driverService.findByEmail(userDetails.getUsername());
 
         if (driverDocument.isEmpty()) {
             return ResponseEntity.notFound().build();
@@ -57,9 +58,9 @@ public class DriverController {
 
     }
 
-    @PostMapping(path = "/{email}/verify")
-    public ResponseEntity<DriverDocument> verifyDriver(@PathVariable String email){
-        return ResponseEntity.ok().body(driverService.verifyDocuments(email));
+    @PostMapping(path = "/verify")
+    public ResponseEntity<DriverDocument> verifyDriver(@AuthenticationPrincipal UserDetails userDetails){
+        return ResponseEntity.ok().body(driverService.verifyDocuments(userDetails.getUsername()));
     }
 
 }

@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -28,11 +29,11 @@ public interface PassengerControllerDocs {
     public ResponseEntity<List<PassengerDocument>> getAllPassengers();
 
     @GetMapping(path = "/passenger/{email}/photo")
-    public ResponseEntity<byte[]> getPassengerPhoto(@PathVariable String email) throws IOException;
+    public ResponseEntity<byte[]> getPassengerPhoto(@AuthenticatednPrincipal UserDetails userDetails) throws IOException;
 
     @GetMapping(path = "/passenger/{email}/active")
-    public ResponseEntity<Boolean> getPassengerActiveStatus(@PathVariable String email);
+    public ResponseEntity<Boolean> getPassengerActiveStatus(@AuthenticatednPrincipal UserDetails userDetails);
 
     @PostMapping(path = "/passenger/pcd/{email}/verifyConditions")
-    public ResponseEntity<PassengerDocument> verifyPcdPassengerConditions(@PathVariable String email);
+    public ResponseEntity<PassengerDocument> verifyPcdPassengerConditions(@AuthenticatednPrincipal UserDetails userDetails);
 }

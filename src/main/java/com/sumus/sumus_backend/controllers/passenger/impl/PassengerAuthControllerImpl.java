@@ -1,7 +1,6 @@
 package com.sumus.sumus_backend.controllers.passenger.impl;
 
 import java.io.IOException;
-import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;

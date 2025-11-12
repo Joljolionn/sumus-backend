@@ -6,15 +6,13 @@ import java.util.Optional;
 
 import org.springframework.data.mongodb.gridfs.GridFsResource;
 
-import com.sumus.sumus_backend.domain.dtos.request.LoginRequest;
 import com.sumus.sumus_backend.domain.dtos.request.PassengerRegistration;
-import com.sumus.sumus_backend.domain.dtos.response.AuthResult;
 import com.sumus.sumus_backend.domain.entities.passenger.PassengerDocument;
-
 
 public interface PassengerService {
 
-    // CORREÇÃO DE IMPORTS: Se o PassengerDocument não estiver importado, o Java não o encontra.
+    // CORREÇÃO DE IMPORTS: Se o PassengerDocument não estiver importado, o Java não
+    // o encontra.
     PassengerDocument create(PassengerRegistration userDto) throws IOException;
 
     List<PassengerDocument> listAll();
@@ -26,8 +24,6 @@ public interface PassengerService {
     Boolean delete(String email);
 
     Optional<PassengerDocument> findByEmail(String email);
-
-    AuthResult login(LoginRequest loginRequest);
 
     GridFsResource getPhotoResourceByPassengerEmail(String email);
 

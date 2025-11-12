@@ -16,8 +16,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.mongodb.client.gridfs.model.GridFSFile;
 import com.sumus.sumus_backend.domain.dtos.request.DriverRegistration;
-import com.sumus.sumus_backend.domain.dtos.request.LoginRequest;
-import com.sumus.sumus_backend.domain.dtos.response.AuthResult;
 import com.sumus.sumus_backend.domain.entities.driver.DriverDocument;
 import com.sumus.sumus_backend.repositories.driver.DriverRepository;
 import com.sumus.sumus_backend.services.driver.DriverService;
@@ -45,7 +43,8 @@ public class DriverServiceImpl implements DriverService {
         }
 
         DriverDocument driverDocument = new DriverDocument(driverRegistration.getName(), driverRegistration.getEmail(),
-                passwordEncoder.encode(driverRegistration.getPassword()), driverRegistration.getPhone(), driverRegistration.getCnh());
+                passwordEncoder.encode(driverRegistration.getPassword()), driverRegistration.getPhone(),
+                driverRegistration.getCnh());
 
         if (driverRegistration.getPhoto() != null && !driverRegistration.getPhoto().isEmpty()) {
             MultipartFile file = driverRegistration.getPhoto();
@@ -62,19 +61,6 @@ public class DriverServiceImpl implements DriverService {
     @Override
     public List<DriverDocument> listAll() {
         return driverRepository.findAll();
-    }
-
-    @Override
-    public AuthResult login(LoginRequest loginRequest) {
-        Optional<DriverDocument> driverOptional = driverRepository.findByEmail(loginRequest.getEmail());
-
-        if (driverOptional.isEmpty()) {
-            return new AuthResult(AuthResult.Status.USER_NOT_FOUND, null);
-        }
-        if (passwordEncoder.matches(loginRequest.getPassword(), driverOptional.get().getPassword())) {
-            return new AuthResult(AuthResult.Status.SUCCESS, "funcionou");
-        }
-        return new AuthResult(AuthResult.Status.INVALID_PASSWORD, null);
     }
 
     @Override
