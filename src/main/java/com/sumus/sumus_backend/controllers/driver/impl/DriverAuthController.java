@@ -3,8 +3,13 @@ package com.sumus.sumus_backend.controllers.driver.impl;
 import java.io.IOException;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -13,8 +18,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.sumus.sumus_backend.domain.dtos.request.DriverRegistration;
 import com.sumus.sumus_backend.domain.dtos.request.LoginRequest;
-import com.sumus.sumus_backend.domain.dtos.response.AuthResult;
 import com.sumus.sumus_backend.domain.entities.driver.DriverDocument;
+import com.sumus.sumus_backend.infra.security.jwt.JwtService;
+import com.sumus.sumus_backend.infra.security.util.UserRole;
 import com.sumus.sumus_backend.services.driver.DriverService;
 
 import jakarta.validation.Valid;
@@ -24,10 +30,20 @@ import jakarta.validation.Valid;
 public class DriverAuthController {
 
     @Autowired
+    private JwtService jwtService;
+
+    @Autowired
     private DriverService driverService;
 
+    @Autowired
+    @Qualifier("driverAuthenticationProvider") // Para garantir que o Bean de provedor
+                                               // utilizado será o especificado
+                                               // para lidar com motoristas
+    private DaoAuthenticationProvider driverAuthenticationProvider;
+
     @PostMapping(path = "/signup")
-    public ResponseEntity<DriverDocument> createPassenger(@ModelAttribute @Valid DriverRegistration driverRegistration) {
+    public ResponseEntity<DriverDocument> createPassenger(
+            @ModelAttribute @Valid DriverRegistration driverRegistration) {
         DriverDocument driverDocument;
         try {
             driverDocument = driverService.create(driverRegistration);
@@ -37,17 +53,15 @@ public class DriverAuthController {
         return new ResponseEntity<>(driverDocument, HttpStatus.CREATED);
     }
 
-
     @PostMapping(path = "/login")
     public ResponseEntity<String> login(@RequestBody @Valid LoginRequest loginRequest) {
-        AuthResult authResult = driverService.login(loginRequest);
-        HttpStatus httpStatus = HttpStatus.OK;
-        if (authResult.getStatus() == AuthResult.Status.USER_NOT_FOUND) {
-            httpStatus = HttpStatus.NOT_FOUND;
-        }
-        if (authResult.getStatus() == AuthResult.Status.INVALID_PASSWORD) {
-            httpStatus = HttpStatus.UNAUTHORIZED;
-        }
-        return new ResponseEntity<>(authResult.getToken(), httpStatus);
+        UsernamePasswordAuthenticationToken usernamePassword = new UsernamePasswordAuthenticationToken(
+                loginRequest.getEmail(), loginRequest.getPassword());
+
+        Authentication auth = driverAuthenticationProvider.authenticate(usernamePassword);
+
+        String token = jwtService.generateToken((UserDetails) auth.getPrincipal(), UserRole.DRIVER);
+
+        return ResponseEntity.ok(token);
     }
 }
