@@ -2,9 +2,10 @@ package com.sumus.sumus_backend.domain.dtos.response;
 
 import org.bson.types.ObjectId;
 
-import com.sumus.sumus_backend.domain.entities.passenger.PassengerDocument;
+import com.sumus.sumus_backend.domain.entities.driver.DriverDocument;
 
-public class PassengerResponseDto {
+
+public class DriverResponseDto {
 
 	private String name;
 
@@ -14,20 +15,20 @@ public class PassengerResponseDto {
 
 	private ObjectId photoId;
 
-    public PassengerResponseDto() {
+    public DriverResponseDto() {
     }
 
-    public PassengerResponseDto(String name, String email, String phone) {
+    public DriverResponseDto(String name, String email, String phone) {
         this.name = name;
         this.email = email;
         this.phone = phone;
     }
 
-    public PassengerResponseDto(PassengerDocument passengerDocument){
-        this.name = passengerDocument.getName();
-        this.email = passengerDocument.getEmail();
-        this.phone = passengerDocument.getPhone();
-        this.photoId = passengerDocument.getPhotoId();
+    public DriverResponseDto(DriverDocument driverDocument){
+        this.name = driverDocument.getName();
+        this.email = driverDocument.getEmail();
+        this.phone = driverDocument.getPhone();
+        this.photoId = driverDocument.getPhotoId();
     }
 
 	public String getEmail() {

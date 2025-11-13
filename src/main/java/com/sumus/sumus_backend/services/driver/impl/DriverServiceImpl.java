@@ -1,7 +1,6 @@
 package com.sumus.sumus_backend.services.driver.impl;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.Optional;
 
 import org.bson.types.ObjectId;
@@ -16,6 +15,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.mongodb.client.gridfs.model.GridFSFile;
 import com.sumus.sumus_backend.domain.dtos.request.DriverRegistration;
+import com.sumus.sumus_backend.domain.dtos.response.DriverListResponseDTO;
+import com.sumus.sumus_backend.domain.dtos.response.DriverResponseDto;
 import com.sumus.sumus_backend.domain.entities.driver.DriverDocument;
 import com.sumus.sumus_backend.repositories.driver.DriverRepository;
 import com.sumus.sumus_backend.services.driver.DriverService;
@@ -33,7 +34,7 @@ public class DriverServiceImpl implements DriverService {
     private PasswordEncoder passwordEncoder;
 
     @Override
-    public DriverDocument create(DriverRegistration driverRegistration) throws IOException {
+    public DriverResponseDto create(DriverRegistration driverRegistration) throws IOException {
 
         if (driverRepository.existsByEmail(driverRegistration.getEmail())) {
             // Lança uma exceção se o e-mail já estiver em uso, garantindo que a regra de
@@ -55,12 +56,14 @@ public class DriverServiceImpl implements DriverService {
             driverDocument.setPhotoId(objectId);
         }
 
-        return driverRepository.save(driverDocument);
+        driverDocument = driverRepository.save(driverDocument);
+
+        return new DriverResponseDto(driverDocument);
     }
 
     @Override
-    public List<DriverDocument> listAll() {
-        return driverRepository.findAll();
+    public DriverListResponseDTO listAll() {
+        return new DriverListResponseDTO(driverRepository.findAll());
     }
 
     @Override
@@ -87,12 +90,18 @@ public class DriverServiceImpl implements DriverService {
     }
 
     @Override
-    public Optional<DriverDocument> findByEmail(String email) {
-        return driverRepository.findByEmail(email);
+    public DriverResponseDto findByEmail(String email) {
+        Optional<DriverDocument> driverDocument = driverRepository.findByEmail(email);
+
+        if(driverDocument.isEmpty()){
+            return null;
+        }
+
+        return new DriverResponseDto(driverDocument.get());
     }
 
     @Override
-    public DriverDocument verifyDocuments(String email) {
+    public DriverResponseDto verifyDocuments(String email) {
         Optional<DriverDocument> driverOptional = driverRepository.findByEmail(email);
 
         if (driverOptional.isEmpty()) {
@@ -103,7 +112,9 @@ public class DriverServiceImpl implements DriverService {
 
         driverDocument.setIsActive(true);
 
-        return driverRepository.save(driverDocument);
+        driverDocument = driverRepository.save(driverDocument);
+
+        return new DriverResponseDto(driverDocument);
 
     }
 
