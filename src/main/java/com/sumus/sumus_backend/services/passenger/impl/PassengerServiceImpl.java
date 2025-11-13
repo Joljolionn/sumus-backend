@@ -17,6 +17,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.mongodb.client.gridfs.model.GridFSFile;
 import com.sumus.sumus_backend.domain.dtos.request.PassengerRegistration;
+import com.sumus.sumus_backend.domain.dtos.response.PassengerListResponseDto;
+import com.sumus.sumus_backend.domain.dtos.response.PassengerResponseDto;
 import com.sumus.sumus_backend.domain.entities.passenger.PassengerDocument;
 import com.sumus.sumus_backend.domain.entities.passenger.PcdCondition;
 import com.sumus.sumus_backend.repositories.passenger.PassengerRepository;
@@ -36,7 +38,7 @@ public class PassengerServiceImpl implements PassengerService {
 
     // TODO: Fazer com que esse método retorne um DTO
     @Override
-    public PassengerDocument create(PassengerRegistration userDto) throws IOException {
+    public PassengerResponseDto create(PassengerRegistration userDto) throws IOException {
 
  
         if (userRepository.existsByEmail(userDto.getEmail())) {
@@ -78,12 +80,14 @@ public class PassengerServiceImpl implements PassengerService {
             userDocument.setPhotoId(fileId);
         }
 
-        return userRepository.save(userDocument);
+        userDocument = userRepository.save(userDocument);
+
+        return new PassengerResponseDto(userDocument);
     }
 
     @Override
-    public List<PassengerDocument> listAll() {
-        return userRepository.findAll();
+    public PassengerListResponseDto listAll() {
+        return new PassengerListResponseDto(userRepository.findAll());
     }
 
     // TODO: Fazer que esse método retorne um DTO
@@ -135,8 +139,14 @@ public class PassengerServiceImpl implements PassengerService {
 
     // TODO: Fazer que esse método retorne um DTO
     @Override
-    public Optional<PassengerDocument> findByEmail(String email) {
-        return userRepository.findByEmail(email);
+    public PassengerResponseDto findByEmail(String email) {
+        Optional<PassengerDocument> passengerDocument = userRepository.findByEmail(email);
+
+        if(passengerDocument.isEmpty()){
+            return null;
+        }
+
+        return new PassengerResponseDto(passengerDocument.get());
     }
 
     @Override
@@ -182,7 +192,7 @@ public class PassengerServiceImpl implements PassengerService {
     }
 
     @Override
-    public PassengerDocument verifyPcdConditions(String email) {
+    public PassengerResponseDto verifyPcdConditions(String email) {
         Optional<PassengerDocument> found = userRepository.findByEmail(email);
 
         if (found.isEmpty()) {
@@ -199,7 +209,9 @@ public class PassengerServiceImpl implements PassengerService {
 
         passengerDocument.setStatusCadastro(PassengerDocument.StatusCadastro.ATIVO);
 
-        return userRepository.save(passengerDocument);
+        passengerDocument = userRepository.save(passengerDocument);
+
+        return new PassengerResponseDto(passengerDocument);
     }
 
 }

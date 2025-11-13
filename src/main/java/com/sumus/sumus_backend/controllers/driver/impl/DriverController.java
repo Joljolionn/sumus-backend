@@ -1,8 +1,6 @@
 package com.sumus.sumus_backend.controllers.driver.impl;
 
 import java.io.IOException;
-import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.gridfs.GridFsResource;
@@ -16,7 +14,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.sumus.sumus_backend.domain.entities.driver.DriverDocument;
+import com.sumus.sumus_backend.domain.dtos.response.DriverListResponseDTO;
+import com.sumus.sumus_backend.domain.dtos.response.DriverResponseDto;
 import com.sumus.sumus_backend.services.driver.DriverService;
 
 @RestController
@@ -27,7 +26,7 @@ public class DriverController {
     private DriverService driverService;
 
     @GetMapping(path = "/all")
-    public ResponseEntity<List<DriverDocument>> getAllDrivers() {
+    public ResponseEntity<DriverListResponseDTO> getAllDrivers() {
 
         return new ResponseEntity<>(driverService.listAll(), HttpStatus.OK);
     }
@@ -47,19 +46,19 @@ public class DriverController {
     }
 
     @GetMapping(path = "/")
-    public ResponseEntity<DriverDocument> findDriverByEmail(@AuthenticationPrincipal UserDetails userDetails) {
-        Optional<DriverDocument> driverDocument = driverService.findByEmail(userDetails.getUsername());
+    public ResponseEntity<DriverResponseDto> findDriverByEmail(@AuthenticationPrincipal UserDetails userDetails) {
+        DriverResponseDto driverResponseDto = driverService.findByEmail(userDetails.getUsername());
 
-        if (driverDocument.isEmpty()) {
+        if (driverResponseDto == null) {
             return ResponseEntity.notFound().build();
         }
 
-        return new ResponseEntity<>(driverDocument.get(), HttpStatus.OK);
+        return new ResponseEntity<>(driverResponseDto, HttpStatus.OK);
 
     }
 
     @PostMapping(path = "/verify")
-    public ResponseEntity<DriverDocument> verifyDriver(@AuthenticationPrincipal UserDetails userDetails){
+    public ResponseEntity<DriverResponseDto> verifyDriver(@AuthenticationPrincipal UserDetails userDetails){
         return ResponseEntity.ok().body(driverService.verifyDocuments(userDetails.getUsername()));
     }
 

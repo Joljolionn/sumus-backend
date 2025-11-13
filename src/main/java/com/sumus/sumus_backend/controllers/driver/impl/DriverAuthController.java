@@ -18,7 +18,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.sumus.sumus_backend.domain.dtos.request.DriverRegistration;
 import com.sumus.sumus_backend.domain.dtos.request.LoginRequest;
-import com.sumus.sumus_backend.domain.entities.driver.DriverDocument;
+import com.sumus.sumus_backend.domain.dtos.response.AuthResponseDto;
+import com.sumus.sumus_backend.domain.dtos.response.DriverResponseDto;
 import com.sumus.sumus_backend.infra.security.jwt.JwtService;
 import com.sumus.sumus_backend.infra.security.util.UserRole;
 import com.sumus.sumus_backend.services.driver.DriverService;
@@ -42,19 +43,19 @@ public class DriverAuthController {
     private DaoAuthenticationProvider driverAuthenticationProvider;
 
     @PostMapping(path = "/signup")
-    public ResponseEntity<DriverDocument> createPassenger(
+    public ResponseEntity<DriverResponseDto> createPassenger(
             @ModelAttribute @Valid DriverRegistration driverRegistration) {
-        DriverDocument driverDocument;
+        DriverResponseDto driverResponseDto;
         try {
-            driverDocument = driverService.create(driverRegistration);
+            driverResponseDto = driverService.create(driverRegistration);
         } catch (IOException e) {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return new ResponseEntity<>(driverDocument, HttpStatus.CREATED);
+        return new ResponseEntity<>(driverResponseDto, HttpStatus.CREATED);
     }
 
     @PostMapping(path = "/login")
-    public ResponseEntity<String> login(@RequestBody @Valid LoginRequest loginRequest) {
+    public ResponseEntity<AuthResponseDto> login(@RequestBody @Valid LoginRequest loginRequest) {
         UsernamePasswordAuthenticationToken usernamePassword = new UsernamePasswordAuthenticationToken(
                 loginRequest.getEmail(), loginRequest.getPassword());
 
@@ -62,6 +63,6 @@ public class DriverAuthController {
 
         String token = jwtService.generateToken((UserDetails) auth.getPrincipal(), UserRole.DRIVER);
 
-        return ResponseEntity.ok(token);
+        return ResponseEntity.ok(new AuthResponseDto(token));
     }
 }

@@ -12,12 +12,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.sumus.sumus_backend.controllers.passenger.docs.PassengerControllerDocs;
+import com.sumus.sumus_backend.domain.dtos.response.PassengerListResponseDto;
+import com.sumus.sumus_backend.domain.dtos.response.PassengerResponseDto;
 import com.sumus.sumus_backend.domain.entities.passenger.PassengerDocument;
 import com.sumus.sumus_backend.services.passenger.PassengerService;
 
@@ -30,7 +31,7 @@ public class PassengerControllerImpl implements PassengerControllerDocs {
 
     @Override
     @GetMapping(path = "/all")
-    public ResponseEntity<List<PassengerDocument>> getAllPassengers() {
+    public ResponseEntity<PassengerListResponseDto> getAllPassengers() {
         return new ResponseEntity<>(userService.listAll(), HttpStatus.OK);
     }
 
@@ -58,9 +59,9 @@ public class PassengerControllerImpl implements PassengerControllerDocs {
 
     @Override
     @PostMapping(path = "/pcd/verifyConditions")
-    public ResponseEntity<PassengerDocument> verifyPcdPassengerConditions(@AuthenticationPrincipal UserDetails userDetails) {
+    public ResponseEntity<PassengerResponseDto> verifyPcdPassengerConditions(@AuthenticationPrincipal UserDetails userDetails) {
 
-        PassengerDocument passengerDocument = userService.verifyPcdConditions(userDetails.getUsername());
+        PassengerResponseDto passengerDocument = userService.verifyPcdConditions(userDetails.getUsername());
 
         if (passengerDocument == null) {
             return ResponseEntity.notFound().build();

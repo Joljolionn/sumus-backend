@@ -19,6 +19,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.sumus.sumus_backend.controllers.passenger.docs.PassengerAuthControllerDocs;
 import com.sumus.sumus_backend.domain.dtos.request.LoginRequest;
 import com.sumus.sumus_backend.domain.dtos.request.PassengerRegistration;
+import com.sumus.sumus_backend.domain.dtos.response.AuthResponseDto;
+import com.sumus.sumus_backend.domain.dtos.response.PassengerResponseDto;
 import com.sumus.sumus_backend.domain.entities.passenger.PassengerDocument;
 import com.sumus.sumus_backend.infra.security.jwt.JwtService;
 import com.sumus.sumus_backend.infra.security.util.UserRole;
@@ -46,8 +48,8 @@ public class PassengerAuthControllerImpl implements PassengerAuthControllerDocs 
 
     @Override
     @PostMapping(path = "/signup")
-    public ResponseEntity<PassengerDocument> createPassenger(@ModelAttribute @Valid PassengerRegistration userDto) {
-        PassengerDocument user;
+    public ResponseEntity<PassengerResponseDto> createPassenger(@ModelAttribute @Valid PassengerRegistration userDto) {
+        PassengerResponseDto user;
         try {
             user = userService.create(userDto);
         } catch (IOException e) {
@@ -58,7 +60,7 @@ public class PassengerAuthControllerImpl implements PassengerAuthControllerDocs 
 
     @Override
     @PostMapping(path = "/login")
-    public ResponseEntity<String> login(@RequestBody @Valid LoginRequest loginRequest) {
+    public ResponseEntity<AuthResponseDto> login(@RequestBody @Valid LoginRequest loginRequest) {
         UsernamePasswordAuthenticationToken usernamePassword = new UsernamePasswordAuthenticationToken(
                 loginRequest.getEmail(), loginRequest.getPassword());
 
@@ -66,6 +68,6 @@ public class PassengerAuthControllerImpl implements PassengerAuthControllerDocs 
 
         String token = jwtService.generateToken((UserDetails) auth.getPrincipal(), UserRole.PASSENGER);
 
-        return ResponseEntity.ok(token);
+        return ResponseEntity.ok(new AuthResponseDto(token));
     }
 }
