@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.sumus.sumus_backend.controllers.passenger.docs.PassengerAuthControllerDocs;
 import com.sumus.sumus_backend.domain.dtos.request.LoginRequest;
-import com.sumus.sumus_backend.domain.dtos.request.PassengerRegistration;
+import com.sumus.sumus_backend.domain.dtos.request.PassengerRegistrationRequest;
 import com.sumus.sumus_backend.domain.dtos.response.AuthResponseDto;
 import com.sumus.sumus_backend.domain.dtos.response.PassengerResponseDto;
 import com.sumus.sumus_backend.infra.security.jwt.JwtService;
@@ -47,7 +47,7 @@ public class PassengerAuthControllerImpl implements PassengerAuthControllerDocs 
 
     @Override
     @PostMapping(path = "/signup")
-    public ResponseEntity<PassengerResponseDto> createPassenger(@ModelAttribute @Valid PassengerRegistration passengerRegistration) {
+    public ResponseEntity<PassengerResponseDto> createPassenger(@ModelAttribute @Valid PassengerRegistrationRequest passengerRegistration) {
         PassengerResponseDto passengerResponseDto;
         try {
             passengerResponseDto = passengerService.create(passengerRegistration);

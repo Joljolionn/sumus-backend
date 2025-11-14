@@ -2,8 +2,6 @@ package com.sumus.sumus_backend.domain.dtos.request;
 
 import java.util.List;
 
-import org.springframework.web.multipart.MultipartFile;
-
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -11,7 +9,7 @@ import jakarta.validation.constraints.Pattern;
 
 // Classe usada na camada de apresentação para mostrar e transferir dados para
 // os usuários
-public class PassengerRegistration {
+public class PassengerRegistrationRequest {
 
     @NotBlank(message = "O nome é obrigatório")
     private String name;
@@ -27,39 +25,22 @@ public class PassengerRegistration {
     @NotBlank(message = "O telefone é obrigatório")
     private String phone;
 
-    private MultipartFile photo;
-
     @NotNull(message = "O usuário deve informar se é ou não prioritário")
     private Boolean isPcd;
 
     private List<String> conditions;
 
-    public PassengerRegistration() {
+    public PassengerRegistrationRequest() {
     }
 
-    public PassengerRegistration(String name, String email, String password, String phone, MultipartFile photo, Boolean isPcd, List<String> conditions) {
+    public PassengerRegistrationRequest(String name, String email, String password, String phone, Boolean isPcd,
+            List<String> conditions) {
         this.name = name;
         this.email = email;
         this.password = password;
         this.phone = phone;
-        this.photo = photo;
         this.isPcd = isPcd;
         this.conditions = conditions;
-    }
-
-    public PassengerRegistration(String name, String email, String password, String phone) {
-        this.name = name;
-        this.email = email;
-        this.password = password;
-        this.phone = phone;
-    }
-
-    public MultipartFile getPhoto() {
-        return photo;
-    }
-
-    public void setPhoto(MultipartFile photo) {
-        this.photo = photo;
     }
 
     public String getName() {
@@ -94,19 +75,19 @@ public class PassengerRegistration {
         this.phone = phone;
     }
 
-	public Boolean getIsPcd() {
-		return isPcd;
-	}
+    public Boolean getIsPcd() {
+        return isPcd;
+    }
 
-	public void setIsPcd(Boolean isPcd) {
-		this.isPcd = isPcd;
-	}
+    public void setIsPcd(Boolean isPcd) {
+        this.isPcd = isPcd;
+    }
 
-	public List<String> getConditions() {
-		return conditions;
-	}
+    public List<String> getConditions() {
+        return conditions;
+    }
 
-	public void setConditions(List<String> conditions) {
-		this.conditions = conditions;
-	}
+    public void setConditions(List<String> conditions) {
+        this.conditions = conditions;
+    }
 }
