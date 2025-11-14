@@ -2,7 +2,6 @@ package com.sumus.sumus_backend.controllers.passenger.impl;
 
 
 import java.io.IOException;
-import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.gridfs.GridFsResource;
@@ -19,7 +18,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.sumus.sumus_backend.controllers.passenger.docs.PassengerControllerDocs;
 import com.sumus.sumus_backend.domain.dtos.response.PassengerListResponseDto;
 import com.sumus.sumus_backend.domain.dtos.response.PassengerResponseDto;
-import com.sumus.sumus_backend.domain.entities.passenger.PassengerDocument;
 import com.sumus.sumus_backend.services.passenger.PassengerService;
 
 @RestController
@@ -27,18 +25,18 @@ import com.sumus.sumus_backend.services.passenger.PassengerService;
 public class PassengerControllerImpl implements PassengerControllerDocs {
 
     @Autowired
-    private PassengerService userService;
+    private PassengerService passengerService;
 
     @Override
     @GetMapping(path = "/all")
     public ResponseEntity<PassengerListResponseDto> getAllPassengers() {
-        return new ResponseEntity<>(userService.listAll(), HttpStatus.OK);
+        return new ResponseEntity<>(passengerService.listAll(), HttpStatus.OK);
     }
 
     @GetMapping(path = "/photo")
     public ResponseEntity<byte[]> getPassengerPhoto(@AuthenticationPrincipal UserDetails userDetails) throws IOException {
 
-        GridFsResource photoResource = userService.getPhotoResourceByPassengerEmail(userDetails.getUsername());
+        GridFsResource photoResource = passengerService.getPhotoResourceByPassengerEmail(userDetails.getUsername());
 
         if (photoResource == null) {
             return ResponseEntity.notFound().build();
@@ -54,14 +52,14 @@ public class PassengerControllerImpl implements PassengerControllerDocs {
     @Override
     @GetMapping(path = "/active")
     public ResponseEntity<Boolean> getPassengerActiveStatus(@AuthenticationPrincipal UserDetails userDetails) {
-        return new ResponseEntity<>(userService.getActiveStatus(userDetails.getUsername()), HttpStatus.OK);
+        return new ResponseEntity<>(passengerService.getActiveStatus(userDetails.getUsername()), HttpStatus.OK);
     }
 
     @Override
     @PostMapping(path = "/pcd/verifyConditions")
     public ResponseEntity<PassengerResponseDto> verifyPcdPassengerConditions(@AuthenticationPrincipal UserDetails userDetails) {
 
-        PassengerResponseDto passengerDocument = userService.verifyPcdConditions(userDetails.getUsername());
+        PassengerResponseDto passengerDocument = passengerService.verifyPcdConditions(userDetails.getUsername());
 
         if (passengerDocument == null) {
             return ResponseEntity.notFound().build();

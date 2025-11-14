@@ -12,8 +12,6 @@ import com.sumus.sumus_backend.domain.entities.passenger.PassengerDocument;
 
 public interface PassengerService {
 
-    // CORREÇÃO DE IMPORTS: Se o PassengerDocument não estiver importado, o Java não
-    // o encontra.
     PassengerResponseDto create(PassengerRegistration userDto) throws IOException;
 
     PassengerListResponseDto listAll();

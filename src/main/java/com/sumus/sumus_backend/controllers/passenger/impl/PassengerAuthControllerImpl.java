@@ -21,7 +21,6 @@ import com.sumus.sumus_backend.domain.dtos.request.LoginRequest;
 import com.sumus.sumus_backend.domain.dtos.request.PassengerRegistration;
 import com.sumus.sumus_backend.domain.dtos.response.AuthResponseDto;
 import com.sumus.sumus_backend.domain.dtos.response.PassengerResponseDto;
-import com.sumus.sumus_backend.domain.entities.passenger.PassengerDocument;
 import com.sumus.sumus_backend.infra.security.jwt.JwtService;
 import com.sumus.sumus_backend.infra.security.util.UserRole;
 import com.sumus.sumus_backend.services.passenger.PassengerService;
@@ -37,7 +36,7 @@ public class PassengerAuthControllerImpl implements PassengerAuthControllerDocs 
     private JwtService jwtService;
 
     @Autowired
-    private PassengerService userService;
+    private PassengerService passengerService;
 
     @Autowired
     @Qualifier("passengerAuthenticationProvider") // Para garantir que o Bean de provedor
@@ -48,14 +47,14 @@ public class PassengerAuthControllerImpl implements PassengerAuthControllerDocs 
 
     @Override
     @PostMapping(path = "/signup")
-    public ResponseEntity<PassengerResponseDto> createPassenger(@ModelAttribute @Valid PassengerRegistration userDto) {
-        PassengerResponseDto user;
+    public ResponseEntity<PassengerResponseDto> createPassenger(@ModelAttribute @Valid PassengerRegistration passengerRegistration) {
+        PassengerResponseDto passengerResponseDto;
         try {
-            user = userService.create(userDto);
+            passengerResponseDto = passengerService.create(passengerRegistration);
         } catch (IOException e) {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return new ResponseEntity<>(user, HttpStatus.CREATED);
+        return new ResponseEntity<>(passengerResponseDto, HttpStatus.CREATED);
     }
 
     @Override
