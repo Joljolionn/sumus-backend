@@ -6,7 +6,7 @@ import com.sumus.sumus_backend.domain.dtos.request.PassengerRegistrationRequest;
 
 
 @Component
-public class TestDtos {
+public class TestPassengerDtos {
 
     public PassengerRegistrationRequest dtoOne() {
         return new PassengerRegistrationRequest("luzinete", "luzinete@gmail.com", "Luzinete@123", "11 123456789", false, null);

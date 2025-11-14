@@ -29,21 +29,21 @@ public interface PassengerControllerDocs {
     @Operation(summary = "Visualiza todos os usuários inseridos no banco", description = "Retorna uma lista com todos os usuários inseridos no sistema", responses = {
             @ApiResponse(responseCode = "200", description = "Retorna uma array com todos os usuários inseridos no banco (vazia se o banco estiver vazio)", content = @Content(mediaType = "application/json", schema = @Schema(implementation = PassengerListResponseDto.class)))
     })
-    @GetMapping(path = "/passenger/all")
+    @GetMapping()
     public ResponseEntity<PassengerListResponseDto> getAllPassengers();
 
-    @GetMapping(path = "/passenger/photo")
+    @GetMapping()
     public ResponseEntity<byte[]> getPassengerPhoto(@AuthenticationPrincipal UserDetails userDetails) throws IOException;
 
-    @PostMapping(path = "/passenger/pcd/verifyConditions")
+    @PostMapping()
     public ResponseEntity<PassengerResponseDto> verifyPcdPassengerConditions(@AuthenticationPrincipal UserDetails userDetails);
 
-    @PutMapping(path = "/passenger/")
+    @PutMapping()
     public ResponseEntity<PassengerResponseDto> updatePassenger(@AuthenticationPrincipal UserDetails userDetails, PassengerUpdateRequest passengerUpdateRequest) throws IOException;
 
-    @PatchMapping(path = "/passenger/password")
+    @PatchMapping()
     public ResponseEntity<Void> updatePassengerPassword(@AuthenticationPrincipal UserDetails userDetails, PasswordUpdateRequest passwordUpdateRequest);
 
-    @DeleteMapping(path = "/passenger/")
+    @DeleteMapping()
     public ResponseEntity<Void> deletePassenger(@AuthenticationPrincipal UserDetails userDetails);
 }

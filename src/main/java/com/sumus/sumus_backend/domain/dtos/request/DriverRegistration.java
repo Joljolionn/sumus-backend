@@ -1,7 +1,5 @@
 package com.sumus.sumus_backend.domain.dtos.request;
 
-import org.springframework.web.multipart.MultipartFile;
-
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
@@ -25,18 +23,7 @@ public class DriverRegistration {
     @NotBlank(message = "A cnh é obrigatória")
     private String cnh;
 
-    private MultipartFile photo;
-
     public DriverRegistration() {
-    }
-
-    public DriverRegistration(String name, String email, String password, String phone, String cnh, MultipartFile photo) {
-        this.name = name;
-        this.email = email;
-        this.password = password;
-        this.phone = phone;
-        this.cnh = cnh;
-        this.photo = photo;
     }
 
     public DriverRegistration(String name, String email, String password, String phone, String cnh) {
@@ -77,14 +64,6 @@ public class DriverRegistration {
 
 	public void setPhone(String phone) {
 		this.phone = phone;
-	}
-
-	public MultipartFile getPhoto() {
-		return photo;
-	}
-
-	public void setPhoto(MultipartFile photo) {
-		this.photo = photo;
 	}
 
 	public String getCnh() {

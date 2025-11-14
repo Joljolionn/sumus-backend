@@ -6,7 +6,7 @@ import com.sumus.sumus_backend.domain.entities.passenger.PassengerDocument;
 
 
 @Component
-public class TestEntities {
+public class TestPassengerEntities {
 
     public PassengerDocument entityOne() {
         return new PassengerDocument("luzinete", "luzinete@gmail.com", "luzinete123", "11 123456789", false, null);
