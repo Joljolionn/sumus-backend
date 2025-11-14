@@ -6,9 +6,14 @@ import java.io.IOException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 
+import com.sumus.sumus_backend.domain.dtos.request.PassengerUpdateRequest;
+import com.sumus.sumus_backend.domain.dtos.request.PasswordUpdateRequest;
 import com.sumus.sumus_backend.domain.dtos.response.PassengerListResponseDto;
 import com.sumus.sumus_backend.domain.dtos.response.PassengerResponseDto;
 
@@ -24,15 +29,21 @@ public interface PassengerControllerDocs {
     @Operation(summary = "Visualiza todos os usuários inseridos no banco", description = "Retorna uma lista com todos os usuários inseridos no sistema", responses = {
             @ApiResponse(responseCode = "200", description = "Retorna uma array com todos os usuários inseridos no banco (vazia se o banco estiver vazio)", content = @Content(mediaType = "application/json", schema = @Schema(implementation = PassengerListResponseDto.class)))
     })
-    @GetMapping(path = "/passenger/all")
+    @GetMapping()
     public ResponseEntity<PassengerListResponseDto> getAllPassengers();
 
-    @GetMapping(path = "/passenger/{email}/photo")
+    @GetMapping()
     public ResponseEntity<byte[]> getPassengerPhoto(@AuthenticationPrincipal UserDetails userDetails) throws IOException;
 
-    @GetMapping(path = "/passenger/{email}/active")
-    public ResponseEntity<Boolean> getPassengerActiveStatus(@AuthenticationPrincipal UserDetails userDetails);
-
-    @PostMapping(path = "/passenger/pcd/{email}/verifyConditions")
+    @PostMapping()
     public ResponseEntity<PassengerResponseDto> verifyPcdPassengerConditions(@AuthenticationPrincipal UserDetails userDetails);
+
+    @PutMapping()
+    public ResponseEntity<PassengerResponseDto> updatePassenger(@AuthenticationPrincipal UserDetails userDetails, PassengerUpdateRequest passengerUpdateRequest) throws IOException;
+
+    @PatchMapping()
+    public ResponseEntity<Void> updatePassengerPassword(@AuthenticationPrincipal UserDetails userDetails, PasswordUpdateRequest passwordUpdateRequest);
+
+    @DeleteMapping()
+    public ResponseEntity<Void> deletePassenger(@AuthenticationPrincipal UserDetails userDetails);
 }

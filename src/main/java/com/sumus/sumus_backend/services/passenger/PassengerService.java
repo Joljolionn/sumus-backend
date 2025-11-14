@@ -1,27 +1,23 @@
 package com.sumus.sumus_backend.services.passenger;
 
 import java.io.IOException;
-import java.util.Optional;
 
 import org.springframework.data.mongodb.gridfs.GridFsResource;
 
-import com.sumus.sumus_backend.domain.dtos.request.PassengerRegistration;
+import com.sumus.sumus_backend.domain.dtos.request.PassengerRegistrationRequest;
+import com.sumus.sumus_backend.domain.dtos.request.PassengerUpdateRequest;
+import com.sumus.sumus_backend.domain.dtos.request.PasswordUpdateRequest;
 import com.sumus.sumus_backend.domain.dtos.response.PassengerListResponseDto;
 import com.sumus.sumus_backend.domain.dtos.response.PassengerResponseDto;
-import com.sumus.sumus_backend.domain.entities.passenger.PassengerDocument;
 
 public interface PassengerService {
 
-    // CORREÇÃO DE IMPORTS: Se o PassengerDocument não estiver importado, o Java não
-    // o encontra.
-    PassengerResponseDto create(PassengerRegistration userDto) throws IOException;
+    PassengerResponseDto create(PassengerRegistrationRequest userDto) throws IOException;
 
     PassengerListResponseDto listAll();
 
-    // TODO: Implementar update de informações do passageiro
-    Optional<PassengerDocument> update(PassengerRegistration userDto) throws IOException;
+    PassengerResponseDto update(String email, PassengerUpdateRequest passengerUpdateRequest) throws IOException;
 
-    // TODO: Implementar delete de passageiro
     Boolean delete(String email);
 
     PassengerResponseDto findByEmail(String email);
@@ -31,5 +27,7 @@ public interface PassengerService {
     Boolean getActiveStatus(String email);
 
     PassengerResponseDto verifyPcdConditions(String email);
+
+    Boolean updatePassword(String email, PasswordUpdateRequest passwordUpdateRequest);
 
 }
