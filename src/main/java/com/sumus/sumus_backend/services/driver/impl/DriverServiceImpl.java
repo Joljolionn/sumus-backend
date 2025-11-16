@@ -11,10 +11,11 @@ import org.springframework.data.mongodb.gridfs.GridFsResource;
 import org.springframework.data.mongodb.gridfs.GridFsTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 import com.mongodb.client.gridfs.model.GridFSFile;
 import com.sumus.sumus_backend.domain.dtos.request.DriverRegistration;
+import com.sumus.sumus_backend.domain.dtos.request.DriverUpdateRequest;
+import com.sumus.sumus_backend.domain.dtos.request.PasswordUpdateRequest;
 import com.sumus.sumus_backend.domain.dtos.response.DriverListResponseDTO;
 import com.sumus.sumus_backend.domain.dtos.response.DriverResponseDto;
 import com.sumus.sumus_backend.domain.entities.driver.DriverDocument;
@@ -46,15 +47,6 @@ public class DriverServiceImpl implements DriverService {
         DriverDocument driverDocument = new DriverDocument(driverRegistration.getName(), driverRegistration.getEmail(),
                 passwordEncoder.encode(driverRegistration.getPassword()), driverRegistration.getPhone(),
                 driverRegistration.getCnh());
-
-        if (driverRegistration.getPhoto() != null && !driverRegistration.getPhoto().isEmpty()) {
-            MultipartFile file = driverRegistration.getPhoto();
-
-            ObjectId objectId = gridFsTemplate.store(file.getInputStream(), file.getOriginalFilename(),
-                    file.getContentType());
-
-            driverDocument.setPhotoId(objectId);
-        }
 
         driverDocument = driverRepository.save(driverDocument);
 
@@ -93,7 +85,7 @@ public class DriverServiceImpl implements DriverService {
     public DriverResponseDto findByEmail(String email) {
         Optional<DriverDocument> driverDocument = driverRepository.findByEmail(email);
 
-        if(driverDocument.isEmpty()){
+        if (driverDocument.isEmpty()) {
             return null;
         }
 
@@ -115,6 +107,72 @@ public class DriverServiceImpl implements DriverService {
         driverDocument = driverRepository.save(driverDocument);
 
         return new DriverResponseDto(driverDocument);
+
+    }
+
+    @Override
+    public DriverResponseDto update(String email, DriverUpdateRequest driverUpdateRequest) throws IOException {
+
+        Optional<DriverDocument> driverOptional = driverRepository
+                .findByEmail(email);
+        if (driverOptional.isEmpty()) {
+            return null;
+        }
+
+        DriverDocument driverDocument = driverOptional.get();
+
+        if (driverUpdateRequest.getName() != null)
+            driverDocument.setName(driverUpdateRequest.getName());
+        if (driverUpdateRequest.getEmail() != null)
+            driverDocument.setEmail(driverUpdateRequest.getEmail());
+        if (driverUpdateRequest.getPhone() != null)
+            driverDocument.setPhone(driverUpdateRequest.getPhone());
+        if (driverUpdateRequest.getCnh() != null)
+            driverDocument.setCnh(driverUpdateRequest.getCnh());
+
+        // Atualizar a foto
+        if (driverUpdateRequest.getPhoto() != null && !driverUpdateRequest.getPhoto().isEmpty()) {
+            if (driverDocument.getPhotoId() != null) {
+                gridFsTemplate.delete(Query.query(Criteria.where("_id").is(driverDocument.getPhotoId())));
+            }
+            ObjectId fileId = gridFsTemplate.store(
+                    driverUpdateRequest.getPhoto().getInputStream(),
+                    driverUpdateRequest.getPhoto().getOriginalFilename(),
+                    driverUpdateRequest.getPhoto().getContentType());
+
+            driverDocument.setPhotoId(fileId);
+        }
+
+        return new DriverResponseDto(driverRepository.save(driverDocument));
+    }
+
+    @Override
+    public Boolean updatePassword(String email, PasswordUpdateRequest passwordUpdateRequest) {
+        Optional<DriverDocument> driverOptional = driverRepository.findByEmail(email);
+
+        if (driverOptional.isEmpty()) {
+            return false;
+        }
+
+        DriverDocument driverDocument = driverOptional.get();
+
+        driverDocument.setPassword(passwordEncoder.encode(passwordUpdateRequest.getPassword()));
+
+        driverRepository.save(driverDocument);
+
+        return true;
+    }
+
+    @Override
+    public Boolean deleteDriver(String email) {
+        Optional<DriverDocument> driverOptional = driverRepository.findByEmail(email);
+
+        if (driverOptional.isEmpty()) {
+            return false;
+        }
+
+        driverRepository.deleteById(driverOptional.get().getId());
+        return true;
 
     }
 

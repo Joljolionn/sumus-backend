@@ -13,10 +13,11 @@ import org.springframework.data.mongodb.gridfs.GridFsResource;
 import org.springframework.data.mongodb.gridfs.GridFsTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 import com.mongodb.client.gridfs.model.GridFSFile;
-import com.sumus.sumus_backend.domain.dtos.request.PassengerRegistration;
+import com.sumus.sumus_backend.domain.dtos.request.PassengerRegistrationRequest;
+import com.sumus.sumus_backend.domain.dtos.request.PassengerUpdateRequest;
+import com.sumus.sumus_backend.domain.dtos.request.PasswordUpdateRequest;
 import com.sumus.sumus_backend.domain.dtos.response.PassengerListResponseDto;
 import com.sumus.sumus_backend.domain.dtos.response.PassengerResponseDto;
 import com.sumus.sumus_backend.domain.entities.passenger.PassengerDocument;
@@ -31,118 +32,101 @@ public class PassengerServiceImpl implements PassengerService {
     private GridFsTemplate gridFsTemplate;
 
     @Autowired
-    private PassengerRepository userRepository;
+    private PassengerRepository passengerRepository;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    // TODO: Fazer com que esse método retorne um DTO
     @Override
-    public PassengerResponseDto create(PassengerRegistration userDto) throws IOException {
+    public PassengerResponseDto create(PassengerRegistrationRequest passengerRegistration) throws IOException {
 
- 
-        if (userRepository.existsByEmail(userDto.getEmail())) {
+        if (passengerRepository.existsByEmail(passengerRegistration.getEmail())) {
             // Lança uma exceção se o e-mail já estiver em uso, garantindo que a regra de
             // negócio seja respeitada.
             throw new IllegalArgumentException(
-                    "Erro: O e-mail " + userDto.getEmail() + " já está cadastrado no sistema.");
+                    "Erro: O e-mail " + passengerRegistration.getEmail() + " já está cadastrado no sistema.");
         }
 
         List<PcdCondition> pcdConditions = null;
 
-        if (userDto.getIsPcd()) {
-            if (userDto.getConditions().isEmpty()) {
+        if (passengerRegistration.getIsPcd()) {
+            if (passengerRegistration.getConditions().isEmpty()) {
                 throw new IllegalArgumentException("Erro: O usuário PCD deve informar suas condições");
             }
             pcdConditions = new ArrayList<PcdCondition>();
 
-            for (String condition : userDto.getConditions()) {
+            for (String condition : passengerRegistration.getConditions()) {
                 pcdConditions.add(new PcdCondition(condition));
             }
         }
 
-        PassengerDocument userDocument = new PassengerDocument(
-                userDto.getName(),
-                userDto.getEmail(),
-                passwordEncoder.encode(userDto.getPassword()),
-                userDto.getPhone(),
-                userDto.getIsPcd(),
+        PassengerDocument passengerDocument = new PassengerDocument(
+                passengerRegistration.getName(),
+                passengerRegistration.getEmail(),
+                passwordEncoder.encode(passengerRegistration.getPassword()),
+                passengerRegistration.getPhone(),
+                passengerRegistration.getIsPcd(),
                 pcdConditions);
 
-        if (userDto.getPhoto() != null && !userDto.getPhoto().isEmpty()) {
-            MultipartFile file = userDto.getPhoto();
+        passengerDocument = passengerRepository.save(passengerDocument);
 
-            ObjectId fileId = gridFsTemplate.store(
-                    file.getInputStream(),
-                    file.getOriginalFilename(),
-                    file.getContentType());
-
-            userDocument.setPhotoId(fileId);
-        }
-
-        userDocument = userRepository.save(userDocument);
-
-        return new PassengerResponseDto(userDocument);
+        return new PassengerResponseDto(passengerDocument);
     }
 
     @Override
     public PassengerListResponseDto listAll() {
-        return new PassengerListResponseDto(userRepository.findAll());
+        return new PassengerListResponseDto(passengerRepository.findAll());
     }
 
-    // TODO: Fazer que esse método retorne um DTO
     @Override
-    public Optional<PassengerDocument> update(PassengerRegistration userDto) throws IOException {
-        Optional<PassengerDocument> user = userRepository.findByEmail(userDto.getEmail());
-        if (user.isEmpty()) {
-            return user;
+    public PassengerResponseDto update(String email, PassengerUpdateRequest passengerUpdateRequest) throws IOException {
+        Optional<PassengerDocument> passengerOptional = passengerRepository
+                .findByEmail(email);
+        if (passengerOptional.isEmpty()) {
+            return null;
         }
 
-        PassengerDocument updatedUser = user.get();
+        PassengerDocument passengerDocument = passengerOptional.get();
 
-        if (userDto.getName() != null)
-            updatedUser.setName(userDto.getName());
-        if (userDto.getEmail() != null)
-            updatedUser.setEmail(userDto.getEmail());
-        if (userDto.getPassword() != null)
-            updatedUser.setPassword(passwordEncoder.encode(userDto.getPassword()));
-        if (userDto.getPhone() != null)
-            updatedUser.setPhone(userDto.getPhone());
+        if (passengerUpdateRequest.getName() != null)
+            passengerDocument.setName(passengerUpdateRequest.getName());
+        if (passengerUpdateRequest.getEmail() != null)
+            passengerDocument.setEmail(passengerUpdateRequest.getEmail());
+        if (passengerUpdateRequest.getPhone() != null)
+            passengerDocument.setPhone(passengerUpdateRequest.getPhone());
 
         // Atualizar a foto
-
-        if (userDto.getPhoto() != null && !userDto.getPhoto().isEmpty()) {
-            if (updatedUser.getPhotoId() != null) {
-                gridFsTemplate.delete(Query.query(Criteria.where("_id").is(updatedUser.getPhotoId())));
+        if (passengerUpdateRequest.getPhoto() != null && !passengerUpdateRequest.getPhoto().isEmpty()) {
+            if (passengerDocument.getPhotoId() != null) {
+                gridFsTemplate.delete(Query.query(Criteria.where("_id").is(passengerDocument.getPhotoId())));
             }
             ObjectId fileId = gridFsTemplate.store(
-                    userDto.getPhoto().getInputStream(),
-                    userDto.getPhoto().getOriginalFilename(),
-                    userDto.getPhoto().getContentType());
+                    passengerUpdateRequest.getPhoto().getInputStream(),
+                    passengerUpdateRequest.getPhoto().getOriginalFilename(),
+                    passengerUpdateRequest.getPhoto().getContentType());
 
-            updatedUser.setPhotoId(fileId);
+            passengerDocument.setPhotoId(fileId);
         }
 
-        return Optional.of(userRepository.save(updatedUser));
+        return new PassengerResponseDto(passengerRepository.save(passengerDocument));
     }
 
     @Override
     public Boolean delete(String email) {
-        Optional<PassengerDocument> user = userRepository.findByEmail(email);
-        if (user.isEmpty()) {
+        Optional<PassengerDocument> passengerOptional = passengerRepository.findByEmail(email);
+        if (passengerOptional.isEmpty()) {
             return false;
         } else {
-            userRepository.deleteById(user.get().getId());
+            passengerRepository.deleteById(passengerOptional.get().getId());
             return true;
         }
     }
 
-    // TODO: Fazer que esse método retorne um DTO
     @Override
     public PassengerResponseDto findByEmail(String email) {
-        Optional<PassengerDocument> passengerDocument = userRepository.findByEmail(email);
+        Optional<PassengerDocument> passengerDocument = passengerRepository.findByEmail(email);
 
-        if(passengerDocument.isEmpty()){
+        if (passengerDocument.isEmpty()) {
             return null;
         }
 
@@ -151,20 +135,20 @@ public class PassengerServiceImpl implements PassengerService {
 
     @Override
     public GridFsResource getPhotoResourceByPassengerEmail(String email) {
-        Optional<PassengerDocument> found = userRepository.findByEmail(email);
+        Optional<PassengerDocument> passengerOptional = passengerRepository.findByEmail(email);
 
-        if (found.isEmpty()) {
+        if (passengerOptional.isEmpty()) {
             return null;
         }
 
-        PassengerDocument user = found.get();
+        PassengerDocument passengerDocument = passengerOptional.get();
 
-        if (user.getPhotoId() == null) {
+        if (passengerDocument.getPhotoId() == null) {
             return null;
         }
 
         GridFSFile file = gridFsTemplate.findOne(
-                Query.query(Criteria.where("_id").is(user.getPhotoId())));
+                Query.query(Criteria.where("_id").is(passengerDocument.getPhotoId())));
 
         if (file == null) {
             return null;
@@ -175,14 +159,14 @@ public class PassengerServiceImpl implements PassengerService {
 
     @Override
     public Boolean getActiveStatus(String email) {
-        Optional<PassengerDocument> found = userRepository.findByEmail(email);
+        Optional<PassengerDocument> passengerOptional = passengerRepository.findByEmail(email);
 
         // TODO: Adicionar erro para caso usuário não seja achado
-        if (found.isEmpty()) {
+        if (passengerOptional.isEmpty()) {
             return null;
         }
 
-        PassengerDocument passengerDocument = found.get();
+        PassengerDocument passengerDocument = passengerOptional.get();
 
         if (passengerDocument.getStatusCadastro() == PassengerDocument.StatusCadastro.ATIVO) {
             return true;
@@ -193,7 +177,7 @@ public class PassengerServiceImpl implements PassengerService {
 
     @Override
     public PassengerResponseDto verifyPcdConditions(String email) {
-        Optional<PassengerDocument> found = userRepository.findByEmail(email);
+        Optional<PassengerDocument> found = passengerRepository.findByEmail(email);
 
         if (found.isEmpty()) {
             return null;
@@ -209,9 +193,26 @@ public class PassengerServiceImpl implements PassengerService {
 
         passengerDocument.setStatusCadastro(PassengerDocument.StatusCadastro.ATIVO);
 
-        passengerDocument = userRepository.save(passengerDocument);
+        passengerDocument = passengerRepository.save(passengerDocument);
 
         return new PassengerResponseDto(passengerDocument);
+    }
+
+    @Override
+    public Boolean updatePassword(String email, PasswordUpdateRequest passwordUpdateRequest) {
+        Optional<PassengerDocument> passengerOptional = passengerRepository.findByEmail(email);
+
+        if (passengerOptional.isEmpty()) {
+            return false;
+        }
+
+        PassengerDocument passengerDocument = passengerOptional.get();
+
+        passengerDocument.setPassword(passwordEncoder.encode(passwordUpdateRequest.getPassword()));
+
+        passengerRepository.save(passengerDocument);
+
+        return true;
     }
 
 }
