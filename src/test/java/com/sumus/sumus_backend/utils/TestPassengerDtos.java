@@ -9,34 +9,34 @@ import com.sumus.sumus_backend.domain.dtos.request.PassengerRegistrationRequest;
 public class TestPassengerDtos {
 
     public PassengerRegistrationRequest dtoOne() {
-        return new PassengerRegistrationRequest("luzinete", "luzinete@gmail.com", "Luzinete@123", "11 123456789", false, null);
+        return new PassengerRegistrationRequest("luzinete@gmail.com", "Luzinete@123");
     }
 
     public PassengerRegistrationRequest dtoTwo() {
-        return new PassengerRegistrationRequest("livia", "livia@gmail.com", "Livia@123", "11 123456789", false, null);
+        return new PassengerRegistrationRequest("livia@gmail.com", "Livia@123");
     }
 
     public PassengerRegistrationRequest dtoThree() {
-        return new PassengerRegistrationRequest("alessandra", "alessandra@gmail.com", "Alessandra@123", "11 123456789", false, null);
+        return new PassengerRegistrationRequest("alessandra@gmail.com", "Alessandra@123");
     }
 
     public PassengerRegistrationRequest dtoFour() {
-        return new PassengerRegistrationRequest("katia", "katia@gmail.com", "Katia@123", "11 123456789", false, null);
+        return new PassengerRegistrationRequest("katia@gmail.com", "Katia@123");
     }
 
     public PassengerRegistrationRequest dtoFive() {
-        return new PassengerRegistrationRequest("rosangela", "rosangela@gmail.com", "Rosangela@123", "11 123456789", false, null);
+        return new PassengerRegistrationRequest("rosangela@gmail.com", "Rosangela@123");
     }
 
     public PassengerRegistrationRequest dtoSix() {
-        return new PassengerRegistrationRequest("silvia", "silvia@gmail.com", "Silvia@123", "11 123456789", false, null);
+        return new PassengerRegistrationRequest("silvia@gmail.com", "Silvia@123");
     }
 
     public PassengerRegistrationRequest dtoSeven() {
-        return new PassengerRegistrationRequest("luzinete", "luzinete@gmail.com", "Luzinete@123", "11 123456789", false, null);
+        return new PassengerRegistrationRequest("luzinete@gmail.com", "Luzinete@123");
     }
 
     public PassengerRegistrationRequest dtoEight() {
-        return new PassengerRegistrationRequest("marialucia", "marialucia@gmail.com", "Marialucia@123", "11 123456789", false, null);
+        return new PassengerRegistrationRequest("marialucia@gmail.com", "Marialucia@123");
     }
 }

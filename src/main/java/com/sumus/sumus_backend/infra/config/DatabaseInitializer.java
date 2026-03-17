@@ -37,16 +37,14 @@ public class DatabaseInitializer {
                     "Luzinete PP",
                     testEmail,
                     passwordEncoder.encode("senha321"), // Senha criptografada
-                    "11999999999",
-                    false,
-                    null
+                    "11999999999"
             );
 
             // 4. Salva o documento
             PassengerDocument savedUser = repository.save(novoUsuario);
 
             System.out.println("SUCESSO! Novo usuário de teste criado. Email: " + savedUser.getEmail());
-            System.out.println("Senha de teste para login: senha123");
+            System.out.println("Senha de teste para login: senha321");
             System.out.println("---------------------------------------------");
         };
     }
