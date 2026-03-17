@@ -32,41 +32,47 @@ import jakarta.validation.Valid;
 @RequestMapping("/passenger")
 public class PassengerAuthControllerImpl implements PassengerAuthControllerDocs {
 
-    @Autowired
-    private JwtService jwtService;
+  @Autowired
+  private JwtService jwtService;
 
-    @Autowired
-    private PassengerService passengerService;
+  @Autowired
+  private PassengerService passengerService;
 
-    @Autowired
-    @Qualifier("passengerAuthenticationProvider") // Para garantir que o Bean de provedor
-                                                  // utilizado será o especificado
-                                                  // para lidar com motoristas
+  @Autowired
+  @Qualifier("passengerAuthenticationProvider")
+  private DaoAuthenticationProvider passengerAuthenticationProvider;
 
-    private DaoAuthenticationProvider passengerAuthenticationProvider;
-
-    @Override
-    @PostMapping(path = "/signup")
-    public ResponseEntity<PassengerResponseDto> createPassenger(@ModelAttribute @Valid PassengerRegistrationRequest passengerRegistration) {
-        PassengerResponseDto passengerResponseDto;
-        try {
-            passengerResponseDto = passengerService.create(passengerRegistration);
-        } catch (IOException e) {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-        return new ResponseEntity<>(passengerResponseDto, HttpStatus.CREATED);
+  @Override
+  @PostMapping(path = "/signup")
+  public ResponseEntity<PassengerResponseDto> createPassenger(
+      @RequestBody @Valid PassengerRegistrationRequest passengerRegistration) {
+    PassengerResponseDto passengerResponseDto;
+    System.out.println();
+    System.out.println();
+    System.out.println();
+    System.out.println();
+    System.out.println();
+    System.out.println();
+    System.out.println();
+    System.out.println("Teste");
+    try {
+      passengerResponseDto = passengerService.create(passengerRegistration);
+    } catch (IOException e) {
+      return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
     }
+    return new ResponseEntity<>(passengerResponseDto, HttpStatus.CREATED);
+  }
 
-    @Override
-    @PostMapping(path = "/login")
-    public ResponseEntity<AuthResponseDto> login(@RequestBody @Valid LoginRequest loginRequest) {
-        UsernamePasswordAuthenticationToken usernamePassword = new UsernamePasswordAuthenticationToken(
-                loginRequest.getEmail(), loginRequest.getPassword());
+  @Override
+  @PostMapping(path = "/login")
+  public ResponseEntity<AuthResponseDto> login(@RequestBody @Valid LoginRequest loginRequest) {
+    UsernamePasswordAuthenticationToken usernamePassword = new UsernamePasswordAuthenticationToken(
+        loginRequest.getEmail(), loginRequest.getPassword());
 
-        Authentication auth = passengerAuthenticationProvider.authenticate(usernamePassword);
+    Authentication auth = passengerAuthenticationProvider.authenticate(usernamePassword);
 
-        String token = jwtService.generateToken((UserDetails) auth.getPrincipal(), UserRole.PASSENGER);
+    String token = jwtService.generateToken((UserDetails) auth.getPrincipal(), UserRole.PASSENGER);
 
-        return ResponseEntity.ok(new AuthResponseDto(token));
-    }
+    return ResponseEntity.ok(new AuthResponseDto(token));
+  }
 }

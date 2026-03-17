@@ -24,7 +24,7 @@ public interface PassengerAuthControllerDocs {
             @ApiResponse(responseCode = "500", description = "Erro interno no servidor (possivelmente ao processar a imagem do usuário", content = @Content)
     })
     @PostMapping()
-    public ResponseEntity<PassengerResponseDto> createPassenger(@ModelAttribute PassengerRegistrationRequest passengerRegistration);
+    public ResponseEntity<PassengerResponseDto> createPassenger(@RequestBody PassengerRegistrationRequest passengerRegistration);
 
     @Operation(summary = "Faz o login do usuário no sistema", description = "Recebe um email e uma senha e faz a busca no banco para confirmar se acha o email do usuário e se a senha está correta e retorna um 'token' de autenticação (por enquanto não implementado, retorna somente 'funcionou')", responses = {
             @ApiResponse(responseCode = "404", description = "Usuário com email enviado não foi encontrado no banco de dados", content = @Content),

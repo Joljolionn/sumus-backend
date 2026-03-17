@@ -46,14 +46,11 @@ public class PassengerDocument {
     public PassengerDocument() {
     }
 
-    public PassengerDocument(String name, String email, String password, String phone, Boolean isPcd, List<PcdCondition> pcdConditions) {
+    public PassengerDocument(String name, String email, String password, String phone){
         this.name = name;
         this.email = email;
         this.password = password;
         this.phone = phone;
-        this.isPcd = isPcd;
-        this.statusCadastro = isPcd ? StatusCadastro.PENDENTE_PCD : StatusCadastro.ATIVO;
-        this.pcdConditions = pcdConditions;
     }
 
     public String getId() {
