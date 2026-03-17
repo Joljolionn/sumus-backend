@@ -19,6 +19,25 @@ services:
             MONGO_INITDB_DATABASE: sumus_db
 
     # --------------------------------------------------------------------------------
+    # Banco de Dados de Testes (limpo e efêmero)
+    # --------------------------------------------------------------------------------
+    mongo_test:
+      image: mongo:latest
+        
+      container_name: db_test
+
+      # O serviço sobe com o perfil 'dev' OU com o perfil 'db'
+      profiles:
+          - dev
+          - db  
+
+      environment:
+            MONGO_INITDB_DATABASE: sumus_db
+
+      ports:
+        - "27019:27017"
+
+    # --------------------------------------------------------------------------------
     # Serviço do Backend para Desenvolvimento (com Build)
     # --------------------------------------------------------------------------------
     backend-dev:
