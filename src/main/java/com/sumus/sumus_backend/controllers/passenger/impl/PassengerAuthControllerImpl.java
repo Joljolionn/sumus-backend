@@ -2,14 +2,18 @@ package com.sumus.sumus_backend.controllers.passenger.impl;
 
 import java.io.IOException;
 
+import org.apache.catalina.authenticator.BasicAuthenticator.BasicCredentials;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -47,14 +51,6 @@ public class PassengerAuthControllerImpl implements PassengerAuthControllerDocs 
   public ResponseEntity<PassengerResponseDto> createPassenger(
       @RequestBody @Valid PassengerRegistrationRequest passengerRegistration) {
     PassengerResponseDto passengerResponseDto;
-    System.out.println();
-    System.out.println();
-    System.out.println();
-    System.out.println();
-    System.out.println();
-    System.out.println();
-    System.out.println();
-    System.out.println("Teste");
     try {
       passengerResponseDto = passengerService.create(passengerRegistration);
     } catch (IOException e) {
@@ -66,13 +62,28 @@ public class PassengerAuthControllerImpl implements PassengerAuthControllerDocs 
   @Override
   @PostMapping(path = "/login")
   public ResponseEntity<AuthResponseDto> login(@RequestBody @Valid LoginRequest loginRequest) {
-    UsernamePasswordAuthenticationToken usernamePassword = new UsernamePasswordAuthenticationToken(
-        loginRequest.getEmail(), loginRequest.getPassword());
+    try {
 
-    Authentication auth = passengerAuthenticationProvider.authenticate(usernamePassword);
+      UsernamePasswordAuthenticationToken usernamePassword = new UsernamePasswordAuthenticationToken(
+          loginRequest.getEmail(), loginRequest.getPassword());
 
-    String token = jwtService.generateToken((UserDetails) auth.getPrincipal(), UserRole.PASSENGER);
+      Authentication auth = passengerAuthenticationProvider.authenticate(usernamePassword);
 
-    return ResponseEntity.ok(new AuthResponseDto(token));
+      String token = jwtService.generateToken((UserDetails) auth.getPrincipal(), UserRole.PASSENGER);
+
+      return ResponseEntity.status(HttpStatus.OK).body(new AuthResponseDto(token));
+
+    } catch (BadCredentialsException e) {
+
+      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+
+    } catch (UsernameNotFoundException e) {
+
+      return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+
+    } catch (AuthenticationException e) {
+
+      return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
+    }
   }
 }
