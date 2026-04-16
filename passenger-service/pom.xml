@@ -7,14 +7,13 @@
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
         <version>3.5.5</version>
-        <relativePath/> 
-    </parent>
+        <relativePath/> </parent>
 
     <groupId>com.sumus</groupId>
-    <artifactId>driver-service</artifactId>
+    <artifactId>passenger-service</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>driver-service</name>
-    <description>Microsserviço de motoristas</description>
+    <name>passenger-service</name>
+    <description>Microsserviço de passageiros</description>
 
     <properties>
         <java.version>21</java.version>
