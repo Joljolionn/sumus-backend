@@ -5,17 +5,22 @@ FROM maven AS builder
 # Define o diretório de trabalho do projeto
 WORKDIR /app
 
-# Copia o POM para baixar as dependências primeiro (aproveitando o cache do Docker)
+# Copia o POM.xml pai para baixar as dependências primeiro (aproveitando o cache do Docker)
 COPY pom.xml .
 
+COPY driver-service/pom.xml ./driver-service/
+
+# Instala o POM pai no repositório local do container
+RUN mvn install -N
+
 # Baixa todas as dependências do projeto
-RUN mvn dependency:go-offline
+RUN mvn dependency:go-offline -pl driver-service -am
 
 # Copia o código-fonte restante
-COPY src/ ./src/
+COPY driver-service/src/ ./driver-service/src/
 
 # Empacota o projeto em um JAR (o 'target/*.jar')
-RUN mvn package -DskipTests
+RUN mvn clean package -DskipTests -pl driver-service -am
 
 # --------------------------------------------------------------------------------------
 
@@ -28,7 +33,7 @@ WORKDIR /app
 
 # Copia o JAR criado no estágio 'builder' para este estágio
 # Isso garante que a imagem final não inclua o Maven e o código-fonte
-COPY --from=builder /app/target/*.jar app.jar
+COPY --from=builder /app/driver-service/target/*.jar app.jar
 
 # Expõe a porta do Spring Boot
 EXPOSE 8080

@@ -31,18 +31,20 @@ services:
         profiles:
             - dev
 
-        build: . # Constrói a imagem do Dockerfile
+        build:
+            context: . # A raiz do projeto
+            dockerfile: driver-service/Dockerfile # Localização do Dockerfile
         ports:
             - "8080:8080"
 
         # Depende do Mongo no Docker (que também está no perfil 'dev')
         depends_on:
-            - mongodb 
-        
+            - mongodb
+
             #  Ativa o perfil 'dev' do Spring (application-dev.properties)
         environment:
-            SPRING_PROFILES_ACTIVE: dev 
-            
+            SPRING_PROFILES_ACTIVE: dev
+
         networks:
             - sumus
 
