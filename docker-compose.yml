@@ -4,13 +4,13 @@ services:
     # --------------------------------------------------------------------------------
     mongodb:
         container_name: mongodb-sumus
-        image: mongo:latest
-        
+        image: mongo:4.4.29 # Versão compatível com x86_64
+
         # O serviço sobe com o perfil 'dev' OU com o perfil 'db'
         profiles:
             - dev
-            - db  
-            
+            - db
+
         ports:
             - "27018:27017"
         volumes:
@@ -18,24 +18,8 @@ services:
         environment:
             MONGO_INITDB_DATABASE: sumus_db
 
-    # --------------------------------------------------------------------------------
-    # Banco de Dados de Testes (limpo e efêmero)
-    # --------------------------------------------------------------------------------
-    mongo_test:
-      image: mongo:latest
-        
-      container_name: db_test
-
-      # O serviço sobe com o perfil 'dev' OU com o perfil 'db'
-      profiles:
-          - dev
-          - db  
-
-      environment:
-            MONGO_INITDB_DATABASE: sumus_db
-
-      ports:
-        - "27019:27017"
+        networks:
+            - sumus
 
     # --------------------------------------------------------------------------------
     # Serviço do Backend para Desenvolvimento (com Build)
@@ -45,20 +29,28 @@ services:
 
         # O perfil 'dev' faz com que este serviço só suba se o perfil 'dev' for ativado
         profiles:
-            - dev 
+            - dev
 
         build: . # Constrói a imagem do Dockerfile
         ports:
             - "8080:8080"
-        
+
         # Depende do Mongo no Docker (que também está no perfil 'dev')
         depends_on:
             - mongodb 
         
+            #  Ativa o perfil 'dev' do Spring (application-dev.properties)
         environment:
-            # 1. Ativa o perfil 'dev' do Spring (application-dev.properties)
             SPRING_PROFILES_ACTIVE: dev 
             
+        networks:
+            - sumus
+
 # Definição dos volumes persistentes
 volumes:
     mongo-data:
+
+networks:
+    sumus:
+        name: sumus
+        driver: bridge
