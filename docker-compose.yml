@@ -4,7 +4,7 @@ services:
     # --------------------------------------------------------------------------------
     mongodb:
         container_name: mongodb-sumus
-        image: mongo:4.4.29 # Versão compatível com x86_64
+        image: mongo:4.4 # Versão do mongo compatível com CPUs sem suporte para instruções AVX.
 
         # O serviço sobe com o perfil 'dev' OU com o perfil 'db'
         profiles:
@@ -18,39 +18,73 @@ services:
         environment:
             MONGO_INITDB_DATABASE: sumus_db
 
-        networks:
-            - sumus
+    # --------------------------------------------------------------------------------
+    # Banco de Dados de Testes (limpo e efêmero)
+    # --------------------------------------------------------------------------------
+    mongo_test:
+        image: mongo:4.4 
+
+        container_name: db_test
+
+        # O serviço sobe com o perfil 'dev' OU com o perfil 'db'
+        profiles:
+            - dev
+            - db
+
+        environment:
+            MONGO_INITDB_DATABASE: sumus_db
+
+        ports:
+            - "27019:27017"
 
     # --------------------------------------------------------------------------------
-    # Serviço do Backend para Desenvolvimento (com Build)
+    # Microsserviço de Motoristas
     # --------------------------------------------------------------------------------
-    backend-dev:
-        container_name: backend-sumus-dev
+    driver-service:
+        container_name: driver-service
 
         # O perfil 'dev' faz com que este serviço só suba se o perfil 'dev' for ativado
         profiles:
             - dev
 
-        build: . # Constrói a imagem do Dockerfile
+        build:
+            context: driver-service/ # A raiz do projeto (onde está o pom.xml pai)
+
         ports:
             - "8080:8080"
 
         # Depende do Mongo no Docker (que também está no perfil 'dev')
         depends_on:
-            - mongodb 
-        
-            #  Ativa o perfil 'dev' do Spring (application-dev.properties)
+            - mongodb
+
         environment:
-            SPRING_PROFILES_ACTIVE: dev 
-            
-        networks:
-            - sumus
+            # 1. Ativa o perfil 'dev' do Spring (application-dev.properties)
+            SPRING_PROFILES_ACTIVE: dev
+
+    # --------------------------------------------------------------------------------
+    # Microsserviço de Passageiros
+    # --------------------------------------------------------------------------------
+    passenger-service:
+        container_name: passenger-service
+
+        # O perfil 'dev' faz com que este serviço só suba se o perfil 'dev' for ativado
+        profiles:
+            - dev
+
+        build:
+            context: passenger-service/ # A raiz do projeto (onde está o pom.xml pai)
+
+        ports:
+            - "8081:8080"
+
+        # Depende do Mongo no Docker (que também está no perfil 'dev')
+        depends_on:
+            - mongodb
+
+        environment:
+            # 1. Ativa o perfil 'dev' do Spring (application-dev.properties)
+            SPRING_PROFILES_ACTIVE: dev
 
 # Definição dos volumes persistentes
 volumes:
     mongo-data:
-
-networks:
-    sumus:
-        name: sumus
-        driver: bridge

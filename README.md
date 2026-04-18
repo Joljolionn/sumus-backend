@@ -1,6 +1,6 @@
 # Backend Sumus - Guia de Execução
 
-Este projeto utiliza o **Docker Compose** com o recurso de **Profiles** para gerenciar o ambiente de desenvolvimento de forma flexível. O Docker atua como o maestro, garantindo que o banco de dados e a aplicação subam em harmonia, sincronizados e limpos.
+Este projeto utiliza o **Docker Compose** com o recurso de **Profiles** para gerenciar um ambiente de microsserviços de forma flexível. O Docker atua como o maestro, garantindo que os bancos de dados e as aplicações subam em harmonia.
 
 ---
 
@@ -8,46 +8,51 @@ Este projeto utiliza o **Docker Compose** com o recurso de **Profiles** para ger
 
 Suportamos nativamente dois fluxos principais de trabalho:
 
-### Apenas Banco de Dados (`db`)
-Ideal para quando você quer rodar o backend (Spring/Java) diretamente na sua **IDE** (IntelliJ, VS Code, Eclipse), eliminando a necessidade de instalar o MongoDB localmente.
+### Apenas Bancos de Dados (`db`)
+Ideal para quando você quer rodar os serviços (Spring/Java) diretamente na sua **IDE** (IntelliJ, VS Code, Eclipse), eliminando a necessidade de instalar o MongoDB localmente.
 
 ```bash
 docker compose --profile db up
 ```
 
-* **O que faz:** Sobe apenas o container do MongoDB.
-* **Porta Externa:** `27018`
-* **Persistência:** Os dados são mantidos no volume `mongo-data`.
+* **O que faz:** Sobe o container do MongoDB principal e o MongoDB de testes.
+* **Portas Externas:** `27018` (Principal) e `27019` (Testes).
+* **Persistência:** Dados do banco principal mantidos no volume `mongo-data`.
+
+#### Desenvolvendo um serviço isolado (IDE)
+Se você for mexer em apenas um dos serviços (ex: apenas no `driver-service`), siga estes passos:
+1. Execute o comando acima (`--profile db`).
+2. Abra o projeto do serviço desejado na sua IDE.
+3. Certifique-se de que o perfil do Spring está como **default** (o Spring lerá o `application.properties` que aponta para `localhost:27018`).
+4. Execute a classe `Application` principal.
+
+> **Atenção:** Se precisar rodar o segundo serviço simultaneamente na IDE, você deverá alterar a porta da aplicação (ex: `-Dserver.port=8081`) para evitar conflito na porta `8080` da sua máquina local.
 
 ### Ambiente Completo (`dev`)
-Ideal para testar a aplicação exatamente como ela rodaria em um container, simulando o ambiente de produção/homologação.
+Ideal para testar a integração entre os microsserviços exatamente como rodariam em um container.
 
 ```bash
 docker compose --profile dev up
 ```
 
-* **O que faz:** Sobe o MongoDB **e** constrói a imagem do backend a partir do `Dockerfile`.
-* **Comunicação:** O backend e o banco conversam através da rede interna do Docker.
+* **O que faz:** Sobe ambos os bancos de dados **e** constrói as imagens do `driver-service` e `passenger-service`.
 
 ---
 
 ## Configuração do Sistema (Spring Profiles)
 
-O comportamento da aplicação é gerenciado automaticamente via **Spring Profiles**, evitando alterações manuais em arquivos de configuração.
+O comportamento da aplicação é gerenciado automaticamente via **Spring Profiles** em três cenários:
 
-### 1. No Docker (Perfil `dev`)
-Ao executar o profile `dev` no Docker, o container é iniciado com a variável `SPRING_PROFILES_ACTIVE=dev`.
+| Cenário | Perfil Ativo | Arquivo | URI do MongoDB |
+| :--- | :--- | :--- | :--- |
+| **Docker (dev)** | `dev` | `application-dev.properties` | `mongodb://mongodb:27017` |
+| **Local (IDE)** | `default` | `application.properties` | `mongodb://localhost:27018` |
+| **Testes** | `test` | `application.properties` (test) | `mongodb://localhost:27019` |
 
-* **Arquivo utilizado:** `application-dev.properties`.
-* **Host do Banco:** Busca pelo nome do serviço: `mongodb:27017`.
-
-### 2. Na IDE / Localmente (Perfil Padrão)
-Se você rodar a aplicação pela IDE (após subir o banco com o profile `db`), o Spring usará o perfil padrão.
-
-* **Arquivo utilizado:** `application.properties`.
-* **Host do Banco:** Busca em `localhost:27018` (porta mapeada pelo Docker para acesso externo).
-
-> **Atenção:** Evite alterar o `spring.data.mongodb.uri` diretamente no código. Se precisar usar um banco fora do Docker, passe a configuração via **variável de ambiente** na sua IDE para não "sujar" o arquivo compartilhado com o time. Recomenda-se reverter qualquer mudança temporária feita nesses arquivos antes de abrir um *Pull Request*.
+### Segurança e JWT
+Ambos os serviços utilizam a chave `JWT_SECRET` para autenticação. 
+* Em ambiente de desenvolvimento, o valor padrão é `maria-do-carmo`.
+* **Configuração via Variável:** Para mudar a chave sem alterar o código, defina: `JWT_SECRET=sua_chave_aqui`.
 
 ---
 
@@ -55,38 +60,33 @@ Se você rodar a aplicação pela IDE (após subir o banco com o profile `db`), 
 
 | Serviço | Porta Interna | Porta Externa (Host) | Perfil Docker |
 | :--- | :--- | :--- | :--- |
-| **MongoDB** | `27017` | `27018` | `db` ou `dev` |
-| **Backend** | `8080` | `8080` | `dev` |
+| **MongoDB (Principal)** | `27017` | **`27018`** | `db` ou `dev` |
+| **MongoDB (Testes)** | `27017` | **`27019`** | `db` ou `dev` |
+| **Driver Service** | `8080` | **`8080`** | `dev` |
+| **Passenger Service** | `8080` | **`8081`** | `dev` |
 
 ---
 
 ## Comandos de Utilidade
 
-### Forçar Reconstrução (Reset do Build)
-Use este comando se alterou o código e quer garantir que o Docker ignore o cache e crie uma imagem nova:
+### Forçar Reconstrução
 ```bash
 docker compose --profile dev up --build --force-recreate
 ```
 
 ### Encerrar o Ambiente
-Para parar os serviços e liberar recursos:
-
 * **Ambiente completo:** `docker compose --profile dev down -v`
-* **Apenas o banco:** `docker compose --profile db down -v`
-
-> **O que o `-v` faz?**
-> A flag `-v` remove os **volumes**. No nosso caso, ela **apaga os dados** do MongoDB. Se desejar manter seus dados para a próxima sessão, execute o comando **sem** o `-v`.
+* **Apenas os bancos:** `docker compose --profile db down -v`
 
 ---
 
-## Estrutura do Maestro (Docker Compose)
+## Notas Técnicas e Arquitetura
 
-* **Serviços:**
-    * `mongodb`: Banco de dados NoSQL (versão 4.4).
-    * `backend-dev`: Aplicação Spring Boot.
-* **Rede (`sumus`):** Rede isolada que permite a comunicação entre os containers (Backend ↔ Banco ↔ Frontend) através dos nomes dos serviços.
-* **Volumes:** `mongo-data` garante a persistência do estado do banco de dados.
-
----
-
-> **Nota:** Sempre verifique se as portas `8080` ou `27018` já estão sendo usadas por outros processos antes de iniciar o ambiente.
+* **Persistência:** O volume `mongo-data` garante a durabilidade dos dados entre reinicializações do container `mongodb`.
+* **Compatibilidade:** Utilizamos MongoDB v4.4 para garantir suporte a CPUs que não possuem instruções AVX.
+* **Ambiente de Testes:** O arquivo `application.properties` de teste aponta para a porta `27019`. 
+> **Importante:** Para que os testes de integração funcionem localmente, o
+> perfil `db` do Docker precisa estar ativo para prover a instância
+> `mongo_test`. Caso contrário, não se esqueça de utilizar a opção
+> **`-DskipTests`** para pular a etapa de testes. Ex: **`mvn spring-boot:run -DskipTests`**
+* **Escalabilidade de Arquivos:** As configurações de `multipart` (limite de 5MB) estão padronizadas entre os serviços para garantir consistência no upload de documentos e fotos.
