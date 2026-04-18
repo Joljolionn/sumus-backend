@@ -43,8 +43,8 @@ public class SecurityConfiguration {
             // .anyRequest().permitAll() // permite todas as rotas sem necessidade de
             // autenticação
 
-            // Endpoints de login e signup são públicos
-            .requestMatchers("/passenger/login", "/passenger/signup")
+            // Endpoints de login, signup e a rota de erros interna do Spring são públicos
+            .requestMatchers("/passenger/login", "/passenger/signup", "/error")
             .permitAll()
 
             // Endpoints de documentação são "públicos"
