@@ -1,7 +1,6 @@
 package com.sumus.driver.services.impl;
 
 import java.io.IOException;
-import java.util.Optional;
 
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +18,8 @@ import com.sumus.driver.domain.dtos.request.PasswordUpdateRequest;
 import com.sumus.driver.domain.dtos.response.DriverListResponseDTO;
 import com.sumus.driver.domain.dtos.response.DriverResponseDto;
 import com.sumus.driver.domain.entities.DriverDocument;
+import com.sumus.driver.exceptions.BusinessRuleException;
+import com.sumus.driver.exceptions.ResourceNotFoundException;
 import com.sumus.driver.repositories.DriverRepository;
 import com.sumus.driver.services.DriverService;
 
@@ -38,9 +39,8 @@ public class DriverServiceImpl implements DriverService {
     public DriverResponseDto create(DriverRegistration driverRegistration) throws IOException {
 
         if (driverRepository.existsByEmail(driverRegistration.getEmail())) {
-            // Lança uma exceção se o e-mail já estiver em uso, garantindo que a regra de
-            // negócio seja respeitada.
-            throw new IllegalArgumentException(
+            // Agora lança a nossa exceção customizada de Regra de Negócio (Status 400)
+            throw new BusinessRuleException(
                     "Erro: O e-mail " + driverRegistration.getEmail() + " já está cadastrado no sistema.");
         }
 
@@ -60,22 +60,18 @@ public class DriverServiceImpl implements DriverService {
 
     @Override
     public GridFsResource getPhotoResourceByDriverEmail(String email) {
-        Optional<DriverDocument> driverOptional = driverRepository.findByEmail(email);
-
-        if (driverOptional.isEmpty()) {
-            return null;
-        }
-
-        DriverDocument driverDocument = driverOptional.get();
+        // Usa o orElseThrow para lançar erro 404 automaticamente se não achar no banco
+        DriverDocument driverDocument = driverRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("Motorista não encontrado com o e-mail: " + email));
 
         if (driverDocument.getPhotoId() == null) {
-            return null;
+            throw new ResourceNotFoundException("O motorista " + email + " não possui foto cadastrada.");
         }
 
         GridFSFile file = gridFsTemplate.findOne(Query.query(Criteria.where("_id").is(driverDocument.getPhotoId())));
 
         if (file == null) {
-            return null;
+            throw new ResourceNotFoundException("Arquivo de foto não encontrado no banco de dados.");
         }
 
         return gridFsTemplate.getResource(file);
@@ -83,43 +79,28 @@ public class DriverServiceImpl implements DriverService {
 
     @Override
     public DriverResponseDto findByEmail(String email) {
-        Optional<DriverDocument> driverDocument = driverRepository.findByEmail(email);
+        DriverDocument driverDocument = driverRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("Motorista não encontrado com o e-mail: " + email));
 
-        if (driverDocument.isEmpty()) {
-            return null;
-        }
-
-        return new DriverResponseDto(driverDocument.get());
+        return new DriverResponseDto(driverDocument);
     }
 
     @Override
     public DriverResponseDto verifyDocuments(String email) {
-        Optional<DriverDocument> driverOptional = driverRepository.findByEmail(email);
-
-        if (driverOptional.isEmpty()) {
-            return null;
-        }
-
-        DriverDocument driverDocument = driverOptional.get();
+        DriverDocument driverDocument = driverRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("Motorista não encontrado com o e-mail: " + email));
 
         driverDocument.setIsActive(true);
-
         driverDocument = driverRepository.save(driverDocument);
 
         return new DriverResponseDto(driverDocument);
-
     }
 
     @Override
     public DriverResponseDto update(String email, DriverUpdateRequest driverUpdateRequest) throws IOException {
 
-        Optional<DriverDocument> driverOptional = driverRepository
-                .findByEmail(email);
-        if (driverOptional.isEmpty()) {
-            return null;
-        }
-
-        DriverDocument driverDocument = driverOptional.get();
+        DriverDocument driverDocument = driverRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("Motorista não encontrado com o e-mail: " + email));
 
         if (driverUpdateRequest.getName() != null)
             driverDocument.setName(driverUpdateRequest.getName());
@@ -148,16 +129,10 @@ public class DriverServiceImpl implements DriverService {
 
     @Override
     public Boolean updatePassword(String email, PasswordUpdateRequest passwordUpdateRequest) {
-        Optional<DriverDocument> driverOptional = driverRepository.findByEmail(email);
-
-        if (driverOptional.isEmpty()) {
-            return false;
-        }
-
-        DriverDocument driverDocument = driverOptional.get();
+        DriverDocument driverDocument = driverRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("Motorista não encontrado com o e-mail: " + email));
 
         driverDocument.setPassword(passwordEncoder.encode(passwordUpdateRequest.getPassword()));
-
         driverRepository.save(driverDocument);
 
         return true;
@@ -165,15 +140,11 @@ public class DriverServiceImpl implements DriverService {
 
     @Override
     public Boolean deleteDriver(String email) {
-        Optional<DriverDocument> driverOptional = driverRepository.findByEmail(email);
+        DriverDocument driverDocument = driverRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("Motorista não encontrado com o e-mail: " + email));
 
-        if (driverOptional.isEmpty()) {
-            return false;
-        }
-
-        driverRepository.deleteById(driverOptional.get().getId());
+        driverRepository.deleteById(driverDocument.getId());
         return true;
-
     }
 
 }

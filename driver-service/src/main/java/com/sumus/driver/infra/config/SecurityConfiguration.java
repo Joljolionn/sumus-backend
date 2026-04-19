@@ -43,7 +43,7 @@ public class SecurityConfiguration {
             // autenticação
 
             // Endpoints de login e signup são públicos
-            .requestMatchers("/driver/login", "/driver/signup")
+            .requestMatchers("/driver/login", "/driver/signup", "/driver/all", "/driver/teste-erro", "/error")
             .permitAll()
 
             // Endpoints de documentação são "públicos"
