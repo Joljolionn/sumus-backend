@@ -57,7 +57,7 @@ public class DriverAuthController {
     @PostMapping(path = "/login")
     public ResponseEntity<AuthResponseDto> login(@RequestBody @Valid LoginRequest loginRequest) {
         UsernamePasswordAuthenticationToken usernamePassword = new UsernamePasswordAuthenticationToken(
-                loginRequest.getEmail(), loginRequest.getPassword());
+                loginRequest.email(), loginRequest.password());
 
         Authentication auth = driverAuthenticationProvider.authenticate(usernamePassword);
 

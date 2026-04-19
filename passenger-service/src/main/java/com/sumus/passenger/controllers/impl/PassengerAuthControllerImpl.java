@@ -63,7 +63,7 @@ public class PassengerAuthControllerImpl implements PassengerAuthControllerDocs 
     try {
 
       UsernamePasswordAuthenticationToken usernamePassword = new UsernamePasswordAuthenticationToken(
-          loginRequest.getEmail(), loginRequest.getPassword());
+          loginRequest.email(), loginRequest.password());
 
       Authentication auth = passengerAuthenticationProvider.authenticate(usernamePassword);
 
