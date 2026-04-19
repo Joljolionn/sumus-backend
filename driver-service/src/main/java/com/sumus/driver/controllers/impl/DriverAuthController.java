@@ -37,9 +37,7 @@ public class DriverAuthController {
     private DriverService driverService;
 
     @Autowired
-    @Qualifier("driverAuthenticationProvider") // Para garantir que o Bean de provedor
-                                               // utilizado será o especificado
-                                               // para lidar com motoristas
+    @Qualifier("driverAuthenticationProvider") 
     private DaoAuthenticationProvider driverAuthenticationProvider;
 
     @PostMapping(path = "/signup")

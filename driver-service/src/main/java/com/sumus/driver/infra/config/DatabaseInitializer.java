@@ -36,12 +36,11 @@ public class DatabaseInitializer {
             DriverDocument novoUsuario = new DriverDocument(
                     "Luzinete PP",
                     testEmail,
-                    passwordEncoder.encode("senha321"), // Senha criptografada
+                    passwordEncoder.encode("senha321"), 
                     "11999999999", 
                     "11111111111"
             );
 
-            // 4. Salva o documento
             DriverDocument savedUser = repository.save(novoUsuario);
 
             System.out.println("SUCESSO! Novo usuário de teste criado. Email: " + savedUser.getEmail());

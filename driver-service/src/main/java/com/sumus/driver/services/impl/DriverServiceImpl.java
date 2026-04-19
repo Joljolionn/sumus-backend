@@ -39,7 +39,6 @@ public class DriverServiceImpl implements DriverService {
     public DriverResponseDto create(DriverRegistration driverRegistration) throws IOException {
 
         if (driverRepository.existsByEmail(driverRegistration.email())) {
-            // Agora lança a nossa exceção customizada de Regra de Negócio (Status 400)
             throw new BusinessRuleException(
                     "Erro: O e-mail " + driverRegistration.email() + " já está cadastrado no sistema.");
         }
@@ -60,7 +59,6 @@ public class DriverServiceImpl implements DriverService {
 
     @Override
     public GridFsResource getPhotoResourceByDriverEmail(String email) {
-        // Usa o orElseThrow para lançar erro 404 automaticamente se não achar no banco
         DriverDocument driverDocument = driverRepository.findByEmail(email)
                 .orElseThrow(() -> new ResourceNotFoundException("Motorista não encontrado com o e-mail: " + email));
 
@@ -111,7 +109,6 @@ public class DriverServiceImpl implements DriverService {
         if (driverUpdateRequest.cnh() != null)
             driverDocument.setCnh(driverUpdateRequest.cnh());
 
-        // Atualizar a foto
         if (driverUpdateRequest.photo() != null && !driverUpdateRequest.photo().isEmpty()) {
             if (driverDocument.getPhotoId() != null) {
                 gridFsTemplate.delete(Query.query(Criteria.where("_id").is(driverDocument.getPhotoId())));

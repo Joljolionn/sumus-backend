@@ -39,8 +39,6 @@ public class PassengerServiceImpl implements PassengerService {
   public PassengerResponseDto create(PassengerRegistrationRequest passengerRegistration) throws IOException {
 
     if (passengerRepository.existsByEmail(passengerRegistration.email())) {
-      // Lança uma exceção se o e-mail já estiver em uso, garantindo que a regra de
-      // negócio seja respeitada.
       throw new IllegalArgumentException(
           "Erro: O e-mail " + passengerRegistration.email() + " já está cadastrado no sistema.");
     }
