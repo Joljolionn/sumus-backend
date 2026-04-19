@@ -2,7 +2,7 @@ services:
     # --------------------------------------------------------------------------------
     # Serviço do Banco de Dados (Usado em DEV e no modo SÓ-DB)
     # --------------------------------------------------------------------------------
-    mongodb:
+    mongodb-sumus:
         container_name: mongodb-sumus
         image: mongo:4.4 # Versão do mongo compatível com CPUs sem suporte para instruções AVX.
 
@@ -21,10 +21,10 @@ services:
     # --------------------------------------------------------------------------------
     # Banco de Dados de Testes (limpo e efêmero)
     # --------------------------------------------------------------------------------
-    mongo_test:
+    mongo-test-sumus:
+        container_name: mongodb-sumus-test
         image: mongo:4.4 
 
-        container_name: db_test
 
         # O serviço sobe com o perfil 'dev' OU com o perfil 'db'
         profiles:
