@@ -22,7 +22,7 @@ jobs:
           cache: "maven"
 
       - name: Starting MongoDB for Testing
-        run: docker-compose --profile db up -d
+        run: docker compose --profile db up -d
 
       - name: Build, Test & Sonar (Driver Service)
         env:
@@ -50,4 +50,4 @@ jobs:
 
       - name: Stop containers
         if: always()
-        run: docker-compose --profile db down
+        run: docker compose --profile db down
