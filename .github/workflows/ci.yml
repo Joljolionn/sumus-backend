@@ -8,6 +8,7 @@ jobs:
   build-and-analyze:
     name: Build, Test & Security Analysis
     runs-on: ubuntu-latest
+    environment: production
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
