@@ -13,7 +13,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.sumus.driver.domain.dtos.request.DriverRegistration;
@@ -27,7 +26,6 @@ import com.sumus.driver.services.DriverService;
 import jakarta.validation.Valid;
 
 @RestController
-@RequestMapping("/driver")
 public class DriverAuthController {
 
     @Autowired

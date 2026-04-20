@@ -8,10 +8,11 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
-
+import org.springframework.web.bind.annotation.RequestBody;
 import com.sumus.passenger.domain.dtos.request.PassengerUpdateRequest;
 import com.sumus.passenger.domain.dtos.request.PasswordUpdateRequest;
 import com.sumus.passenger.domain.dtos.response.PassengerListResponseDto;
@@ -23,27 +24,44 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
+import jakarta.validation.Valid;
+
 @Tag(name = "Passenger", description = "Endpoints de funcionalidades básicas envolvendo usuários")
 public interface PassengerControllerDocs {
 
-    @Operation(summary = "Visualiza todos os usuários inseridos no banco", description = "Retorna uma lista com todos os usuários inseridos no sistema", responses = {
-            @ApiResponse(responseCode = "200", description = "Retorna uma array com todos os usuários inseridos no banco (vazia se o banco estiver vazio)", content = @Content(mediaType = "application/json", schema = @Schema(implementation = PassengerListResponseDto.class)))
-    })
-    @GetMapping()
-    public ResponseEntity<PassengerListResponseDto> getAllPassengers();
+  @Operation(summary = "Visualiza todos os usuários inseridos no banco",
+      description = "Retorna uma lista com todos os usuários inseridos no sistema",
+      responses = {@ApiResponse(responseCode = "200",
+          description = "Retorna uma array com todos os usuários inseridos no banco (vazia se o banco estiver vazio)",
+          content = @Content(mediaType = "application/json",
+              schema = @Schema(implementation = PassengerListResponseDto.class)))})
+  @GetMapping(path = "/all")
+  public ResponseEntity<PassengerListResponseDto> getAll();
 
-    @GetMapping()
-    public ResponseEntity<byte[]> getPassengerPhoto(@AuthenticationPrincipal UserDetails userDetails) throws IOException;
+  @GetMapping(path = "/photo")
+  public ResponseEntity<byte[]> getPhoto(@AuthenticationPrincipal
+  UserDetails userDetails) throws IOException;
 
-    @PostMapping()
-    public ResponseEntity<PassengerResponseDto> verifyPcdPassengerConditions(@AuthenticationPrincipal UserDetails userDetails);
+  @PostMapping(path = "/pcd/verifyConditions")
+  public ResponseEntity<PassengerResponseDto> postPcdConditions(@AuthenticationPrincipal
+  UserDetails userDetails);
 
-    @PutMapping()
-    public ResponseEntity<PassengerResponseDto> updatePassenger(@AuthenticationPrincipal UserDetails userDetails, PassengerUpdateRequest passengerUpdateRequest) throws IOException;
+  @GetMapping(path = "/")
+  public ResponseEntity<PassengerResponseDto> getByEmail(@AuthenticationPrincipal
+  UserDetails userDetails);
 
-    @PatchMapping()
-    public ResponseEntity<Void> updatePassengerPassword(@AuthenticationPrincipal UserDetails userDetails, PasswordUpdateRequest passwordUpdateRequest);
+  @PutMapping(path = "/")
+  public ResponseEntity<PassengerResponseDto> putUpdate(UserDetails userDetails,
+      @ModelAttribute
+      @Valid
+      PassengerUpdateRequest passengerUpdateRequest) throws IOException;
 
-    @DeleteMapping()
-    public ResponseEntity<Void> deletePassenger(@AuthenticationPrincipal UserDetails userDetails);
+  @PatchMapping(path = "/password")
+  public ResponseEntity<Void> patchPassword(UserDetails userDetails, @RequestBody
+  @Valid
+  PasswordUpdateRequest passwordUpdateRequest);
+
+  @DeleteMapping(path = "/")
+  public ResponseEntity<Void> deleteAccount(@AuthenticationPrincipal
+  UserDetails userDetails);
 }

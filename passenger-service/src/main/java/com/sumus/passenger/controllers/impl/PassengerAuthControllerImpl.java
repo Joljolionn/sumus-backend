@@ -13,9 +13,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.sumus.passenger.controllers.docs.PassengerAuthControllerDocs;
@@ -27,11 +24,7 @@ import com.sumus.passenger.infra.security.jwt.JwtService;
 import com.sumus.passenger.infra.security.util.UserRole;
 import com.sumus.passenger.services.PassengerService;
 
-import jakarta.validation.Valid;
-
-// Classe para representar os endpoints da aplicação
 @RestController
-@RequestMapping("/passenger")
 public class PassengerAuthControllerImpl implements PassengerAuthControllerDocs {
 
   @Autowired
@@ -45,9 +38,8 @@ public class PassengerAuthControllerImpl implements PassengerAuthControllerDocs 
   private DaoAuthenticationProvider passengerAuthenticationProvider;
 
   @Override
-  @PostMapping(path = "/signup")
-  public ResponseEntity<PassengerResponseDto> createPassenger(
-      @RequestBody @Valid PassengerRegistrationRequest passengerRegistration) {
+  public ResponseEntity<PassengerResponseDto> postSignup(
+      PassengerRegistrationRequest passengerRegistration) {
     PassengerResponseDto passengerResponseDto;
     try {
       passengerResponseDto = passengerService.create(passengerRegistration);
@@ -58,8 +50,7 @@ public class PassengerAuthControllerImpl implements PassengerAuthControllerDocs 
   }
 
   @Override
-  @PostMapping(path = "/login")
-  public ResponseEntity<AuthResponseDto> login(@RequestBody @Valid LoginRequest loginRequest) {
+  public ResponseEntity<AuthResponseDto> postLogin(LoginRequest loginRequest) {
     try {
 
       UsernamePasswordAuthenticationToken usernamePassword = new UsernamePasswordAuthenticationToken(
