@@ -16,7 +16,7 @@ import com.sumus.driver.infra.security.jwt.JwtAuthenticationFilter;
 import com.sumus.driver.infra.security.userdetails.DriverDetailsService;
 import com.sumus.driver.infra.security.util.UserRole;
 
-// Classe central para configurar segurança da aplicação
+
 @Configuration
 @EnableWebSecurity
 public class SecurityConfiguration {
@@ -35,33 +35,33 @@ public class SecurityConfiguration {
   @Bean
   public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
     return http
-        .csrf(csrf -> csrf.disable()) // Desativa necessidade de tokens CSRF
+        .csrf(csrf -> csrf.disable()) 
         .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-        .formLogin().disable() // remove a página de login padrão
+        .formLogin().disable() 
         .authorizeHttpRequests(auth -> auth
             // .anyRequest().permitAll() // permite todas as rotas sem necessidade de
             // autenticação
 
-            // Endpoints de login e signup são públicos
-            .requestMatchers("/driver/login", "/driver/signup", "/driver/all", "/driver/teste-erro", "/error")
+            
+            .requestMatchers("/login", "/signup", "/all", "/teste-erro", "/error")
             .permitAll()
 
-            // Endpoints de documentação são "públicos"
+            
             .requestMatchers(
                 "/v3/api-docs/**",
                 "/swagger-ui/**",
                 "/swagger-ui.html")
-            .permitAll() // <-- Mantemos isso aqui
+            .permitAll() 
 
-            // URLs específicas de usuário requerem autorização
-            .requestMatchers("/driver/**").hasAuthority(UserRole.DRIVER.getAuthority())
+            
+            .requestMatchers("/**").hasAuthority(UserRole.DRIVER.getAuthority())
             .anyRequest().authenticated())
         .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
         .build();
   }
 
 
-  // --- Provedor de Autenticação para Motoristas ---
+  
   @Bean
   public DaoAuthenticationProvider driverAuthenticationProvider() {
     DaoAuthenticationProvider provider = new DaoAuthenticationProvider();

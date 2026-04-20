@@ -68,7 +68,6 @@ public class JwtService {
     }
 
     private DecodedJWT decodeToken(String token) throws JWTVerificationException {
-        // Tenta decodificar o token, verificando Assinatura, Emissor e Expiração.
         return JWT.require(Algorithm.HMAC256(secret))
                 .withIssuer("sumus_backend")
                 .build()

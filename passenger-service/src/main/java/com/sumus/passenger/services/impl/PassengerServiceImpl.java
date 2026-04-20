@@ -38,18 +38,16 @@ public class PassengerServiceImpl implements PassengerService {
   @Override
   public PassengerResponseDto create(PassengerRegistrationRequest passengerRegistration) throws IOException {
 
-    if (passengerRepository.existsByEmail(passengerRegistration.getEmail())) {
-      // Lança uma exceção se o e-mail já estiver em uso, garantindo que a regra de
-      // negócio seja respeitada.
+    if (passengerRepository.existsByEmail(passengerRegistration.email())) {
       throw new IllegalArgumentException(
-          "Erro: O e-mail " + passengerRegistration.getEmail() + " já está cadastrado no sistema.");
+          "Erro: O e-mail " + passengerRegistration.email() + " já está cadastrado no sistema.");
     }
 
 
     PassengerDocument passengerDocument = new PassengerDocument(
         "Anonimous",
-        passengerRegistration.getEmail(),
-        passwordEncoder.encode(passengerRegistration.getPassword()),
+        passengerRegistration.email(),
+        passwordEncoder.encode(passengerRegistration.password()),
         null
         );
 
@@ -73,22 +71,22 @@ public class PassengerServiceImpl implements PassengerService {
 
     PassengerDocument passengerDocument = passengerOptional.get();
 
-    if (passengerUpdateRequest.getName() != null)
-      passengerDocument.setName(passengerUpdateRequest.getName());
-    if (passengerUpdateRequest.getEmail() != null)
-      passengerDocument.setEmail(passengerUpdateRequest.getEmail());
-    if (passengerUpdateRequest.getPhone() != null)
-      passengerDocument.setPhone(passengerUpdateRequest.getPhone());
+    if (passengerUpdateRequest.name() != null)
+      passengerDocument.setName(passengerUpdateRequest.name());
+    if (passengerUpdateRequest.email() != null)
+      passengerDocument.setEmail(passengerUpdateRequest.email());
+    if (passengerUpdateRequest.phone() != null)
+      passengerDocument.setPhone(passengerUpdateRequest.phone());
 
     // Atualizar a foto
-    if (passengerUpdateRequest.getPhoto() != null && !passengerUpdateRequest.getPhoto().isEmpty()) {
+    if (passengerUpdateRequest.photo() != null && !passengerUpdateRequest.photo().isEmpty()) {
       if (passengerDocument.getPhotoId() != null) {
         gridFsTemplate.delete(Query.query(Criteria.where("_id").is(passengerDocument.getPhotoId())));
       }
       ObjectId fileId = gridFsTemplate.store(
-          passengerUpdateRequest.getPhoto().getInputStream(),
-          passengerUpdateRequest.getPhoto().getOriginalFilename(),
-          passengerUpdateRequest.getPhoto().getContentType());
+          passengerUpdateRequest.photo().getInputStream(),
+          passengerUpdateRequest.photo().getOriginalFilename(),
+          passengerUpdateRequest.photo().getContentType());
 
       passengerDocument.setPhotoId(fileId);
     }
@@ -193,7 +191,7 @@ public class PassengerServiceImpl implements PassengerService {
 
     PassengerDocument passengerDocument = passengerOptional.get();
 
-    passengerDocument.setPassword(passwordEncoder.encode(passwordUpdateRequest.getPassword()));
+    passengerDocument.setPassword(passwordEncoder.encode(passwordUpdateRequest.password()));
 
     passengerRepository.save(passengerDocument);
 

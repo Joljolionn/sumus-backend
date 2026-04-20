@@ -4,22 +4,9 @@ import java.util.List;
 
 import com.sumus.driver.domain.entities.DriverDocument;
 
+public record DriverListResponseDTO(
 
-public class DriverListResponseDTO {
+    List<DriverDocument> drivers
 
-    private List<DriverDocument> drivers;
-    
-    public DriverListResponseDTO(List<DriverDocument> drivers){
-        this.drivers = drivers;
-    }
-
-	public List<DriverDocument> getDrivers() {
-		return drivers;
-	}
-
-	public void setDrivers(List<DriverDocument> drivers) {
-		this.drivers = drivers;
-	}
-
-
+) {
 }

@@ -17,7 +17,7 @@ import com.sumus.passenger.infra.security.userdetails.PassengerDetailsService;
 import com.sumus.passenger.infra.security.util.UserRole;
 
 
-// Classe central para configurar segurança da aplicação
+
 @Configuration
 @EnableWebSecurity
 public class SecurityConfiguration {
@@ -36,38 +36,38 @@ public class SecurityConfiguration {
   @Bean
   public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
     return http
-        .csrf(csrf -> csrf.disable()) // Desativa necessidade de tokens CSRF
+        .csrf(csrf -> csrf.disable()) 
         .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-        .formLogin().disable() // remove a página de login padrão
+        .formLogin().disable() 
         .authorizeHttpRequests(auth -> auth
             // .anyRequest().permitAll() // permite todas as rotas sem necessidade de
             // autenticação
 
-            // Endpoints de login, signup e a rota de erros interna do Spring são públicos
-            .requestMatchers("/passenger/login", "/passenger/signup", "/error")
+            
+            .requestMatchers("/login", "/signup", "/error")
             .permitAll()
 
-            // Endpoints de documentação são "públicos"
+            
             .requestMatchers(
                 "/v3/api-docs/**",
                 "/swagger-ui/**",
                 "/swagger-ui.html")
-            .permitAll() // <-- Mantemos isso aqui
+            .permitAll() 
 
-            // URLs específicas de usuário requerem autorização
-            .requestMatchers("/passenger/**").hasAuthority(UserRole.PASSENGER.getAuthority())
+            
+            .requestMatchers("/**").hasAuthority(UserRole.PASSENGER.getAuthority())
             .anyRequest().authenticated())
         .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
         .build();
   }
 
-  // --- Provedor de Autenticação para Passageiros ---
+  
   @Bean
   public DaoAuthenticationProvider passengerAuthenticationProvider() {
     DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
     provider.setUserDetailsService(passengerDetailsService);
     provider.setPasswordEncoder(passwordEncoder());
-    provider.setHideUserNotFoundExceptions(false); // Permite erro para senha incorreta
+    provider.setHideUserNotFoundExceptions(false); 
     return provider;
   }
 

@@ -37,11 +37,10 @@ public class DatabaseInitializer {
             PassengerDocument novoUsuario = new PassengerDocument(
                     "Luzinete PP",
                     testEmail,
-                    passwordEncoder.encode("senha321"), // Senha criptografada
+                    passwordEncoder.encode("senha321"), 
                     "11999999999"
             );
 
-            // 4. Salva o documento
             PassengerDocument savedUser = repository.save(novoUsuario);
 
             System.out.println("SUCESSO! Novo usuário de teste criado. Email: " + savedUser.getEmail());

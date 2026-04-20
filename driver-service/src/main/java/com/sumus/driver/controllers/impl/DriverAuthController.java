@@ -13,7 +13,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.sumus.driver.domain.dtos.request.DriverRegistration;
@@ -27,7 +26,6 @@ import com.sumus.driver.services.DriverService;
 import jakarta.validation.Valid;
 
 @RestController
-@RequestMapping("/driver")
 public class DriverAuthController {
 
     @Autowired
@@ -37,9 +35,7 @@ public class DriverAuthController {
     private DriverService driverService;
 
     @Autowired
-    @Qualifier("driverAuthenticationProvider") // Para garantir que o Bean de provedor
-                                               // utilizado será o especificado
-                                               // para lidar com motoristas
+    @Qualifier("driverAuthenticationProvider") 
     private DaoAuthenticationProvider driverAuthenticationProvider;
 
     @PostMapping(path = "/signup")
@@ -57,7 +53,7 @@ public class DriverAuthController {
     @PostMapping(path = "/login")
     public ResponseEntity<AuthResponseDto> login(@RequestBody @Valid LoginRequest loginRequest) {
         UsernamePasswordAuthenticationToken usernamePassword = new UsernamePasswordAuthenticationToken(
-                loginRequest.getEmail(), loginRequest.getPassword());
+                loginRequest.email(), loginRequest.password());
 
         Authentication auth = driverAuthenticationProvider.authenticate(usernamePassword);
 
