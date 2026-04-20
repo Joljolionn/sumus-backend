@@ -43,7 +43,7 @@ public class SecurityConfiguration {
             // autenticação
 
             
-            .requestMatchers("/driver/login", "/driver/signup", "/driver/all", "/driver/teste-erro", "/error")
+            .requestMatchers("/login", "/signup", "/all", "/teste-erro", "/error")
             .permitAll()
 
             
@@ -54,7 +54,7 @@ public class SecurityConfiguration {
             .permitAll() 
 
             
-            .requestMatchers("/driver/**").hasAuthority(UserRole.DRIVER.getAuthority())
+            .requestMatchers("/**").hasAuthority(UserRole.DRIVER.getAuthority())
             .anyRequest().authenticated())
         .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
         .build();

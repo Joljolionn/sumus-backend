@@ -44,7 +44,7 @@ public class SecurityConfiguration {
             // autenticação
 
             
-            .requestMatchers("/passenger/login", "/passenger/signup", "/error")
+            .requestMatchers("/login", "/signup", "/error")
             .permitAll()
 
             
@@ -55,7 +55,7 @@ public class SecurityConfiguration {
             .permitAll() 
 
             
-            .requestMatchers("/passenger/**").hasAuthority(UserRole.PASSENGER.getAuthority())
+            .requestMatchers("/**").hasAuthority(UserRole.PASSENGER.getAuthority())
             .anyRequest().authenticated())
         .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
         .build();
