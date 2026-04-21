@@ -54,8 +54,7 @@ services:
             - "8080:8080"
 
         # Depende do Mongo no Docker (que também está no perfil 'dev')
-        depends_on:
-            - mongodb
+        depends_on: [mongodb-sumus]
 
         environment:
             # 1. Ativa o perfil 'dev' do Spring (application-dev.properties)
@@ -78,8 +77,8 @@ services:
             - "8081:8080"
 
         # Depende do Mongo no Docker (que também está no perfil 'dev')
-        depends_on:
-            - mongodb
+        depends_on: [mongodb-sumus]
+
 
         environment:
             # 1. Ativa o perfil 'dev' do Spring (application-dev.properties)
