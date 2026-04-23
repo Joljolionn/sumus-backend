@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.sumus.driver.domain.dtos.request.DriverUpdateRequest;
 import com.sumus.driver.domain.dtos.request.PasswordUpdateRequest;
-import com.sumus.driver.domain.dtos.response.DriverListResponseDTO;
+import com.sumus.driver.domain.dtos.response.DriverListResponseDto;
 import com.sumus.driver.domain.dtos.response.DriverResponseDto;
 import com.sumus.driver.services.DriverService;
 
@@ -33,7 +33,7 @@ public class DriverController {
     private DriverService driverService;
 
     @GetMapping(path = "/all")
-    public ResponseEntity<DriverListResponseDTO> getAllDrivers() {
+    public ResponseEntity<DriverListResponseDto> getAllDrivers() {
 
         return new ResponseEntity<>(driverService.listAll(), HttpStatus.OK);
     }

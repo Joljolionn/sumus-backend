@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.sumus.driver.domain.dtos.request.DriverRegistration;
+import com.sumus.driver.domain.dtos.request.DriverRegistrationRequest;
 import com.sumus.driver.domain.dtos.request.LoginRequest;
 import com.sumus.driver.domain.dtos.response.AuthResponseDto;
 import com.sumus.driver.domain.dtos.response.DriverResponseDto;
@@ -40,7 +40,7 @@ public class DriverAuthController {
 
     @PostMapping(path = "/signup")
     public ResponseEntity<DriverResponseDto> createPassenger(
-            @ModelAttribute @Valid DriverRegistration driverRegistration) {
+            @ModelAttribute @Valid DriverRegistrationRequest driverRegistration) {
         DriverResponseDto driverResponseDto;
         try {
             driverResponseDto = driverService.create(driverRegistration);
