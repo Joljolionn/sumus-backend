@@ -7,9 +7,7 @@ services:
         image: mongo:4.4 # Versão do mongo compatível com CPUs sem suporte para instruções AVX.
 
         # O serviço sobe com o perfil 'dev' OU com o perfil 'db'
-        profiles:
-            - dev
-            - db
+        profiles: [dev, db]
 
         ports:
             - "27018:27017"
@@ -23,13 +21,9 @@ services:
     # --------------------------------------------------------------------------------
     mongo-test-sumus:
         container_name: mongodb-sumus-test
-        image: mongo:4.4 
+        image: mongo:4.4
 
-
-        # O serviço sobe com o perfil 'dev' OU com o perfil 'db'
-        profiles:
-            - dev
-            - db
+        profiles: [test]
 
         environment:
             MONGO_INITDB_DATABASE: sumus_db
@@ -44,8 +38,7 @@ services:
         container_name: driver-service
 
         # O perfil 'dev' faz com que este serviço só suba se o perfil 'dev' for ativado
-        profiles:
-            - dev
+        profiles: [driver-service, dev]
 
         build:
             context: driver-service/ # A raiz do projeto (onde está o pom.xml pai)
@@ -67,8 +60,7 @@ services:
         container_name: passenger-service
 
         # O perfil 'dev' faz com que este serviço só suba se o perfil 'dev' for ativado
-        profiles:
-            - dev
+        profiles: [passenger-service, dev]
 
         build:
             context: passenger-service/ # A raiz do projeto (onde está o pom.xml pai)
@@ -78,7 +70,6 @@ services:
 
         # Depende do Mongo no Docker (que também está no perfil 'dev')
         depends_on: [mongodb-sumus]
-
 
         environment:
             # 1. Ativa o perfil 'dev' do Spring (application-dev.properties)
