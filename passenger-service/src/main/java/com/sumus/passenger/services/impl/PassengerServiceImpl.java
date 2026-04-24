@@ -1,6 +1,7 @@
 package com.sumus.passenger.services.impl;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Optional;
 
 import org.bson.types.ObjectId;
@@ -58,7 +59,16 @@ public class PassengerServiceImpl implements PassengerService {
 
   @Override
   public PassengerListResponseDto listAll() {
-    return new PassengerListResponseDto(passengerRepository.findAll());
+    List<PassengerDocument> passengerDocuments =passengerRepository.findAll();
+
+    return new PassengerListResponseDto(passengerDocuments.stream()
+            .map(p -> new PassengerResponseDto(
+                p.getName(),
+                p.getEmail(),
+                p.getPhone(),
+                p.getPhotoId()
+            ))
+            .toList()); 
   }
 
   @Override
