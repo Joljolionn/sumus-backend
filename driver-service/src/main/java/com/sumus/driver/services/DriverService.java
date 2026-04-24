@@ -4,18 +4,18 @@ import java.io.IOException;
 
 import org.springframework.data.mongodb.gridfs.GridFsResource;
 
-import com.sumus.driver.domain.dtos.request.DriverRegistration;
+import com.sumus.driver.domain.dtos.request.DriverRegistrationRequest;
 import com.sumus.driver.domain.dtos.request.DriverUpdateRequest;
 import com.sumus.driver.domain.dtos.request.PasswordUpdateRequest;
-import com.sumus.driver.domain.dtos.response.DriverListResponseDTO;
+import com.sumus.driver.domain.dtos.response.DriverListResponseDto;
 import com.sumus.driver.domain.dtos.response.DriverResponseDto;
 
 
 public interface DriverService {
 
-    DriverResponseDto create(DriverRegistration driverRegistration) throws IOException;
+    DriverResponseDto create(DriverRegistrationRequest driverRegistration) throws IOException;
 
-    DriverListResponseDTO listAll();
+    DriverListResponseDto listAll();
 
     GridFsResource getPhotoResourceByDriverEmail(String email);
 
