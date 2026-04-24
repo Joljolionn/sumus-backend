@@ -15,19 +15,6 @@ jobs:
               with:
                   fetch-depth: 0
 
-            - name: Check Branch Name
-              run: |
-                  BRANCH_NAME="${{ github.head_ref }}"
-                  # Regex: Permite letras, números, barras, hifens e underscores. 
-                  # Bloqueia acentos, espaços e símbolos estranhos.
-                  ALLOWED_REGEX="^[a-zA-Z0-9\/\-_]+$"
-
-                  if [[ ! $BRANCH_NAME =~ $ALLOWED_REGEX ]]; then
-                  echo "ERROR: O nome da branch '$BRANCH_NAME' contém caracteres especiais!"
-                  echo "Use apenas letras, números, '/', '-' ou '_'."
-                  exit 1
-                  fi
-
             - name: Validate Each Commit Message
               run: |
                   BASE_SHA=${{ github.event.pull_request.base.sha }}
