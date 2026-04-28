@@ -21,8 +21,20 @@ public class ApiGatewayApplication {
 
   @Bean
   public RouterFunction<ServerResponse> gatewayRoutes() {
-    return route("passenger-service").route(path("/passenger/**"), http())
+    return route("passenger-service")
+        .route(path("/passenger/**"), http())
         .before(addRequestHeader("X-Gateway-Token", "Demo123"))
-        .before(uri("http://passenger-service:8080")).build();
+        .before(uri("http://passenger-service:8080"))
+        .build()
+        .and(route("driver-service")
+            .route(path("/driver/**"), http())
+            .before(addRequestHeader("X-Gateway-Token", "Demo123"))
+            .before(uri("http://driver-service:8080"))
+            .build())
+        .and(route("routing-service")
+            .route(path("/routing/**"), http())
+            .before(addRequestHeader("X-Gateway-Token", "Demo123"))
+            .before(uri("http://routing-service:8080"))
+            .build());
   }
 }

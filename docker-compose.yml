@@ -82,6 +82,22 @@ services:
             # 1. Ativa o perfil 'dev' do Spring (application-dev.properties)
             SPRING_PROFILES_ACTIVE: dev
 
+    routing-service:
+        container_name: routing-service
+
+        # O perfil 'dev' faz com que este serviço só suba se o perfil 'dev' for ativado
+        profiles:
+            - dev
+
+        build:
+            context: routing-service/ # A raiz do projeto (onde está o pom.xml pai)
+
+        ports:
+            - "8083:8080"
+
+        environment:
+            SPRING_PROFILES_ACTIVE: dev
+
     api-gateway:
         container_name: api-gateway
 
@@ -90,7 +106,6 @@ services:
 
         build:
             context: api-gateway/ # A raiz do projeto (onde está o pom.xml pai)
-
 
         depends_on: [driver-service, passenger-service]
 
