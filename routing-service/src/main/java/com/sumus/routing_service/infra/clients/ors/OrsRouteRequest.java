@@ -1,4 +1,12 @@
 package com.sumus.routing_service.infra.clients.ors;
 
-public record OrsRouteRequest(String originX, String originY, String destX, String destY) {
+import java.util.List;
+
+public record OrsRouteRequest(
+    List<double[]> coordinates,
+    String units,
+    boolean instructions) {
+  public OrsRouteRequest(List<double[]> coordinates) {
+    this(coordinates, "m", false);
+  }
 }

@@ -1,4 +1,4 @@
 package com.sumus.routing_service.domain.dtos.requests;
 
-public record RouteRequest(String originY, String originX, String destY, String destX) {
+public record RouteRequest(double originY, double originX, double destY, double destX) {
 }
