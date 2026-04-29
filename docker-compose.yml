@@ -27,7 +27,6 @@ services:
 
         # O serviço sobe com o perfil 'dev' OU com o perfil 'db'
         profiles:
-            - dev
             - db
 
         environment:
