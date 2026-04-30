@@ -37,7 +37,7 @@ public class SecurityConfiguration {
     return http
         .csrf(csrf -> csrf.disable()) 
         .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-        .formLogin().disable() 
+        .formLogin(form -> form.disable())
         .authorizeHttpRequests(auth -> auth
             // .anyRequest().permitAll() // permite todas as rotas sem necessidade de
             // autenticação
