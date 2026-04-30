@@ -106,7 +106,7 @@ services:
             context: auth-service/
 
         ports:
-            - "8083:8080"
+            - "8084:8080"
 
         environment:
             SPRING_PROFILES_ACTIVE: dev
