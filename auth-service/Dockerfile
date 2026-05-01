@@ -1,10 +1,38 @@
-FROM maven:3.9.6-eclipse-temurin-21 AS build
-WORKDIR /app
-COPY . .
-RUN mvn clean package -DskipTests
+# ESTÁGIO 1: BUILDER
+# Usa uma imagem com JDK e Maven para compilar o código
+FROM maven AS builder
 
-FROM eclipse-temurin:21-jre-jammy
+# Define o diretório de trabalho do projeto
 WORKDIR /app
-COPY --from=build /app/target/*.jar app.jar
+
+# Copia o POM.xml 
+COPY pom.xml .
+
+# Baixa todas as dependências do projeto
+RUN mvn dependency:go-offline 
+
+# Copia o código-fonte 
+COPY src/ ./src/
+
+# Empacota o projeto em um JAR (o 'target/*.jar')
+RUN mvn clean package -DskipTests 
+
+# --------------------------------------------------------------------------------------
+
+# ESTÁGIO 2: EXECUÇÃO (Runtime)
+# Usa uma imagem mínima que só tem o JRE (Java Runtime Environment)
+FROM eclipse-temurin:21-jre-alpine AS runtime
+
+# Define o diretório de trabalho do container
+WORKDIR /app
+
+# Copia o JAR criado no estágio 'builder' para este estágio
+# Isso garante que a imagem final não inclua o Maven e o código-fonte
+COPY --from=builder /app/target/*.jar app.jar
+
+# Expõe a porta do Spring Boot
 EXPOSE 8080
+
+# Comando de execução
 ENTRYPOINT ["java", "-jar", "app.jar"]
+
