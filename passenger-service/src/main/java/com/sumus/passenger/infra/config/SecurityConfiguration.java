@@ -1,32 +1,21 @@
 package com.sumus.passenger.infra.config;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-
-import com.sumus.passenger.infra.security.jwt.JwtAuthenticationFilter;
-import com.sumus.passenger.infra.security.userdetails.PassengerDetailsService;
-import com.sumus.passenger.infra.security.util.UserRole;
-
 
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfiguration {
 
-  @Autowired
-  private PassengerDetailsService passengerDetailsService;
-
-  @Autowired
-  private JwtAuthenticationFilter jwtAuthenticationFilter;
+  private String passengerRole = "ROLE_PASSENGER";
 
   @Bean
   public PasswordEncoder passwordEncoder() {
@@ -55,20 +44,12 @@ public class SecurityConfiguration {
             .permitAll() 
 
             
-            .requestMatchers("/**").hasAuthority(UserRole.PASSENGER.getAuthority())
+            .requestMatchers("/**").hasAuthority(passengerRole)
             .anyRequest().authenticated())
-        .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
-        .build();
+        .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()))
+    .build();
   }
 
   
-  @Bean
-  public DaoAuthenticationProvider passengerAuthenticationProvider() {
-    DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
-    provider.setUserDetailsService(passengerDetailsService);
-    provider.setPasswordEncoder(passwordEncoder());
-    provider.setHideUserNotFoundExceptions(false); 
-    return provider;
-  }
 
 }

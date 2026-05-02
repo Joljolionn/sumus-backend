@@ -32,7 +32,7 @@ public class JwtService {
     // Token expira em 2 horas
   }
 
-  private String issuer = "auth-service";
+  private String issuer = "http://auth-service:8080";
 
   public String generateToken(UserDetails userDetails, UserRole userRole)
       throws IllegalArgumentException, JOSEException {
