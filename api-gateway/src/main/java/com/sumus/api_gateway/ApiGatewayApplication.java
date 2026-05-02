@@ -25,8 +25,8 @@ public class ApiGatewayApplication {
       PassengerServiceRoutes passengerServiceRoutes,
       RoutingServiceRoutes routingServiceRoutes) {
 
-    return authServiceRoutes.loginRoutes()
-        .and(authServiceRoutes.authRoutes())
+    return // authServiceRoutes.loginRoutes() // TODO: ajustar rotas de login novamente
+    authServiceRoutes.authRoutes()
         .and(passengerServiceRoutes.routes())
         .and(driverServicerRoutes.routes())
         .and(routingServiceRoutes.routes());
