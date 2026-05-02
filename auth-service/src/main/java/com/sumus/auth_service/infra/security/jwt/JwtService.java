@@ -23,14 +23,25 @@ public class JwtService {
   @Autowired
   private RSAKey key;
 
+  private Algorithm getAlgorithm() throws IllegalArgumentException, JOSEException {
+    return Algorithm.RSA256(key.toRSAPublicKey(), key.toRSAPrivateKey());
+  }
+
+  private Instant generateExpirationDate() {
+    return LocalDateTime.now().plusHours(2).toInstant(ZoneOffset.of("-03:00"));
+    // Token expira em 2 horas
+  }
+
+  private String issuer = "auth-service";
+
   public String generateToken(UserDetails userDetails, UserRole userRole)
       throws IllegalArgumentException, JOSEException {
 
     try {
-      Algorithm algorithm = Algorithm.RSA256(key.toRSAPublicKey(), key.toRSAPrivateKey());
+      Algorithm algorithm = getAlgorithm();
 
       String token = JWT.create()
-          .withIssuer("auth-service")
+          .withIssuer(issuer)
           .withSubject(userDetails.getUsername())
           .withClaim("role_type", userRole.getAuthority())
           .withExpiresAt(generateExpirationDate())
@@ -45,9 +56,9 @@ public class JwtService {
   public String validateToken(String token) throws IllegalArgumentException, JOSEException {
     try {
 
-      Algorithm algorithm = Algorithm.RSA256(key.toRSAPublicKey(), key.toRSAPrivateKey());
+      Algorithm algorithm = getAlgorithm();
       return JWT.require(algorithm)
-          .withIssuer("auth-service")
+          .withIssuer(issuer)
           .build()
           .verify(token)
           .getSubject();
@@ -56,7 +67,8 @@ public class JwtService {
     }
   }
 
-  public Claim extractClaim(String token, String claimName) throws IllegalArgumentException, JOSEException {
+  public Claim extractClaim(String token, String claimName)
+      throws IllegalArgumentException, JOSEException {
     try {
       return decodeToken(token).getClaim(claimName);
     } catch (JWTVerificationException e) {
@@ -64,15 +76,12 @@ public class JwtService {
     }
   }
 
-  private Instant generateExpirationDate() {
-    return LocalDateTime.now().plusHours(2).toInstant(ZoneOffset.of("-03:00"));
-    // Token expira em 2 horas
-  }
 
-  private DecodedJWT decodeToken(String token) throws JWTVerificationException, IllegalArgumentException, JOSEException {
+  private DecodedJWT decodeToken(String token)
+      throws JWTVerificationException, IllegalArgumentException, JOSEException {
 
-    return JWT.require(Algorithm.RSA256(key.toRSAPublicKey(), key.toRSAPrivateKey()))
-        .withIssuer("auth-service")
+    return JWT.require(getAlgorithm())
+        .withIssuer(issuer)
         .build()
         .verify(token);
   }
