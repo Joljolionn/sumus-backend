@@ -12,6 +12,12 @@ services:
 
         ports:
             - "27018:27017"
+        healthcheck:
+            test: ["CMD", "mongo", "--eval", "db.adminCommand('ping')"]
+            interval: 10s
+            timeout: 5s
+            retries: 5
+            start_period: 10s
         volumes:
             - mongo-data:/data/db
         environment:
@@ -43,12 +49,14 @@ services:
             - dev
 
         build:
-            context: driver-service/ 
+            context: driver-service/
 
         ports:
             - "8081:8080"
 
-        depends_on: [mongodb-sumus]
+        depends_on:
+            mongodb-sumus:
+                condition: service_healthy
 
         environment:
             SPRING_PROFILES_ACTIVE: dev
@@ -63,16 +71,17 @@ services:
             - dev
 
         build:
-            context: passenger-service/ 
+            context: passenger-service/
 
         ports:
             - "8082:8080"
 
-        depends_on: [mongodb-sumus]
+        depends_on:
+            mongodb-sumus:
+                condition: service_healthy
 
         environment:
             SPRING_PROFILES_ACTIVE: dev
-
 
     # --------------------------------------------------------------------------------
     # Microsserviço de Rotas (ORS)
@@ -84,14 +93,13 @@ services:
             - dev
 
         build:
-            context: routing-service/ 
+            context: routing-service/
 
         ports:
             - "8083:8080"
 
         environment:
             SPRING_PROFILES_ACTIVE: dev
-
 
     # --------------------------------------------------------------------------------
     # Microsserviço de Autenticação
@@ -108,9 +116,20 @@ services:
         ports:
             - "8084:8080"
 
+        depends_on:
+            mongodb-sumus:
+                condition: service_healthy
+            driver-service:
+                condition: service_started
+            passenger-service:
+                condition: service_started
+
         environment:
             SPRING_PROFILES_ACTIVE: dev
 
+    # --------------------------------------------------------------------------------
+    # Microsserviço de Gateway
+    # --------------------------------------------------------------------------------
     api-gateway:
         container_name: api-gateway
 
@@ -118,13 +137,20 @@ services:
             - dev
 
         build:
-            context: api-gateway/ 
+            context: api-gateway/
 
-        depends_on: [driver-service, passenger-service]
+        depends_on:
+            driver-service:
+                condition: service_started
+            passenger-service:
+                condition: service_started
+            routing-service:
+                condition: service_started
+            auth-service:
+                condition: service_started
 
         ports:
             - 8080:8080
 
-# Definição dos volumes persistentes
 volumes:
     mongo-data:
