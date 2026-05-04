@@ -1,31 +1,21 @@
 package com.sumus.driver.infra.config;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-
-import com.sumus.driver.infra.security.jwt.JwtAuthenticationFilter;
-import com.sumus.driver.infra.security.userdetails.DriverDetailsService;
-import com.sumus.driver.infra.security.util.UserRole;
 
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfiguration {
 
-  @Autowired
-  private DriverDetailsService driverDetailsService;
-
-  @Autowired
-  private JwtAuthenticationFilter jwtAuthenticationFilter;
+  private String driverRole = "ROLE_DRIVER";
 
   @Bean
   public PasswordEncoder passwordEncoder() {
@@ -35,38 +25,30 @@ public class SecurityConfiguration {
   @Bean
   public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
     return http
-        .csrf(csrf -> csrf.disable()) 
-        .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-        .formLogin().disable() 
+        .csrf(csrf -> csrf.disable())
+        .sessionManagement(
+            session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+        .formLogin(form -> form.disable())
         .authorizeHttpRequests(auth -> auth
             // .anyRequest().permitAll() // permite todas as rotas sem necessidade de
             // autenticação
 
-            
+
             .requestMatchers("/login", "/signup", "/all", "/teste-erro", "/error")
             .permitAll()
 
-            
+
             .requestMatchers(
                 "/v3/api-docs/**",
                 "/swagger-ui/**",
                 "/swagger-ui.html")
-            .permitAll() 
+            .permitAll()
 
-            
-            .requestMatchers("/**").hasAuthority(UserRole.DRIVER.getAuthority())
+
+            .requestMatchers("/**").hasAuthority(driverRole)
             .anyRequest().authenticated())
-        .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+        .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()))
         .build();
   }
 
-
-  
-  @Bean
-  public DaoAuthenticationProvider driverAuthenticationProvider() {
-    DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
-    provider.setUserDetailsService(driverDetailsService);
-    provider.setPasswordEncoder(passwordEncoder());
-    return provider;
-  }
 }

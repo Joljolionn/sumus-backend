@@ -1,33 +1,36 @@
 services:
     # --------------------------------------------------------------------------------
-    # Serviço do Banco de Dados (Usado em DEV e no modo SÓ-DB)
+    # Banco de Dados (Runtime)
     # --------------------------------------------------------------------------------
     mongodb-sumus:
         container_name: mongodb-sumus
         image: mongo:4.4 # Versão do mongo compatível com CPUs sem suporte para instruções AVX.
 
-        # O serviço sobe com o perfil 'dev' OU com o perfil 'db'
         profiles:
             - dev
             - db
 
         ports:
             - "27018:27017"
+        healthcheck:
+            test: ["CMD", "mongo", "--eval", "db.adminCommand('ping')"]
+            interval: 10s
+            timeout: 5s
+            retries: 5
+            start_period: 10s
         volumes:
             - mongo-data:/data/db
         environment:
             MONGO_INITDB_DATABASE: sumus_db
 
     # --------------------------------------------------------------------------------
-    # Banco de Dados de Testes (limpo e efêmero)
+    # Banco de Dados (Testes)
     # --------------------------------------------------------------------------------
     mongo-test-sumus:
         container_name: mongodb-sumus-test
         image: mongo:4.4
 
-        # O serviço sobe com o perfil 'dev' OU com o perfil 'db'
         profiles:
-            - dev
             - db
 
         environment:
@@ -42,21 +45,20 @@ services:
     driver-service:
         container_name: driver-service
 
-        # O perfil 'dev' faz com que este serviço só suba se o perfil 'dev' for ativado
         profiles:
             - dev
 
         build:
-            context: driver-service/ # A raiz do projeto (onde está o pom.xml pai)
+            context: driver-service/
 
         ports:
             - "8081:8080"
 
-        # Depende do Mongo no Docker (que também está no perfil 'dev')
-        depends_on: [mongodb-sumus]
+        depends_on:
+            mongodb-sumus:
+                condition: service_healthy
 
         environment:
-            # 1. Ativa o perfil 'dev' do Spring (application-dev.properties)
             SPRING_PROFILES_ACTIVE: dev
 
     # --------------------------------------------------------------------------------
@@ -65,39 +67,70 @@ services:
     passenger-service:
         container_name: passenger-service
 
-        # O perfil 'dev' faz com que este serviço só suba se o perfil 'dev' for ativado
         profiles:
             - dev
 
         build:
-            context: passenger-service/ # A raiz do projeto (onde está o pom.xml pai)
+            context: passenger-service/
 
         ports:
             - "8082:8080"
 
-        # Depende do Mongo no Docker (que também está no perfil 'dev')
-        depends_on: [mongodb-sumus]
+        depends_on:
+            mongodb-sumus:
+                condition: service_healthy
 
         environment:
-            # 1. Ativa o perfil 'dev' do Spring (application-dev.properties)
             SPRING_PROFILES_ACTIVE: dev
 
+    # --------------------------------------------------------------------------------
+    # Microsserviço de Rotas (ORS)
+    # --------------------------------------------------------------------------------
     routing-service:
         container_name: routing-service
 
-        # O perfil 'dev' faz com que este serviço só suba se o perfil 'dev' for ativado
         profiles:
             - dev
 
         build:
-            context: routing-service/ # A raiz do projeto (onde está o pom.xml pai)
+            context: routing-service/
 
         ports:
             - "8083:8080"
 
         environment:
+            ORS_KEY: ${ORS_TOKEN}
             SPRING_PROFILES_ACTIVE: dev
 
+    # --------------------------------------------------------------------------------
+    # Microsserviço de Autenticação
+    # --------------------------------------------------------------------------------
+    auth-service:
+        container_name: auth-service
+
+        profiles:
+            - dev
+
+        build:
+            context: auth-service/
+
+        ports:
+            - "8084:8080"
+
+        depends_on:
+            mongodb-sumus:
+                condition: service_healthy
+            driver-service:
+                condition: service_started
+            passenger-service:
+                condition: service_started
+
+        environment:
+            SPRING_PROFILES_ACTIVE: dev
+
+    # --------------------------------------------------------------------------------
+    # Microsserviço de Gateway
+    # --------------------------------------------------------------------------------
     api-gateway:
         container_name: api-gateway
 
@@ -105,13 +138,20 @@ services:
             - dev
 
         build:
-            context: api-gateway/ # A raiz do projeto (onde está o pom.xml pai)
+            context: api-gateway/
 
-        depends_on: [driver-service, passenger-service]
+        depends_on:
+            driver-service:
+                condition: service_started
+            passenger-service:
+                condition: service_started
+            routing-service:
+                condition: service_started
+            auth-service:
+                condition: service_started
 
         ports:
             - 8080:8080
 
-# Definição dos volumes persistentes
 volumes:
     mongo-data:
