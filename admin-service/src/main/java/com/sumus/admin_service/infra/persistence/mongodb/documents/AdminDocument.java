@@ -1,10 +1,11 @@
-package com.sumus.admin_service.infra.persistence.mongodb;
+package com.sumus.admin_service.infra.persistence.mongodb.documents;
 
 import java.time.LocalDate;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
+import com.sumus.admin_service.domain.models.Admin;
 
 @Document(collection = "admins")
 public class AdminDocument {
@@ -35,14 +36,24 @@ public class AdminDocument {
     PRIMARY, SECONDARY
   }
 
-  public AdminDocument(String name, String email, String password, String phone,
-      String cpf, LocalDate dataNasc) {
+  public AdminDocument(String id, String name, String email, String password, String phone,
+      String cpf, LocalDate dataNasc, AdminLevel adminLevel) {
     this.name = name;
     this.email = email;
     this.password = password;
     this.phone = phone;
     this.cpf = cpf;
     this.dataNasc = dataNasc;
+  }
+
+  public Admin toDomain() {
+    return new Admin(this.id, this.name, this.email, this.phone,
+        this.photoId, this.cpf, this.dataNasc, this.adminLevel);
+  }
+
+  public static AdminDocument fromDomain(Admin admin) {
+    return new AdminDocument(admin.getId(), admin.getName(), admin.getEmail(), admin.getPassword(),
+        admin.getPhone(), admin.getCpf(), admin.getDataNasc(), admin.getAdminLevel());
   }
 
   public String getId() {
