@@ -23,6 +23,9 @@ services:
         environment:
             MONGO_INITDB_DATABASE: sumus_db
 
+        networks:
+            - backend-sumus-network
+
     # --------------------------------------------------------------------------------
     # Banco de Dados (Testes)
     # --------------------------------------------------------------------------------
@@ -38,6 +41,9 @@ services:
 
         ports:
             - "27019:27017"
+
+        networks:
+            - backend-sumus-network
 
     # --------------------------------------------------------------------------------
     # Microsserviço de Motoristas
@@ -61,6 +67,9 @@ services:
         environment:
             SPRING_PROFILES_ACTIVE: dev
 
+        networks:
+            - backend-sumus-network
+
     # --------------------------------------------------------------------------------
     # Microsserviço de Passageiros
     # --------------------------------------------------------------------------------
@@ -83,6 +92,9 @@ services:
         environment:
             SPRING_PROFILES_ACTIVE: dev
 
+        networks:
+            - backend-sumus-network
+
     # --------------------------------------------------------------------------------
     # Microsserviço de Rotas (ORS)
     # --------------------------------------------------------------------------------
@@ -101,6 +113,9 @@ services:
         environment:
             ORS_KEY: ${ORS_TOKEN}
             SPRING_PROFILES_ACTIVE: dev
+
+        networks:
+            - backend-sumus-network
 
     # --------------------------------------------------------------------------------
     # Microsserviço de Autenticação
@@ -128,6 +143,9 @@ services:
         environment:
             SPRING_PROFILES_ACTIVE: dev
 
+        networks:
+            - backend-sumus-network
+
     # --------------------------------------------------------------------------------
     # Microsserviço de Gateway
     # --------------------------------------------------------------------------------
@@ -153,5 +171,17 @@ services:
         ports:
             - 8080:8080
 
+        networks:
+            - backend-sumus-network
+            - frontend-sumus-network
+
 volumes:
     mongo-data:
+
+networks:
+    backend-sumus-network:
+        name: backend-sumus-network
+        driver: bridge
+    frontend-sumus-network:
+        name: frontend-sumus-network
+        driver: bridge
